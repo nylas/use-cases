@@ -1,16 +1,16 @@
-const { default: Draft } = require("nylas/lib/models/draft");
-const { mockDb } = require("./utils/mock-db");
+const { default: Draft } = require('nylas/lib/models/draft');
+const { mockDb } = require('./utils/mock-db');
 
 exports.sendEmail = async (req, res, next, nylasClient) => {
   if (!req.headers.authorization) {
-    console.log("no headers");
-    return res.json("Unauthorized");
+    console.log('no headers');
+    return res.json('Unauthorized');
   }
 
   const user = await mockDb.findUser(req.headers.authorization);
 
   if (!user) {
-    return res.json("Unauthorized");
+    return res.json('Unauthorized');
   }
 
   const { to, body } = req.body;
@@ -28,14 +28,14 @@ exports.sendEmail = async (req, res, next, nylasClient) => {
 
 exports.readEmails = async (req, res, next, nylasClient) => {
   if (!req.headers.authorization) {
-    console.log("no headers");
-    return res.json("Unauthorized");
+    console.log('no headers');
+    return res.json('Unauthorized');
   }
 
   const user = await mockDb.findUser(req.headers.authorization);
 
   if (!user) {
-    return res.json("Unauthorized");
+    return res.json('Unauthorized');
   }
 
   const nylas = nylasClient.with(user.accessToken);

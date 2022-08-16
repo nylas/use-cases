@@ -1,4 +1,4 @@
-const { v4: uuidv4 } = require("uuid");
+const { v4: uuidv4 } = require('uuid');
 const users = [];
 
 const mockDb = {
@@ -8,7 +8,7 @@ const mockDb = {
   updateUser: async (userId, payload) => {
     const idx = users.findIndex((u) => u.id === userId);
     if (idx === -1) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
 
     users[idx] = { ...users[idx], ...payload };

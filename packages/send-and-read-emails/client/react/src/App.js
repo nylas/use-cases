@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { useNylas } from "@nylas/nylas-react";
-import DisplayEmail from "./DisplayEmail";
-import { styles } from "./styles";
+import React, { useState, useEffect } from 'react';
+import { useNylas } from '@nylas/nylas-react';
+import DisplayEmail from './DisplayEmail';
+import { styles } from './styles';
 
 function App() {
   const nylas = useNylas();
 
-  const [userId, setUserId] = useState("");
+  const [userId, setUserId] = useState('');
 
   const handleTokenExchange = (r) => {
     try {
       const user = JSON.parse(r);
       setUserId(user.id);
-      window.history.replaceState({}, "", `/?userId=${user.id}`);
+      window.history.replaceState({}, '', `/?userId=${user.id}`);
     } catch (e) {
-      console.error("An error occurred parsing the response.");
-      window.history.replaceState({}, "", "/");
+      console.error('An error occurred parsing the response.');
+      window.history.replaceState({}, '', '/');
     }
   };
 
@@ -26,12 +26,12 @@ function App() {
 
     // Handle the code that is passed in the query params from Nylas after a successful login
     const params = new URLSearchParams(window.location.search);
-    if (params.has("code")) {
+    if (params.has('code')) {
       nylas.exchangeCodeFromUrlForToken().then(handleTokenExchange);
     }
 
-    if (params.has("userId")) {
-      setUserId(params.get("userId"));
+    if (params.has('userId')) {
+      setUserId(params.get('userId'));
     }
   }, [nylas]);
 
@@ -39,7 +39,7 @@ function App() {
     <>
       <div
         style={{
-          padding: "6em 1em",
+          padding: '6em 1em',
         }}
       >
         {userId ? (
@@ -47,7 +47,7 @@ function App() {
             <section style={styles.App.statusBar}>
               <div
                 style={{
-                  padding: "1em",
+                  padding: '1em',
                 }}
               >
                 <p style={styles.App.statusBarText}>✨ Connected to Nylas!</p>
@@ -69,19 +69,19 @@ function App() {
 function NylasLogin() {
   const nylas = useNylas();
 
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
 
   return (
-    <section style={{ width: "80vw", margin: "0 auto" }}>
+    <section style={{ width: '80vw', margin: '0 auto' }}>
       <h1>Send and read emails sample app</h1>
       <p>Authenticate your email to send and read</p>
-      <div style={{ marginTop: "30px" }}>
+      <div style={{ marginTop: '30px' }}>
         <form
           onSubmit={(e) => {
             e.preventDefault();
             nylas.authWithRedirect({
               emailAddress: email,
-              successRedirectUrl: "",
+              successRedirectUrl: '',
             });
           }}
         >
@@ -108,14 +108,14 @@ function ReadEmails({ userId }) {
       return;
     }
 
-    const url = nylas.serverBaseUrl + "/nylas/read-emails";
+    const url = nylas.serverBaseUrl + '/nylas/read-emails';
 
     const requestHeaders = new Headers();
-    requestHeaders.set("Authorization", userId);
-    requestHeaders.set("Content-Type", "application/json");
+    requestHeaders.set('Authorization', userId);
+    requestHeaders.set('Content-Type', 'application/json');
 
     const res = await fetch(url, {
-      method: "GET",
+      method: 'GET',
       headers: requestHeaders,
     });
 
@@ -141,18 +141,18 @@ function ReadEmails({ userId }) {
 function SendEmails({ userId }) {
   const nylas = useNylas();
 
-  const [to, setTo] = useState("");
-  const [body, setBody] = useState("");
+  const [to, setTo] = useState('');
+  const [body, setBody] = useState('');
 
   const sendEmail = async ({ userId, to, body }) => {
     try {
-      const url = nylas.serverBaseUrl + "/nylas/send-email";
+      const url = nylas.serverBaseUrl + '/nylas/send-email';
 
       const res = await fetch(url, {
-        method: "POST",
+        method: 'POST',
         headers: {
           Authorization: userId,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ to, body }),
       });
@@ -176,10 +176,10 @@ function SendEmails({ userId }) {
     const message = await sendEmail({ userId, to, body });
     console.log(message);
 
-    alert("Sent. Check console for confirmation...");
+    alert('Sent. Check console for confirmation...');
 
-    setTo("");
-    setBody("");
+    setTo('');
+    setBody('');
   };
 
   return (
