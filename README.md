@@ -1,4 +1,4 @@
-# Nylas Use Case Samples
+# Nylas Use Case Samples (In Active Development)
 
 Explore working front-end and back-end sample code using an integration with Nylas.
 
