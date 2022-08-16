@@ -14,7 +14,6 @@
     "body-parser": "^1.15.2",
     "uuid": "^8.3.2",
     "nylas": "^7.0.0-canary.4",
-    "request": "^2.74.0",
-    "cors": "^2.8.5"
+    "request": "^2.74.0"
   }
 }
