@@ -18,7 +18,7 @@ jobs:
       - name: Setup Nodejs ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
-          node-version: 16
+          node-version: 18
 
       - name: Install dependencies and build
         run: npm install
@@ -27,4 +27,4 @@ jobs:
         run: npm run lint:ci
 
       - name: Run prettier checks
-        run: npm run lint:prettier:check 
+        run: npm run lint:prettier:check
