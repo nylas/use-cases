@@ -1,0 +1,22 @@
+{
+  "name": "nylas-read-and-create-calendar-events-node-express",
+  "version": "0.1.0",
+  "description": "Demo using the Nylas Node SDK and ExpressJS.",
+  "main": "server.js",
+  "scripts": {
+    "start": "npx nodemon server.js"
+  },
+  "author": "Nylas Team",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "uuid": "^8.3.2",
+    "express": "^4.14.0",
+    "nylas": "^7.0.0-canary.3",
+    "request": "^2.74.0",
+    "cors": "^2.8.5"
+  }
+}
