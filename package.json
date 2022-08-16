@@ -1,0 +1,25 @@
+{
+  "name": "nylas-use-cases",
+  "version": "0.1.0",
+  "description": "Explore the use cases for Nylas API by using frameworks of your choice.",
+  "engines": {
+    "npm": ">=8.0.0",
+    "node": ">=18.0.0"
+  },
+  "type": "module",
+  "scripts": {
+    "setup": "node scripts/setup",
+    "start": "node scripts/start"
+  },
+  "author": "Nylas",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^7.2.2",
+    "cross-env": "^7.0.3"
+  },
+  "dependencies": {
+    "chalk": "^5.0.1",
+    "dotenv": "^16.0.1",
+    "inquirer": "^9.1.0"
+  }
+}
