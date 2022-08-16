@@ -97,7 +97,7 @@ const startExpress = () => {
 
     const user = await mockDb.findUser(req.headers.authorization);
     if (!user) {
-      return res.json('Unauthorized');
+      return res.sendStatus(401);
     }
 
     const events = await nylasClient

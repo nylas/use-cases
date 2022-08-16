@@ -46,31 +46,12 @@ function App() {
       ) : (
         <>
           <section style={styles.App.statusBar}>
-            <div
-              style={{
-                padding: '1em',
-              }}
-            >
-              <p style={styles.App.statusBarText}>✨ Connected to Nylas!</p>
-            </div>
+            <p style={styles.App.statusBarText}>✨ Connected to Nylas!</p>
           </section>
           <section style={styles.App.contentContainer}>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                maxWidth: '70%',
-                marginRight: 40,
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  marginBottom: 16,
-                }}
-              >
-                <h2 style={{ margin: 0, fontSize: '1.6em' }}>Agenda</h2>
+            <div style={styles.App.agendaContainer}>
+              <div style={styles.App.agendaHeader}>
+                <h2>Agenda</h2>
                 <CalendarPicker
                   serverBaseUrl={serverBaseUrl}
                   userId={userId}
@@ -84,14 +65,8 @@ function App() {
                 calendarId={calendarId}
               />
             </div>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                width: '30%',
-              }}
-            >
-              <h2>Create event</h2>
+            <div style={styles.CreateEventForm.container}>
+              <h2 style={styles.CreateEventForm.title}>Create event</h2>
               <CreateEventForm
                 userId={userId}
                 serverBaseUrl={serverBaseUrl}
@@ -170,8 +145,8 @@ function CalendarPicker({
   }, [serverBaseUrl, userId]);
 
   return (
-    <div style={{ marginLeft: 16, display: 'flex', alignItems: 'center' }}>
-      <label style={{ marginRight: 8 }} for="calendar">
+    <div style={styles.CalendarPicker.container}>
+      <label style={styles.CalendarPicker.label} for="calendar">
         Select a Calendar:
       </label>
       <select
@@ -211,10 +186,12 @@ function Agenda({ serverBaseUrl, userId, calendarId }) {
         });
         const data = await res.json();
 
-        console.log(data);
-        setCalendarEvents(data);
-      } catch (e) {
-        console.warn(`Error retrieving calendarEvents:`, e);
+        console.log('Calendar events:', data);
+        if (data) {
+          setCalendarEvents(data);
+        }
+      } catch (err) {
+        console.warn(`Error retrieving calendarEvents:`, err);
         return false;
       }
     };
@@ -223,48 +200,15 @@ function Agenda({ serverBaseUrl, userId, calendarId }) {
   }, [serverBaseUrl, userId, calendarId]);
 
   return (
-    <section
-      style={{
-        maxHeight: '60vh',
-        overflowY: 'scroll',
-        border: '4px solid rgb(65, 105, 225)',
-        borderRadius: 16,
-        padding: 12,
-      }}
-    >
+    <section style={styles.Agenda.container}>
       {calendarEvents.map((calendarEvent) => (
-        <article
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            borderRadius: 8,
-            boxShadow: '0px 4px 8px rgb(115 115 115 / 60%)',
-            padding: 16,
-            marginBottom: 16,
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              maxWidth: '50%',
-              justifyContent: 'space-between',
-            }}
-          >
+        <article style={styles.Agenda.eventArticle}>
+          <div style={styles.Agenda.eventDateContainer}>
             <CalendarEventDate when={calendarEvent.when} />
           </div>
-          <h2 style={{ margin: '0 0 16px', fontSize: '1.6em' }}>
-            {calendarEvent.title}
-          </h2>
+          <h2 style={styles.Agenda.eventTitle}>{calendarEvent.title}</h2>
           <div
-            style={{
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              display: 'flex',
-              flexDirection: 'column',
-              WebkitLineClamp: 3,
-              maxHeight: '120px',
-              color: '#737373',
-            }}
+            style={styles.Agenda.eventContent}
             dangerouslySetInnerHTML={{
               __html: calendarEvent.description,
             }}
@@ -277,16 +221,20 @@ function Agenda({ serverBaseUrl, userId, calendarId }) {
 
 function CalendarEventDate({ when }) {
   if (when.object === 'date') {
-    return <p>Date: {new Date(when.date).toLocaleDateString()}</p>;
+    return (
+      <p style={styles.CalendarEventDate.text}>
+        Date: {new Date(when.date).toLocaleDateString()}
+      </p>
+    );
   }
 
   if (when.object === 'timespan') {
     return (
       <>
-        <p style={{ margin: '0 0 24px' }}>
+        <p style={styles.CalendarEventDate.text}>
           Start Time: {displayMeetingTime(when.start_time)}
         </p>
-        <p style={{ margin: '0 0 24px' }}>
+        <p style={styles.CalendarEventDate.text}>
           End Time: {displayMeetingTime(when.end_time)}
         </p>
       </>
@@ -308,7 +256,6 @@ function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
     e.preventDefault();
     try {
       const url = serverBaseUrl + '/nylas/create-events';
-      console.log('startTime:', startTime);
 
       const res = await fetch(url, {
         method: 'POST',
@@ -327,19 +274,25 @@ function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
 
       const data = await res.json();
 
-      console.log(data);
+      console.log('Event created:', data);
+
+      // reset form fields
+      setStartTime(getDateString(new Date()));
+      setEndTime(getDateString(new Date()));
+      setTitle('');
+      setDescription('');
     } catch (err) {
       console.warn(`Error creating event:`, err);
     }
   };
 
   return (
-    <form
-      style={{ display: 'flex', flexDirection: 'column' }}
-      onSubmit={createEvent}
-    >
-      <label for="event-start-time">Choose a start time:</label>
+    <form style={styles.CreateEventForm.form} onSubmit={createEvent}>
+      <label style={styles.CreateEventForm.label} for="event-start-time">
+        Choose a start time:
+      </label>
       <input
+        style={styles.CreateEventForm.input}
         type="datetime-local"
         name="event-start-time"
         onChange={(event) => {
@@ -348,8 +301,11 @@ function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
         value={startTime}
         min={getDateString(now)}
       />
-      <label for="event-end-time">Choose an end time:</label>
+      <label style={styles.CreateEventForm.label} for="event-end-time">
+        Choose an end time:
+      </label>
       <input
+        style={styles.CreateEventForm.input}
         type="datetime-local"
         name="event-end-time"
         onChange={(event) => {
@@ -358,8 +314,11 @@ function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
         value={endTime}
         min={getDateString(now)}
       />
-      <label for="title">Title:</label>
+      <label style={styles.CreateEventForm.label} for="title">
+        Title:
+      </label>
       <input
+        style={styles.CreateEventForm.input}
         type="text"
         name="title"
         onChange={(event) => {
@@ -367,8 +326,11 @@ function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
         }}
         value={title}
       />
-      <label for="description">Description:</label>
+      <label style={styles.CreateEventForm.label} for="description">
+        Description:
+      </label>
       <textarea
+        style={styles.CreateEventForm.input}
         type="text"
         name="description"
         onChange={(event) => {
@@ -378,7 +340,9 @@ function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
         rows={10}
         width="100%"
       />
-      <button type="submit">Create Event</button>
+      <button style={styles.CreateEventForm.button} type="submit">
+        Create Event
+      </button>
     </form>
   );
 }
