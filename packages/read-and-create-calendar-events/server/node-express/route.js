@@ -3,7 +3,7 @@ const { mockDb } = require('./utils/mock-db');
 
 exports.readEvents = async (req, res, next, nylasClient) => {
   if (!req.headers.authorization) {
-    return res.json('Unauthorized');
+    return res.sendStatus(401);
   }
 
   const user = await mockDb.findUser(req.headers.authorization);
@@ -25,12 +25,12 @@ exports.readEvents = async (req, res, next, nylasClient) => {
 
 exports.readCalendars = async (req, res, next, nylasClient) => {
   if (!req.headers.authorization) {
-    return res.json('Unauthorized');
+    return res.sendStatus(401);
   }
 
   const user = await mockDb.findUser(req.headers.authorization);
   if (!user) {
-    return res.json('Unauthorized');
+    return res.sendStatus(401);
   }
 
   const calendars = await nylasClient
@@ -43,19 +43,20 @@ exports.readCalendars = async (req, res, next, nylasClient) => {
 
 exports.createEvents = async (req, res, next, nylasClient) => {
   if (!req.headers.authorization) {
-    return res.json('Unauthorized');
+    return res.sendStatus(401);
   }
 
   const user = await mockDb.findUser(req.headers.authorization);
   if (!user) {
-    return res.json('Unauthorized');
+    return res.sendStatus(401);
   }
 
   const { calendarId, title, description, startTime, endTime } = req.body;
   if (!calendarId || !title || !startTime || !endTime) {
-    return res.json(
-      'Missing required fields: calendarId, title, starTime or endTime'
-    );
+    return res.status(400).json({
+      message:
+        'Missing required fields: calendarId, title, starTime or endTime',
+    });
   }
 
   const nylas = nylasClient.with(user.accessToken);

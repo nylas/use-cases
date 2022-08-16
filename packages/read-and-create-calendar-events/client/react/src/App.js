@@ -6,7 +6,7 @@ import { applyTimezone, displayMeetingTime, getDateString } from './utils/date';
 function App() {
   const nylas = useNylas();
   const [userId, setUserId] = useState('');
-  const [calendarId, setCalendarId] = useState(null);
+  const [primaryCalendar, setPrimaryCalendar] = useState(null);
 
   const serverBaseUrl = 'http://localhost:9000';
   const handleTokenExchange = (r) => {
@@ -14,8 +14,8 @@ function App() {
       const user = JSON.parse(r);
       setUserId(user.id);
       window.history.replaceState({}, '', `/?userId=${user.id}`);
-    } catch (e) {
-      console.error('An error occurred parsing the response.');
+    } catch (err) {
+      console.warn('An error occurred parsing the response.');
       window.history.replaceState({}, '', '/');
     }
   };
@@ -31,9 +31,35 @@ function App() {
     }
   }, [nylas]);
 
-  const handleCalendarPickerOnChange = (calendarId) => {
-    setCalendarId(calendarId);
-  };
+  useEffect(() => {
+    const getCalendars = async () => {
+      try {
+        const url = serverBaseUrl + '/nylas/read-calendars';
+
+        const res = await fetch(url, {
+          method: 'GET',
+          headers: {
+            Authorization: userId,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error(res.statusText);
+        }
+
+        const data = await res.json();
+
+        const [calendar] = data.filter((calendar) => calendar.is_primary);
+
+        setPrimaryCalendar(calendar);
+      } catch (err) {
+        console.warn(`Error reading calendars:`, err);
+      }
+    };
+
+    getCalendars();
+  }, [userId]);
 
   return (
     <div
@@ -50,19 +76,13 @@ function App() {
           </section>
           <section style={styles.App.contentContainer}>
             <div style={styles.App.agendaContainer}>
-              <div style={styles.App.agendaHeader}>
-                <h2>Agenda</h2>
-                <CalendarPicker
-                  serverBaseUrl={serverBaseUrl}
-                  userId={userId}
-                  selectedCalendarId={calendarId}
-                  onChange={handleCalendarPickerOnChange}
-                />
-              </div>
+              <h2 style={styles.App.agendaHeader}>
+                Agenda for {primaryCalendar?.name}
+              </h2>
               <Agenda
                 serverBaseUrl={serverBaseUrl}
                 userId={userId}
-                calendarId={calendarId}
+                calendarId={primaryCalendar?.id}
               />
             </div>
             <div style={styles.CreateEventForm.container}>
@@ -70,7 +90,7 @@ function App() {
               <CreateEventForm
                 userId={userId}
                 serverBaseUrl={serverBaseUrl}
-                calendarId={calendarId}
+                calendarId={primaryCalendar?.id}
               />
             </div>
           </section>
@@ -87,7 +107,9 @@ function NylasLogin() {
 
   return (
     <section style={{ width: '80vw', margin: '0 auto' }}>
-      <h1>Read and send calendar events sample app</h1>
+      <h1 style={{ marginBottom: 16 }}>
+        Read and send calendar events sample app
+      </h1>
       <p>Authenticate your email to read</p>
       <div style={{ marginTop: '30px' }}>
         <form
@@ -113,57 +135,6 @@ function NylasLogin() {
   );
 }
 
-function CalendarPicker({
-  serverBaseUrl,
-  userId,
-  selectedCalendarId,
-  onChange,
-}) {
-  const [calendars, setCalendars] = useState([]);
-  useEffect(() => {
-    const getCalendars = async () => {
-      try {
-        const url = serverBaseUrl + '/nylas/read-calendars';
-
-        const res = await fetch(url, {
-          method: 'GET',
-          headers: {
-            Authorization: userId,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        const data = await res.json();
-
-        setCalendars(data);
-      } catch (err) {
-        console.warn(`Error creating event:`, err);
-      }
-    };
-
-    getCalendars();
-  }, [serverBaseUrl, userId]);
-
-  return (
-    <div style={styles.CalendarPicker.container}>
-      <label style={styles.CalendarPicker.label} for="calendar">
-        Select a Calendar:
-      </label>
-      <select
-        name="calendar"
-        value={selectedCalendarId}
-        onChange={(e) => onChange(e.target.value)}
-      >
-        {calendars.map((calendar) => (
-          <option key={calendar.id} value={calendar.id}>
-            {calendar.name}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-}
-
 function Agenda({ serverBaseUrl, userId, calendarId }) {
   const [calendarEvents, setCalendarEvents] = useState([]);
 
@@ -184,15 +155,18 @@ function Agenda({ serverBaseUrl, userId, calendarId }) {
             calendarId,
           },
         });
+
+        if (!res.ok) {
+          throw new Error(res.statusText);
+        }
+
         const data = await res.json();
 
         console.log('Calendar events:', data);
-        if (data) {
-          setCalendarEvents(data);
-        }
+
+        setCalendarEvents(data);
       } catch (err) {
-        console.warn(`Error retrieving calendarEvents:`, err);
-        return false;
+        console.warn(`Error reading calendar events:`, err);
       }
     };
 
@@ -272,6 +246,10 @@ function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
         }),
       });
 
+      if (!res.ok) {
+        throw new Error(res.statusText);
+      }
+
       const data = await res.json();
 
       console.log('Event created:', data);
@@ -288,7 +266,7 @@ function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
 
   return (
     <form style={styles.CreateEventForm.form} onSubmit={createEvent}>
-      <label style={styles.CreateEventForm.label} for="event-start-time">
+      <label style={styles.CreateEventForm.label} htmlFor="event-start-time">
         Choose a start time:
       </label>
       <input
@@ -301,7 +279,7 @@ function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
         value={startTime}
         min={getDateString(now)}
       />
-      <label style={styles.CreateEventForm.label} for="event-end-time">
+      <label style={styles.CreateEventForm.label} htmlFor="event-end-time">
         Choose an end time:
       </label>
       <input
@@ -314,7 +292,7 @@ function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
         value={endTime}
         min={getDateString(now)}
       />
-      <label style={styles.CreateEventForm.label} for="title">
+      <label style={styles.CreateEventForm.label} htmlFor="title">
         Title:
       </label>
       <input
@@ -326,7 +304,7 @@ function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
         }}
         value={title}
       />
-      <label style={styles.CreateEventForm.label} for="description">
+      <label style={styles.CreateEventForm.label} htmlFor="description">
         Description:
       </label>
       <textarea

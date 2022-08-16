@@ -37,10 +37,6 @@ export const styles = {
       marginBottom: 16,
     },
   },
-  CalendarPicker: {
-    container: { marginLeft: 16, display: 'flex', alignItems: 'center' },
-    label: { marginRight: 8 },
-  },
   Agenda: {
     container: {
       maxHeight: '60vh',

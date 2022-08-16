@@ -69,6 +69,10 @@ const startExpress = () => {
     clientUri,
   });
 
+  // Mount the express middleware to your express app
+  const nylasMiddleware = expressBinding.buildMiddleware();
+  app.use('/nylas', nylasMiddleware);
+
   if (process.env.NODE_ENV === 'development') {
     // Handle when an account gets connected
     expressBinding.on(WebhookTriggers.AccountConnected, (payload) => {
@@ -85,10 +89,6 @@ const startExpress = () => {
         prettyPrintJSON(payload.objectData)
       );
     });
-
-    // Mount the express middleware to your express app
-    const nylasMiddleware = expressBinding.buildMiddleware();
-    app.use('/nylas', nylasMiddleware);
 
     // Start the Nylas webhook
     expressBinding
