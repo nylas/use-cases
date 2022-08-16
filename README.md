@@ -66,6 +66,6 @@ Interested in contributing to the Nylas use cases project? Thanks so much for yo
 
 Please refer to [Contributing](CONTRIBUTING.md) for information about how to make contributions to this project. We welcome questions, bug reports, and pull requests.
 
-## 📝License
+## 📝 License
 
 This project is licensed under the terms of the MIT license. Please refer to [LICENSE](LICENSE.txt) for the full terms.
