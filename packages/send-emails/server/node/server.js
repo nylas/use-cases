@@ -1,14 +1,16 @@
-const express = require('express');
-const cors = require('cors');
+const fastify = require('fastify');
+const cors = require('@fastify/cors');
 const dotenv = require('dotenv');
 const { mockDb } = require('./utils/mock-db');
 const { prettyPrintJSON } = require('./utils/formatting');
 
 const Nylas = require('nylas');
+const { WebhookTriggers } = require('nylas/lib/models/webhook');
 const { Scope } = require('nylas/lib/models/connect');
 const { Routes: NylasRoutes } = require('nylas/lib/services/routes');
 const { DefaultPaths } = require('nylas/lib/services/routes');
 const { default: Draft } = require('nylas/lib/models/draft');
+const { openWebhookTunnel } = require('nylas/lib/services/tunnel');
 
 dotenv.config();
 
@@ -114,6 +116,27 @@ const startFastify = () => {
 
     return res.json({ message });
   });
+
+  if (process.env.NODE_ENV === 'development') {
+    // Handle when a new message is created (sent)
+    const handleEvent = (delta) => {
+      switch (delta.type) {
+        case WebhookTriggers.MessageCreated:
+          console.log(
+            'Webhook trigger received, message created. Details: ',
+            prettyPrintJSON(delta.objectData)
+          );
+          break;
+      }
+    };
+
+    // Start the Nylas webhook
+    openWebhookTunnel(nylasClient, {
+      onMessage: handleEvent,
+    }).then((webhookDetails) =>
+      console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id)
+    );
+  }
 
   // Start listening on port 9000
   app.listen({ port }).then(() => console.log('App listening on port' + port));
