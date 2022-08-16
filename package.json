@@ -9,12 +9,21 @@
   "type": "module",
   "scripts": {
     "setup": "node scripts/setup",
-    "start": "node scripts/start"
+    "start": "node scripts/start",
+    "lint": "eslint --ext .js -f visualstudio .",
+    "lint:fix": "npm run lint -- --fix",
+    "lint:ci": "npm run lint:fix -- --quiet",
+    "lint:prettier": "prettier --write '**/*.js'",
+    "lint:prettier:check": "prettier --check '**/*.js'"
   },
   "devDependencies": {
     "concurrently": "^7.2.2",
     "cross-env": "^7.0.3",
-    "prettier": "^2.7.1"
+    "prettier": "^2.7.1",
+    "eslint": "^8.20.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-config-react-app": "^7.0.1"
   },
   "dependencies": {
     "chalk": "^5.0.1",
