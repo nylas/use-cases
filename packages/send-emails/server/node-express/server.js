@@ -72,6 +72,14 @@ const startExpress = () => {
   app.use('/nylas', nylasMiddleware);
 
   if (process.env.NODE_ENV === 'development') {
+    // Handle when an account gets connected
+    expressBinding.on(WebhookTriggers.AccountConnected, (payload) => {
+      console.log(
+        'Webhook trigger received, account connected. Details: ',
+        prettyPrintJSON(payload.objectData)
+      );
+    });
+
     // Handle when a new message is created (sent)
     expressBinding.on(WebhookTriggers.MessageCreated, (payload) => {
       console.log(
