@@ -2,7 +2,8 @@
     <img src="https://brand.nylas.com/assets/downloads/logo_horizontal_png/Nylas-Logo-Horizontal-Blue_.png" alt="Aimeos logo" title="Aimeos" align="right" height="60" />
 </a>
 
-# Nylas Use Case Samples (⚠️ In Active Development)
+# Nylas Use Case Samples
+**⚠️ Warning: This repo is still in the alpha development stage and stability is not fully guaranteed yet**
 
 Explore working front-end and back-end sample code using an integration with Nylas.
 
