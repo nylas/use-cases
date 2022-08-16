@@ -1,4 +1,9 @@
-# Nylas Use Case Samples (In Active Development)
+<a href="https://www.nylas.com/">
+    <img src="https://brand.nylas.com/assets/downloads/logo_horizontal_png/Nylas-Logo-Horizontal-Blue_.png" alt="Aimeos logo" title="Aimeos" align="right" height="60" />
+</a>
+
+# Nylas Use Case Samples
+**⚠️ Warning: This repo is still in the alpha development stage and stability is not fully guaranteed yet**
 
 Explore working front-end and back-end sample code using an integration with Nylas.
 
@@ -6,7 +11,7 @@ The sample application redirects to a prebuilt authentication page hosted on Nyl
 
 Before you get started, head over to your Quickstart Application on the Nylas Dashboard for a copy of your `client id` and `client secret`. You'll need those later in the demo.
 
-## Environment Setup
+## ⚙️ Environment Setup
 
 Let’s check that our environment is set up to use the [Nylas Node SDK](https://github.com/nylas/nylas-nodejs). Check the Node version in your terminal:
 
@@ -23,7 +28,7 @@ If you don’t see a version returned, you may not have Node installed. Try the 
 The minimum required Node version is `v18.0.0`. As a quick check, try running `node -v` again to confirm the version. You may need to restart your terminal for the changes to take effect.
 
 
-## App Setup
+## ⚡️ App Setup
 
 1. Installation
 
@@ -54,3 +59,13 @@ The minimum required Node version is `v18.0.0`. As a quick check, try running `n
     npm start # starts server + opens browser for localhost:3000
               # terminal shows webhook output here
     ```
+
+## 💙 Contributing
+
+Interested in contributing to the Nylas use cases project? Thanks so much for your interest! We are always looking for improvements to the project and contributions from open-source developers are greatly appreciated.
+
+Please refer to [Contributing](CONTRIBUTING.md) for information about how to make contributions to this project. We welcome questions, bug reports, and pull requests.
+
+## 📝 License
+
+This project is licensed under the terms of the MIT license. Please refer to [LICENSE](LICENSE.txt) for the full terms.

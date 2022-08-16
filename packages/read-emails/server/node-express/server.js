@@ -1,13 +1,13 @@
-const express = require("express");
-const cors = require("cors");
-const dotenv = require("dotenv");
-const { mockDb } = require("./utils/mock-db");
-const { prettyPrintJSON } = require("./utils/formatting");
+const express = require('express');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const { mockDb } = require('./utils/mock-db');
+const { prettyPrintJSON } = require('./utils/formatting');
 
-const Nylas = require("nylas");
-const { WebhookTriggers } = require("nylas/lib/models/webhook");
-const { Scope } = require("nylas/lib/models/connect");
-const { ServerBindings } = require("nylas/lib/config");
+const Nylas = require('nylas');
+const { WebhookTriggers } = require('nylas/lib/models/webhook');
+const { Scope } = require('nylas/lib/models/connect');
+const { ServerBindings } = require('nylas/lib/config');
 
 dotenv.config();
 
@@ -21,7 +21,7 @@ const nylasClient = new Nylas({
 });
 
 // The uri for the frontend
-const clientUri = "http://localhost:3000";
+const clientUri = 'http://localhost:3000';
 
 // Before we start our backend, we should whitelist our frontend as a redirect URI to ensure the auth completes
 nylasClient
@@ -30,7 +30,7 @@ nylasClient
   })
   .then((applicationDetails) => {
     console.log(
-      "Application whitelisted. Application Details: ",
+      'Application whitelisted. Application Details: ',
       prettyPrintJSON(applicationDetails)
     );
     startExpress();
@@ -40,7 +40,7 @@ const exchangeMailboxTokenCallback = async (accessTokenObj, res) => {
   // Normally store the access token in the DB
   const accessToken = accessTokenObj.accessToken;
   const emailAddress = accessTokenObj.emailAddress;
-  console.log("Access Token was generated for: " + accessTokenObj.emailAddress);
+  console.log('Access Token was generated for: ' + accessTokenObj.emailAddress);
 
   // Replace this mock code with your actual database operations
   const user = await mockDb.createOrUpdateUser(emailAddress, {
@@ -71,31 +71,31 @@ const startExpress = () => {
   // Handle when an account gets connected
   expressBinding.on(WebhookTriggers.AccountConnected, (payload) => {
     console.log(
-      "Webhook trigger received, account connected. Details: ",
+      'Webhook trigger received, account connected. Details: ',
       prettyPrintJSON(payload.objectData)
     );
   });
 
   // Mount the express middleware to your express app
   const nylasMiddleware = expressBinding.buildMiddleware();
-  app.use("/nylas", nylasMiddleware);
+  app.use('/nylas', nylasMiddleware);
 
   // Start the Nylas webhook
   expressBinding
     .startDevelopmentWebsocket()
     .then((webhookDetails) =>
-      console.log("Webhook tunnel registered. Webhook ID: " + webhookDetails.id)
+      console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id)
     );
 
   // Add route for getting 5 latest emails
-  app.get("/nylas/read-emails", async (req, res) => {
+  app.get('/nylas/read-emails', async (req, res) => {
     if (!req.headers.authorization) {
-      return res.json("Unauthorized");
+      return res.json('Unauthorized');
     }
 
     const user = await mockDb.findUser(req.headers.authorization);
     if (!user) {
-      return res.json("Unauthorized");
+      return res.json('Unauthorized');
     }
 
     const messages = await nylasClient
@@ -106,5 +106,5 @@ const startExpress = () => {
   });
 
   // Start listening on port 9000
-  app.listen(port, () => console.log("App listening on port " + port));
+  app.listen(port, () => console.log('App listening on port ' + port));
 };
