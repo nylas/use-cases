@@ -11,8 +11,6 @@
     "setup": "node scripts/setup",
     "start": "node scripts/start"
   },
-  "author": "Nylas",
-  "license": "ISC",
   "devDependencies": {
     "concurrently": "^7.2.2",
     "cross-env": "^7.0.3",
@@ -22,5 +20,15 @@
     "chalk": "^5.0.1",
     "dotenv": "^16.0.1",
     "inquirer": "^9.1.0"
-  }
+  },
+  "author": "Nylas, Inc.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nylas/use-cases.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nylas/use-cases/issues"
+  },
+  "homepage": "https://github.com/nylas/use-cases#readme"
 }
