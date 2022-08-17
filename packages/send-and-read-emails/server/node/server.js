@@ -1,7 +1,6 @@
-const fastify = require('fastify');
-const cors = require('@fastify/cors');
 const dotenv = require('dotenv');
 const { mockDb } = require('./utils/mock-db');
+const { mockServer, getReqBody } = require('./utils/mock-server');
 const { prettyPrintJSON } = require('./utils');
 const route = require('./route');
 
@@ -36,16 +35,13 @@ const exchangeMailboxTokenCallback = async (accessTokenObj, res) => {
   });
 
   // Return an authorization object to the user
-  res.json({
-    id: user.id,
-    emailAddress: user.emailAddress,
-  });
+  res.writeHead(200).end(
+    JSON.stringify({
+      id: user.id,
+      emailAddress: user.emailAddress,
+    })
+  );
 };
-
-const app = fastify();
-
-// Enable CORS
-app.register(cors);
 
 // The uri for the frontend
 const CLIENT_URI = 'http://localhost:3000';
@@ -53,24 +49,29 @@ const CLIENT_URI = 'http://localhost:3000';
 // Use the routes provided by the Nylas Node SDK to quickly implement the authentication flow
 const { buildAuthUrl, exchangeCodeForToken } = NylasRoutes(nylasClient);
 
-// Configure the Nylas routes using your flavour of backend framework, fastify in this case
-app.post(DefaultPaths.buildAuthUrl, async (req, res) => {
+// Configure the Nylas routes using your flavour of backend framework
+mockServer.post(DefaultPaths.buildAuthUrl, async (req, res) => {
+  const body = await getReqBody(req);
+
   const authUrl = await buildAuthUrl({
     scopes: [Scope.EmailReadOnly],
-    emailAddress: req.body.email_address,
-    successUrl: req.body.success_url,
-    CLIENT_URI,
+    emailAddress: body.email_address,
+    successUrl: body.success_url,
+    clientUri,
   });
-  res.status(200).send(authUrl);
+
+  res.writeHead(200).end(authUrl);
 });
 
-app.post(DefaultPaths.exchangeCodeForToken, async (req, res) => {
+mockServer.post(DefaultPaths.exchangeCodeForToken, async (req, res) => {
+  const body = await getReqBody(req);
+
   try {
-    const accessTokenObj = await exchangeCodeForToken(req.body.token);
+    const accessTokenObj = await exchangeCodeForToken(body.token);
 
     await exchangeMailboxTokenCallback(accessTokenObj, res);
   } catch (e) {
-    res.status(500).send(e.message);
+    res.writeHead(500).end(e.message);
   }
 });
 
@@ -96,18 +97,17 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Handle routes
-app.get('/', (req, res) => res.status(200).send('Ok'));
-
-app.post('/nylas/send-email', (...args) =>
+mockServer.post('/nylas/send-email', (...args) =>
   route.sendEmail(...args, nylasClient)
 );
-app.get('/nylas/read-emails', (...args) =>
+mockServer.get('/nylas/read-emails', (...args) =>
   route.readEmails(...args, nylasClient)
 );
 
-const startFastify = () => {
+const startServer = () => {
   // Start listening on port 9000
-  app.listen({ port }).then(() => console.log('App listening on port' + port));
+  mockServer.init().listen(port);
+  console.log('App listening on port ' + port);
 };
 
 // Before we start our backend, we should whitelist our frontend as a redirect URI to ensure the auth completes
@@ -120,5 +120,5 @@ nylasClient
       'Application whitelisted. Application Details: ',
       prettyPrintJSON(applicationDetails)
     );
-    startFastify();
+    startServer();
   });

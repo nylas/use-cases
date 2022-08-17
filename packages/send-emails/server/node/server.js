@@ -1,7 +1,6 @@
-const fastify = require('fastify');
-const cors = require('@fastify/cors');
 const dotenv = require('dotenv');
 const { mockDb } = require('./utils/mock-db');
+const { mockServer, getReqBody } = require('./utils/mock-server');
 const { prettyPrintJSON } = require('./utils/formatting');
 
 const Nylas = require('nylas');
@@ -36,7 +35,7 @@ nylasClient
       'Application whitelisted. Application Details: ',
       prettyPrintJSON(applicationDetails)
     );
-    startFastify();
+    startServer();
   });
 
 const exchangeMailboxTokenCallback = async (accessTokenObj, res) => {
@@ -45,76 +44,70 @@ const exchangeMailboxTokenCallback = async (accessTokenObj, res) => {
   const emailAddress = accessTokenObj.emailAddress;
   console.log('Access Token was generated for: ' + accessTokenObj.emailAddress);
 
+  // Replace this mock code with your actual database operations
   const user = await mockDb.createOrUpdateUser(emailAddress, {
     accessToken,
     emailAddress,
   });
 
-  res.json({
-    id: user.id,
-    emailAddress: user.emailAddress,
-  });
+  // Return an authorization object to the user
+  res.writeHead(200).end(
+    JSON.stringify({
+      id: user.id,
+      emailAddress: user.emailAddress,
+    })
+  );
 };
 
-const startFastify = () => {
+const startServer = () => {
   // Use the routes provided by the Nylas Node SDK to quickly implement the authentication flow
   const { buildAuthUrl, exchangeCodeForToken } = NylasRoutes(nylasClient);
 
-  // Init the fastify server
-  const app = fastify();
+  // Configure the Nylas routes using your flavour of backend framework
+  mockServer.post(DefaultPaths.buildAuthUrl, async (req, res) => {
+    const body = await getReqBody(req);
 
-  // Enable CORS
-  app.register(cors);
-
-  // Configure the Nylas routes using your flavour of backend framework, fastify in this case
-  app.post(DefaultPaths.buildAuthUrl, async (req, res) => {
     const authUrl = await buildAuthUrl({
       scopes: [Scope.EmailReadOnly],
-      emailAddress: req.body.email_address,
-      successUrl: req.body.success_url,
+      emailAddress: body.email_address,
+      successUrl: body.success_url,
       clientUri,
     });
-    res.status(200).send(authUrl);
+
+    res.writeHead(200).end(authUrl);
   });
 
-  app.post(DefaultPaths.exchangeCodeForToken, async (req, res) => {
+  mockServer.post(DefaultPaths.exchangeCodeForToken, async (req, res) => {
+    const body = await getReqBody(req);
+
     try {
-      const accessTokenObj = await exchangeCodeForToken(req.body.token);
+      const accessTokenObj = await exchangeCodeForToken(body.token);
 
       await exchangeMailboxTokenCallback(accessTokenObj, res);
     } catch (e) {
-      res.status(500).send(e.message);
+      res.writeHead(500).end(e.message);
     }
   });
 
-  // Add some routes for the backend
-  app.get('/', (req, res) => res.status(200).send('Ok'));
-
-  app.post('/nylas/send-email', async (req, res) => {
-    const requestBody = req.body;
-
+  mockServer.post('/nylas/send-email', async (req, res) => {
     if (!req.headers.authorization) {
-      console.log('no headers');
-      return res.json('Unauthorized');
+      return res.writeHead(401).end('Unauthorized');
     }
 
     const user = await mockDb.findUser(req.headers.authorization);
     if (!user) {
-      return res.json('Unauthorized');
+      return res.writeHead(401).end('Unauthorized');
     }
 
-    const { to, body } = requestBody;
-
+    const { to, body } = await getReqBody(req);
     const draft = new Draft(nylasClient.with(user.accessToken));
 
     draft.to = [{ email: to }];
     draft.body = body;
-
     draft.from = [{ email: user.emailAddress }];
 
     const message = await draft.send();
-
-    return res.json({ message });
+    return res.writeHead(200).end(JSON.stringify(message));
   });
 
   if (process.env.NODE_ENV === 'development') {
@@ -139,5 +132,6 @@ const startFastify = () => {
   }
 
   // Start listening on port 9000
-  app.listen({ port }).then(() => console.log('App listening on port' + port));
+  mockServer.init().listen(port);
+  console.log('App listening on port ' + port);
 };
