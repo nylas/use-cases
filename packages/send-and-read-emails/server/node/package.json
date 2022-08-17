@@ -1,0 +1,18 @@
+{
+  "name": "nylas-node-example",
+  "version": "0.1.0",
+  "description": "Demo using the Nylas Node SDK and any Node JS-compatible server framework.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "Nylas Team",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "uuid": "^8.3.2",
+    "express": "^4.14.0",
+    "nylas": "^7.0.0-canary.4",
+    "request": "^2.74.0"
+  }
+}

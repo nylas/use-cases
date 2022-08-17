@@ -79,11 +79,11 @@ if (process.env.NODE_ENV === 'development') {
 // Handle routes
 app.get('/', (req, res) => res.status(200).send('Ok'));
 
-app.post('/nylas/send-email', (...args) =>
-  route.sendEmail(...args, nylasClient)
+app.post('/nylas/send-email', (req, res) =>
+  route.sendEmail(req, res, nylasClient)
 );
-app.get('/nylas/read-emails', (...args) =>
-  route.readEmails(...args, nylasClient)
+app.get('/nylas/read-emails', (req, res) =>
+  route.readEmails(req, res, nylasClient)
 );
 
 const startExpress = () => {
