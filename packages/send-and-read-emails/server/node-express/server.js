@@ -48,6 +48,19 @@ app.use(cors());
 // The uri for the frontend
 const CLIENT_URI = 'http://localhost:3000';
 
+// Before we start our backend, we should whitelist our frontend as a redirect URI to ensure the auth completes
+nylasClient
+  .application({
+    redirectUris: [CLIENT_URI],
+  })
+  .then((applicationDetails) => {
+    console.log(
+      'Application whitelisted. Application Details: ',
+      prettyPrintJSON(applicationDetails)
+    );
+    startExpress();
+  });
+
 // Use the express bindings provided by the SDK and pass in additional configuration such as auth scopes
 const expressBinding = new ServerBindings.express(nylasClient, {
   defaultScopes: [Scope.EmailModify, Scope.EmailSend, Scope.EmailReadOnly],
@@ -96,16 +109,3 @@ const startExpress = () => {
   // Start listening on port 9000
   app.listen(port, () => console.log('App listening on port ' + port));
 };
-
-// Before we start our backend, we should whitelist our frontend as a redirect URI to ensure the auth completes
-nylasClient
-  .application({
-    redirectUris: [CLIENT_URI],
-  })
-  .then((applicationDetails) => {
-    console.log(
-      'Application whitelisted. Application Details: ',
-      prettyPrintJSON(applicationDetails)
-    );
-    startExpress();
-  });

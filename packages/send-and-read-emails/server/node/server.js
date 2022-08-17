@@ -46,6 +46,19 @@ const exchangeMailboxTokenCallback = async (accessTokenObj, res) => {
 // The uri for the frontend
 const CLIENT_URI = 'http://localhost:3000';
 
+// Before we start our backend, we should whitelist our frontend as a redirect URI to ensure the auth completes
+nylasClient
+  .application({
+    redirectUris: [CLIENT_URI],
+  })
+  .then((applicationDetails) => {
+    console.log(
+      'Application whitelisted. Application Details: ',
+      prettyPrintJSON(applicationDetails)
+    );
+    startServer();
+  });
+
 // Use the routes provided by the Nylas Node SDK to quickly implement the authentication flow
 const { buildAuthUrl, exchangeCodeForToken } = NylasRoutes(nylasClient);
 
@@ -111,16 +124,3 @@ const startServer = () => {
   mockServer.init().listen(port);
   console.log('App listening on port ' + port);
 };
-
-// Before we start our backend, we should whitelist our frontend as a redirect URI to ensure the auth completes
-nylasClient
-  .application({
-    redirectUris: [CLIENT_URI],
-  })
-  .then((applicationDetails) => {
-    console.log(
-      'Application whitelisted. Application Details: ',
-      prettyPrintJSON(applicationDetails)
-    );
-    startServer();
-  });
