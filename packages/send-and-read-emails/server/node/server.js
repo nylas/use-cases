@@ -97,11 +97,11 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Handle routes
-mockServer.post('/nylas/send-email', (...args) =>
-  route.sendEmail(...args, nylasClient)
+mockServer.post('/nylas/send-email', (req, res) =>
+  route.sendEmail(req, res, nylasClient)
 );
-mockServer.get('/nylas/read-emails', (...args) =>
-  route.readEmails(...args, nylasClient)
+mockServer.get('/nylas/read-emails', (req, res) =>
+  route.readEmails(req, res, nylasClient)
 );
 
 const startServer = () => {

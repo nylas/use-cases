@@ -1,7 +1,7 @@
 const { default: Draft } = require('nylas/lib/models/draft');
 const { mockDb } = require('./utils/mock-db');
 
-exports.sendEmail = async (req, res, next, nylasClient) => {
+exports.sendEmail = async (req, res, nylasClient) => {
   if (!req.headers.authorization) {
     console.log('no headers');
     return res.json('Unauthorized');
@@ -26,7 +26,7 @@ exports.sendEmail = async (req, res, next, nylasClient) => {
   return res.json({ message });
 };
 
-exports.readEmails = async (req, res, next, nylasClient) => {
+exports.readEmails = async (req, res, nylasClient) => {
   if (!req.headers.authorization) {
     console.log('no headers');
     return res.json('Unauthorized');
