@@ -60,6 +60,14 @@ const nylasMiddleware = expressBinding.buildMiddleware();
 app.use('/nylas', nylasMiddleware);
 
 if (process.env.NODE_ENV === 'development') {
+  // Handle when an account gets connected
+  expressBinding.on(WebhookTriggers.AccountConnected, (payload) => {
+    console.log(
+      'Webhook trigger received, account connected. Details: ',
+      prettyPrintJSON(payload.objectData)
+    );
+  });
+
   // Handle when a new message is created (sent)
   expressBinding.on(WebhookTriggers.MessageCreated, (payload) => {
     console.log(
@@ -77,8 +85,6 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Handle routes
-app.get('/', (req, res) => res.status(200).send('Ok'));
-
 app.post('/nylas/send-email', (req, res) =>
   route.sendEmail(req, res, nylasClient)
 );
