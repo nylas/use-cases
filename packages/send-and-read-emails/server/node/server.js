@@ -59,7 +59,6 @@ nylasClient
     startServer();
   });
 
-
 // Use the routes provided by the Nylas Node SDK to quickly implement the authentication flow
 const { buildAuthUrl, exchangeCodeForToken } = NylasRoutes(nylasClient);
 
