@@ -50,6 +50,7 @@ const CLIENT_URI = 'http://localhost:3000';
 const { buildAuthUrl, exchangeCodeForToken } = NylasRoutes(nylasClient);
 
 // Configure the Nylas routes using your flavour of backend framework
+// '/nylas/generate-auth-url': This route builds the URL for authenticating users to your Nylas application via Hosted Authentication
 mockServer.post(DefaultPaths.buildAuthUrl, async (req, res) => {
   const body = await getReqBody(req);
 
@@ -63,6 +64,7 @@ mockServer.post(DefaultPaths.buildAuthUrl, async (req, res) => {
   res.writeHead(200).end(authUrl);
 });
 
+// '/nylas/exchange-mailbox-token': This route exchanges an authorization code for an access token
 mockServer.post(DefaultPaths.exchangeCodeForToken, async (req, res) => {
   const body = await getReqBody(req);
 
