@@ -5,10 +5,44 @@ import chalk from 'chalk';
 
 console.clear();
 
+console.log(`
+
+                *///////,                                    ///                                    
+             *//  ,//*. ,//           ..                     ///         ..                         
+           //* .//,   //, //      ./////////   ///      ///  ///     //////////    /////////.       
+        *//  ///      ,// //     ,//,     ///  ///      ///  ///   *//.      .//* ,///.             
+      ,/, ,//, *//. ///  //.     *//.     ,//. ///      ///  ///   ///        ///    *//////*       
+        ///  //* .//, ,//.       *//.     ,//. ,//*    ,///  *//*  .///      ////  **     ,//.      
+      */. *//  ///  ///          *//.     ,//.   //////////    ////  .///////////  ,////////        
+        //* .//, ,//.                                   ///                                         
+      //   */   .*                                   ////,                                          
+
+
+
+Find your client credentials by logging into https://dashboard.nylas.com > Choose Application > App Settings
+`);
+
 const projectRoot = process.cwd();
 
 function print(text, color = 'white') {
   console.log(chalk[color](text));
+}
+
+async function getClientCredentials() {
+  const client = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'id',
+      message: 'Nylas dashboard application client id [enter to skip]:',
+    },
+    {
+      type: 'input',
+      name: 'secret',
+      message: 'Nylas dashboard application client secret [enter to skip]:',
+    },
+  ]);
+
+  return client;
 }
 
 async function getUseCases() {
@@ -53,7 +87,7 @@ function installDependencies({ usecase, client, server }) {
   return result;
 }
 
-async function updateEnvironmentVars({ usecase, server, client }) {
+async function updateEnvironmentVars({ id, secret, usecase, server, client }) {
   if (!fs.existsSync(`${projectRoot}/.env`))
     fs.copyFileSync(`${projectRoot}/.env.sample`, `${projectRoot}/.env`);
 
@@ -62,6 +96,12 @@ async function updateEnvironmentVars({ usecase, server, client }) {
   const splitEnv = env.split('\n');
 
   const editedEnv = splitEnv.map((envVar) => {
+    if (envVar.includes('YOUR_APP_CLIENT_ID=') && id.length > 0)
+      envVar = envVar.split('=')[0] + `="${id}"`;
+
+    if (envVar.includes('YOUR_APP_CLIENT_SECRET=') && secret.length > 0)
+      envVar = envVar.split('=')[0] + `="${secret}"`;
+
     if (envVar.includes('CLIENT_FRAMEWORK='))
       envVar = envVar.split('=')[0] + `="${client}"`;
 
@@ -88,6 +128,7 @@ async function updateEnvironmentVars({ usecase, server, client }) {
 }
 
 async function setup() {
+  const { id, secret } = await getClientCredentials();
   const { usecase } = await getUseCases();
   const { server, client } = await getFrameworkOptions(usecase);
 
@@ -122,7 +163,7 @@ async function setup() {
     );
   });
 
-  await updateEnvironmentVars({ usecase, ...selectedFrameworks });
+  await updateEnvironmentVars({ id, secret, usecase, ...selectedFrameworks });
 }
 
 setup();
