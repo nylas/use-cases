@@ -1,7 +1,7 @@
 const { default: Event } = require('nylas/lib/models/event');
 const { mockDb } = require('./utils/mock-db');
 
-exports.readEvents = async (req, res, next, nylasClient) => {
+exports.readEvents = async (req, res, nylasClient) => {
   if (!req.headers.authorization) {
     return res.sendStatus(401);
   }
@@ -23,7 +23,7 @@ exports.readEvents = async (req, res, next, nylasClient) => {
   return res.json(events);
 };
 
-exports.readCalendars = async (req, res, next, nylasClient) => {
+exports.readCalendars = async (req, res, nylasClient) => {
   if (!req.headers.authorization) {
     return res.sendStatus(401);
   }
@@ -41,7 +41,7 @@ exports.readCalendars = async (req, res, next, nylasClient) => {
   return res.json(calendars);
 };
 
-exports.createEvents = async (req, res, next, nylasClient) => {
+exports.createEvents = async (req, res, nylasClient) => {
   if (!req.headers.authorization) {
     return res.sendStatus(401);
   }

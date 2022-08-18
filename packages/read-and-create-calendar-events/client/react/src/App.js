@@ -176,7 +176,7 @@ function Agenda({ serverBaseUrl, userId, calendarId }) {
   return (
     <section style={styles.Agenda.container}>
       {calendarEvents.map((calendarEvent) => (
-        <article style={styles.Agenda.eventArticle}>
+        <article key={calendarEvent.title} style={styles.Agenda.eventArticle}>
           <div style={styles.Agenda.eventDateContainer}>
             <CalendarEventDate when={calendarEvent.when} />
           </div>

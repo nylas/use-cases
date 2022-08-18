@@ -101,18 +101,18 @@ const startExpress = () => {
   }
 
   // Add route for getting 20 latest calendar events
-  app.get('/nylas/read-events', (...args) =>
-    route.readEvents(...args, nylasClient)
+  app.get('/nylas/read-events', (req, res) =>
+    route.readEvents(req, res, nylasClient)
   );
 
   // Add route for getting 20 latest calendar events
-  app.get('/nylas/read-calendars', (...args) =>
-    route.readCalendars(...args, nylasClient)
+  app.get('/nylas/read-calendars', (req, res) =>
+    route.readCalendars(req, res, nylasClient)
   );
 
   // Add route for creating calendar events
-  app.post('/nylas/create-events', (...args) =>
-    route.createEvents(...args, nylasClient)
+  app.post('/nylas/create-events', (req, res) =>
+    route.createEvents(req, res, nylasClient)
   );
 
   // Start listening on port 9000
