@@ -16,7 +16,7 @@
     "lint:prettier": "prettier --write '**/*.js'",
     "lint:prettier:check": "prettier --check '**/*.js'",
     "lint:pretty-quick": "pretty-quick --staged",
-    "postinstall": "husky install"
+    "prep:husky": "npx husky install"
   },
   "devDependencies": {
     "concurrently": "^7.2.2",

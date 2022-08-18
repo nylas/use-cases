@@ -45,8 +45,12 @@ async function getClientCredentials() {
   return client;
 }
 
+const ignoreFiles = ['.DS_Store'];
+
 async function getUseCases() {
-  const useCases = await fs.readdirSync(`${projectRoot}/packages`);
+  const useCases = await fs
+    .readdirSync(`${projectRoot}/packages`)
+    .filter((file) => !ignoreFiles.includes(file));
   const selectedUseCase = await inquirer.prompt([
     {
       type: 'list',
@@ -60,12 +64,13 @@ async function getUseCases() {
 }
 
 async function getFrameworkOptions(useCase) {
-  const serverOptions = await fs.readdirSync(
-    `${projectRoot}/packages/${useCase}/server`
-  );
-  const clientOptions = await fs.readdirSync(
-    `${projectRoot}/packages/${useCase}/client`
-  );
+  const serverOptions = await fs
+    .readdirSync(`${projectRoot}/packages/${useCase}/server`)
+    .filter((file) => !ignoreFiles.includes(file));
+
+  const clientOptions = await fs
+    .readdirSync(`${projectRoot}/packages/${useCase}/client`)
+    .filter((file) => !ignoreFiles.includes(file));
 
   return { server: serverOptions, client: clientOptions };
 }
