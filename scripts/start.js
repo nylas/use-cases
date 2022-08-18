@@ -1,10 +1,15 @@
+import fs from 'fs';
 import concurrently from 'concurrently';
 import dotenv from 'dotenv';
+
 dotenv.config();
 
 const projectRoot = process.cwd();
+const isSourceRepo = await fs
+  .readdirSync(`${projectRoot}`)
+  .includes('packages');
 
-async function start() {
+async function startSourceRepo() {
   if (
     !process.env.CLIENT_FRAMEWORK ||
     !process.env.SERVER_FRAMEWORK ||
@@ -34,4 +39,22 @@ async function start() {
   });
 }
 
-start();
+function startDownloadedRepo() {
+  const { result } = concurrently([
+    {
+      command: 'npm run start',
+      name: `start client`,
+      cwd: `${projectRoot}/src/client`,
+    },
+    {
+      command: 'npm run start',
+      name: `start server`,
+      cwd: `${projectRoot}/src/server`,
+    },
+  ]);
+
+  result.catch(() => {});
+}
+
+if (isSourceRepo) startSourceRepo();
+else startDownloadedRepo();
