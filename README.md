@@ -3,6 +3,7 @@
 </a>
 
 # Nylas Use Case Samples
+
 **⚠️ Warning: This repo is still in the alpha development stage and stability is not fully guaranteed yet**
 
 Explore working front-end and back-end sample code using an integration with Nylas.
@@ -23,42 +24,42 @@ v18.0.0
 If you don’t see a version returned, you may not have Node installed. Try the following steps:
 
 1. Visit [nodejs.org](https://nodejs.org/en/) to set up Node on your machine
-2. *Recommended*: If you happen to use or require multiple versions of Node, consider using [nvm](https://github.com/nvm-sh/nvm)
+2. _Recommended_: If you happen to use or require multiple versions of Node, consider using [nvm](https://github.com/nvm-sh/nvm)
 
 The minimum required Node version is `v18.0.0`. As a quick check, try running `node -v` again to confirm the version. You may need to restart your terminal for the changes to take effect.
-
 
 ## ⚡️ App Setup
 
 1. Installation
 
-    ```bash
-    git clone nylas-samples@use-cases
-                                                                                    
-    cd use-cases
-    
-    npm install
+   ```bash
+   git clone nylas-samples@use-cases
 
-    npm run setup
-    ```
-    
+   cd use-cases
+
+   npm install
+
+   npm run prep:husky // only needed if contributing to the repo
+
+   npm run setup
+   ```
+
 2. Copy `.env.sample` to `.env` on the root level of the project.
-   
 3. Fill in the `YOUR_APP_CLIENT_ID` and `YOUR_APP_CLIENT_SECRET` in `.env` file
-    
-    ```js
-    // Nylas application credentials
-    YOUR_APP_CLIENT_ID="<YOUR_APP_CLIENT_ID> from the Nylas Dashboard"
-    YOUR_APP_CLIENT_SECRET="<YOUR_APP_CLIENT_SECRET> from the Nylas Dashboard"
-    ```
-    
+
+   ```js
+   // Nylas application credentials
+   YOUR_APP_CLIENT_ID = '<YOUR_APP_CLIENT_ID> from the Nylas Dashboard';
+   YOUR_APP_CLIENT_SECRET = '<YOUR_APP_CLIENT_SECRET> from the Nylas Dashboard';
+   ```
+
 4. Run code
-    
-    ```bash
-    # in one terminal
-    npm start # starts server + opens browser for localhost:3000
-              # terminal shows webhook output here
-    ```
+
+   ```bash
+   # in one terminal
+   npm start # starts server + opens browser for localhost:3000
+             # terminal shows webhook output here
+   ```
 
 ## 💙 Contributing
 
