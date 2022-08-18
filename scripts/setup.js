@@ -23,6 +23,9 @@ Find your client credentials by logging into https://dashboard.nylas.com > Choos
 `);
 
 const projectRoot = process.cwd();
+const isSourceRepo = await fs
+  .readdirSync(`${projectRoot}`)
+  .includes('packages');
 
 function print(text, color = 'white') {
   console.log(chalk[color](text));
@@ -75,17 +78,21 @@ async function getFrameworkOptions(useCase) {
   return { server: serverOptions, client: clientOptions };
 }
 
-function installDependencies({ usecase, client, server }) {
+function installDependencies({ usecase, client = null, server = null }) {
   const { result } = concurrently([
     {
       name: 'installing client dependencies',
       command: `npm install`,
-      cwd: `${projectRoot}/packages/${usecase}/client/${client}`,
+      cwd: client
+        ? `${projectRoot}/packages/${usecase}/client/${client}`
+        : `${projectRoot}/src/client`,
     },
     {
       name: 'installing server dependencies',
       command: `npm install`,
-      cwd: `${projectRoot}/packages/${usecase}/server/${server}`,
+      cwd: server
+        ? `${projectRoot}/packages/${usecase}/server/${server}`
+        : `${projectRoot}/src/server`,
     },
   ]);
 
@@ -132,7 +139,7 @@ async function updateEnvironmentVars({ id, secret, usecase, server, client }) {
   print('\nUpdated .env file! 🎉', 'green');
 }
 
-async function setup() {
+async function setupSourceRepo() {
   const { id, secret } = await getClientCredentials();
   const { usecase } = await getUseCases();
   const { server, client } = await getFrameworkOptions(usecase);
@@ -171,4 +178,18 @@ async function setup() {
   await updateEnvironmentVars({ id, secret, usecase, ...selectedFrameworks });
 }
 
-setup();
+async function setupDownloadedRepo() {
+  const ignoredRootDirs = ['node_modules', 'scripts'];
+
+  const rootFiles = await fs.readdirSync(projectRoot);
+
+  const usecase = rootFiles.find(
+    (file) =>
+      fs.lstatSync(file).isDirectory() && !ignoredRootDirs.includes(file)
+  );
+
+  installDependencies({ usecase });
+}
+
+if (isSourceRepo) setupSourceRepo();
+else setupDownloadedRepo();
