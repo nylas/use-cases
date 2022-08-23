@@ -191,5 +191,7 @@ async function setupDownloadedRepo() {
   installDependencies({ usecase });
 }
 
-if (isSourceRepo) setupSourceRepo();
-else setupDownloadedRepo();
+if (!process.env.CI) {
+  if (isSourceRepo) setupSourceRepo();
+  else setupDownloadedRepo();
+}
