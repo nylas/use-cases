@@ -40,8 +40,6 @@ The minimum required Node version is `v18.0.0`. As a quick check, try running `n
    npm install
 
    npm run prep:husky // only needed if contributing to the repo
-
-   npm run setup
    ```
 
 2. Copy `.env.sample` to `.env` on the root level of the project.

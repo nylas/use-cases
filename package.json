@@ -8,6 +8,7 @@
   },
   "type": "module",
   "scripts": {
+    "postinstall": "npm run setup",
     "setup": "node scripts/setup",
     "start": "node scripts/start",
     "lint": "eslint --ext .js -f visualstudio .",
