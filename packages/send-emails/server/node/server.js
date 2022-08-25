@@ -23,12 +23,12 @@ const nylasClient = new Nylas({
 });
 
 // The uri for the frontend
-const clientUri = 'http://localhost:3000';
+const CLIENT_URI = `http://localhost:${process.env.PORT || 3000}`;
 
 // Before we start our backend, we should whitelist our frontend as a redirect URI to ensure the auth completes
 nylasClient
   .application({
-    redirectUris: [clientUri],
+    redirectUris: [CLIENT_URI],
   })
   .then((applicationDetails) => {
     console.log(
@@ -72,7 +72,7 @@ const startServer = () => {
       scopes: [Scope.EmailReadOnly],
       emailAddress: body.email_address,
       successUrl: body.success_url,
-      clientUri,
+      clientUri: CLIENT_URI,
     });
 
     res.writeHead(200).end(authUrl);

@@ -34,9 +34,7 @@ async function startSourceRepo() {
     },
   ]);
 
-  result.catch((error) => {
-    console.log('error:', error);
-  });
+  result.catch(() => {});
 }
 
 function startDownloadedRepo() {

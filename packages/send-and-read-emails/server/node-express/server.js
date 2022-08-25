@@ -46,7 +46,7 @@ const app = express();
 app.use(cors());
 
 // The uri for the frontend
-const CLIENT_URI = 'http://localhost:3000';
+const CLIENT_URI = `http://localhost:${process.env.PORT || 3000}`;
 
 // Before we start our backend, we should whitelist our frontend as a redirect URI to ensure the auth completes
 nylasClient

@@ -44,7 +44,7 @@ const exchangeMailboxTokenCallback = async (accessTokenObj, res) => {
 };
 
 // The uri for the frontend
-const CLIENT_URI = 'http://localhost:3000';
+const CLIENT_URI = `http://localhost:${process.env.PORT || 3000}`;
 
 // Before we start our backend, we should whitelist our frontend as a redirect URI to ensure the auth completes
 nylasClient
@@ -71,7 +71,7 @@ mockServer.post(DefaultPaths.buildAuthUrl, async (req, res) => {
     scopes: [Scope.EmailReadOnly],
     emailAddress: body.email_address,
     successUrl: body.success_url,
-    CLIENT_URI,
+    clientUri: CLIENT_URI,
   });
 
   res.writeHead(200).end(authUrl);

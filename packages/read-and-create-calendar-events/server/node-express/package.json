@@ -1,5 +1,5 @@
 {
-  "name": "nylas-read-and-create-calendar-events-node-express",
+  "name": "nylas-read-send-calendar-events-node-express",
   "version": "0.1.0",
   "description": "Demo using the Nylas Node SDK and ExpressJS.",
   "main": "server.js",
