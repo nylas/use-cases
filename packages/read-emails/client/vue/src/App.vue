@@ -127,16 +127,16 @@ export default {
   height: 60px;
   border: 2px solid #4169e1;
   background: rgba(0, 42, 245, 0.8);
-  borderradius: 8px;
+  border-radius: 8px;
   display: flex;
-  aligncontent: center;
-  alignitems: center;
+  align-content: center;
+  align-items: center;
 }
 
 #statusBarText {
   padding: 0;
-  marginblock: 0;
-  fontweight: bold;
+  margin-block: 0;
+  font-weight: bold;
   color: white;
 }
 
@@ -144,7 +144,7 @@ export default {
   width: 80vw;
   margin: 10vh auto;
   display: flex;
-  flexdirection: column;
+  flex-direction: column;
 }
 
 #emailListContainer {
@@ -160,15 +160,15 @@ export default {
 #emailContainer {
   position: relative;
   padding: 20px;
-  backgroundcolor: white;
+  background-color: white;
   border: 1px solid black;
-  borderwidth: 1px 2px 1px 2px;
+  border-width: 1px 2px 1px 2px;
   cursor: pointer;
-  liststyle: none;
+  list-style: none;
 }
 
 #date {
-  fontsize: smaller;
+  font-size: smaller;
   color: gray;
 }
 
@@ -178,10 +178,10 @@ export default {
 
 #thread {
   padding: 40px;
-  backgroundcolor: darkslategray;
+  background-color: darkslategray;
   color: white;
-  maxheight: 140px;
-  overflowy: scroll;
+  max-height: 140px;
+  overflow-y: scroll;
   margin: 10px 0px 0px;
 }
 </style>
