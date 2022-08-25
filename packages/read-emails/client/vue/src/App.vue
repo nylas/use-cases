@@ -28,16 +28,17 @@
           id="emailContainer"
           v-for="thread in emails"
           :key="thread.id"
+          :data-thread-id="thread.id"
           @click="expandEmail"
         >
           <div>{{ thread.subject }}</div>
           <div id="date">
             {{ new Date(Math.floor(thread.date * 1000)).toDateString() }}
           </div>
-          <div id="gray">{{ thread.snippet }}</div>
-          <pre v-if="isOpen" id="thread">
-        <code>{{ JSON.stringify(thread, null, 4) }}</code>
-      </pre>
+          <div id="snippet">{{ thread.snippet }}</div>
+          <pre v-if="this.openEmails[thread.id]" id="thread">
+            <code>{{ JSON.stringify(thread, null, 4) }}</code>
+          </pre>
         </li>
       </ul>
     </section>
@@ -63,8 +64,7 @@ export default {
     return {
       userId: '',
       email: '',
-      isOpen: false,
-      openEmail: '',
+      openEmails: {},
       emails: [],
     };
   },
@@ -81,11 +81,8 @@ export default {
       });
     },
     expandEmail(event) {
-      if (this.isOpen) {
-        this.openEmail = event.currentTarget.id;
-      } else {
-        this.openEmail = '';
-      }
+      const threadId = event.currentTarget.getAttribute('data-thread-id');
+      this.openEmails[threadId] = !this.openEmails[threadId];
     },
     handleTokenExchange(r) {
       try {
