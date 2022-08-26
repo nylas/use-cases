@@ -96,8 +96,7 @@ export default {
     },
     async getEmails() {
       try {
-        const url = this.serverBaseUrl + '/nylas/read-emails';
-        const res = await fetch(url, {
+        const res = await fetch(`${this.serverBaseUrl}/nylas/read-emails`, {
           method: 'GET',
           headers: {
             Authorization: this.userId,
