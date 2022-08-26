@@ -1,6 +1,6 @@
 import { createApp } from 'vue';
 import App from './App.vue';
-import { Nylas } from '../../../../../../nylas-vue';
+import { Nylas } from '@nylas/nylas-vue';
 
 const app = createApp(App);
 
