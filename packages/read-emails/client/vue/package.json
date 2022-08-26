@@ -12,5 +12,11 @@
   },
   "devDependencies": {
     "@vue/cli-service": "~5.0.0"
+  },
+  "eslintConfig": {
+    "extends": [
+      "plugin:vue/vue3-recommended",
+      "plugin:prettier-vue/recommended"
+    ]
   }
 }
