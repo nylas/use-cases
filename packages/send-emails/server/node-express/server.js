@@ -22,12 +22,12 @@ const nylasClient = new Nylas({
 });
 
 // The uri for the frontend
-const clientUri = 'http://localhost:3000';
+const CLIENT_URI = `http://localhost:${process.env.PORT || 3000}`;
 
 // Before we start our backend, we should whitelist our frontend as a redirect URI to ensure the auth completes
 nylasClient
   .application({
-    redirectUris: [clientUri],
+    redirectUris: [CLIENT_URI],
   })
   .then((applicationDetails) => {
     console.log(
@@ -43,11 +43,13 @@ const exchangeMailboxTokenCallback = async (accessTokenObj, res) => {
   const emailAddress = accessTokenObj.emailAddress;
   console.log('Access Token was generated for: ' + accessTokenObj.emailAddress);
 
+  // Replace this mock code with your actual database operations
   const user = await mockDb.createOrUpdateUser(emailAddress, {
     accessToken,
     emailAddress,
   });
 
+  // Replace this mock code with your actual database operations
   res.json({
     id: user.id,
     emailAddress: user.emailAddress,
@@ -64,7 +66,7 @@ const startExpress = () => {
   const expressBinding = new ServerBindings.express(nylasClient, {
     defaultScopes: [Scope.EmailModify, Scope.EmailSend],
     exchangeMailboxTokenCallback,
-    clientUri,
+    clientUri: CLIENT_URI,
   });
 
   // Mount the express middleware to your express app
@@ -103,7 +105,6 @@ const startExpress = () => {
     const requestBody = req.body;
 
     if (!req.headers.authorization) {
-      console.log('no headers');
       return res.json('Unauthorized');
     }
 
