@@ -18,8 +18,8 @@ const port = 9000;
 
 // Initialize an instance of the Nylas SDK using the client credentials
 const nylasClient = new Nylas({
-  clientId: process.env.YOUR_APP_CLIENT_ID,
-  clientSecret: process.env.YOUR_APP_CLIENT_SECRET,
+  clientId: process.env.NYLAS_APP_ID,
+  clientSecret: process.env.NYLAS_CLIENT_SECRET,
 });
 
 const exchangeMailboxTokenCallback = async (accessTokenObj, res) => {
