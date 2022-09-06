@@ -159,7 +159,6 @@ function SendEmails({ userId }) {
 
       const data = await res.json();
 
-      console.log(data);
       return data;
     } catch (e) {
       console.warn(`Error sending emails:`, e);
