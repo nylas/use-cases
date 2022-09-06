@@ -131,7 +131,11 @@ function ReadEmails({ userId }) {
       </button>
       <div style={styles.ReadEmails.list}>
         {threads.map((thread) => (
-          <DisplayEmail subject={thread.subject} snippet={thread.snippet} />
+          <DisplayEmail
+            key={thread.id}
+            subject={thread.subject}
+            snippet={thread.snippet}
+          />
         ))}
       </div>
     </div>
