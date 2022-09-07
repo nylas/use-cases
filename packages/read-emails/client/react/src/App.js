@@ -8,25 +8,32 @@ function App() {
 
   const handleTokenExchange = (r) => {
     try {
-      const user = JSON.parse(r);
-      setUserId(user.id);
-      window.history.replaceState({}, '', `/?userId=${user.id}`);
+      const { id } = JSON.parse(r);
+      setUserId(id);
     } catch (e) {
       console.error('An error occurred parsing the response.');
-      window.history.replaceState({}, '', '/');
     }
   };
 
   useEffect(() => {
+    if (!nylas) {
+      return;
+    }
+
+    // Handle the code that is passed in the query params from Nylas after a successful login
     const params = new URLSearchParams(window.location.search);
     if (params.has('code')) {
       nylas.exchangeCodeFromUrlForToken().then(handleTokenExchange);
     }
-
-    if (params.has('userId')) {
-      setUserId(params.get('userId'));
-    }
   }, [nylas]);
+
+  useEffect(() => {
+    if (userId.length) {
+      window.history.replaceState({}, '', `/?userId=${userId}`);
+    } else {
+      window.history.replaceState({}, '', '/');
+    }
+  }, [userId]);
 
   return (
     <div
