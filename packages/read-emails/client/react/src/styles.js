@@ -1,8 +1,8 @@
 export const styles = {
-  App: {
+  EmailList: {
     statusBar: {
       width: '80vw',
-      margin: '0 auto',
+      margin: '6em auto 0',
       height: '60px',
       border: '2px solid #4169e1',
       background: 'rgba(0,42,245,0.8)',
@@ -12,19 +12,11 @@ export const styles = {
       alignItems: 'center',
     },
     statusBarText: {
-      padding: 0,
+      padding: '1em',
       marginBlock: 0,
       fontWeight: 'bold',
       color: 'white',
     },
-    contentContainer: {
-      width: '80vw',
-      margin: '10vh auto',
-      display: 'flex',
-      flexDirection: 'column',
-    },
-  },
-  EmailList: {
     container: { width: '80vw', margin: '10vh auto' },
     list: { padding: '0px', margin: 0 },
   },

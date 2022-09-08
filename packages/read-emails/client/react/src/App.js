@@ -1,19 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNylas } from '@nylas/nylas-react';
-import { styles } from './styles';
+import EmailList from './EmailList';
 
 function App() {
   const nylas = useNylas();
   const [userId, setUserId] = useState('');
-
-  const handleTokenExchange = (r) => {
-    try {
-      const { id } = JSON.parse(r);
-      setUserId(id);
-    } catch (e) {
-      console.error('An error occurred parsing the response.');
-    }
-  };
 
   useEffect(() => {
     if (!nylas) {
@@ -23,42 +14,22 @@ function App() {
     // Handle the code that is passed in the query params from Nylas after a successful login
     const params = new URLSearchParams(window.location.search);
     if (params.has('code')) {
-      nylas.exchangeCodeFromUrlForToken().then(handleTokenExchange);
+      nylas
+        .exchangeCodeFromUrlForToken()
+        .then((user) => {
+          const { id } = JSON.parse(user);
+          setUserId(id);
+        })
+        .catch((err) => {
+          console.error('An error occurred parsing the response:', err);
+        });
     }
   }, [nylas]);
 
-  useEffect(() => {
-    if (userId.length) {
-      window.history.replaceState({}, '', `/?userId=${userId}`);
-    } else {
-      window.history.replaceState({}, '', '/');
-    }
-  }, [userId]);
-
-  return (
-    <div
-      style={{
-        padding: '6em 1em',
-      }}
-    >
-      {!userId ? (
-        <NylasLogin />
-      ) : (
-        <>
-          <section style={styles.App.statusBar}>
-            <div
-              style={{
-                padding: '1em',
-              }}
-            >
-              <p style={styles.App.statusBarText}>✨ Connected to Nylas!</p>
-            </div>
-          </section>
-          <section style={styles.App.contentContainer}></section>
-          <EmailList serverBaseUrl={'http://localhost:9000'} userId={userId} />
-        </>
-      )}
-    </div>
+  return !userId ? (
+    <NylasLogin />
+  ) : (
+    <EmailList serverBaseUrl={'http://localhost:9000'} userId={userId} />
   );
 }
 
@@ -92,75 +63,6 @@ function NylasLogin() {
         </form>
       </div>
     </section>
-  );
-}
-
-function EmailList({ serverBaseUrl, userId }) {
-  const [emails, setEmails] = useState([]);
-  const [openEmail, setOpenEmail] = useState('');
-
-  useEffect(() => {
-    const getEmails = async () => {
-      try {
-        const url = serverBaseUrl + '/nylas/read-emails';
-        const res = await fetch(url, {
-          method: 'GET',
-          headers: {
-            Authorization: userId,
-            'Content-Type': 'application/json',
-          },
-        });
-        const data = await res.json();
-
-        console.log(data);
-        setEmails(data);
-      } catch (e) {
-        console.warn(`Error retrieving emails:`, e);
-        return false;
-      }
-    };
-
-    getEmails();
-  }, [serverBaseUrl, userId, emails]);
-
-  return (
-    <section style={styles.EmailList.container}>
-      {emails.length === 0 ? (
-        <p>Loading emails.</p>
-      ) : (
-        <ul style={styles.EmailList.list}>
-          {emails.map((thread) => (
-            <Email
-              key={thread.id}
-              isOpen={openEmail === thread.id}
-              thread={thread}
-              setOpenEmail={setOpenEmail}
-            />
-          ))}
-        </ul>
-      )}
-    </section>
-  );
-}
-
-function Email({ thread, isOpen, setOpenEmail }) {
-  return (
-    <li
-      key={thread.id}
-      onClick={() => (isOpen ? setOpenEmail('') : setOpenEmail(thread.id))}
-      style={styles.Email.container}
-    >
-      <div>{thread.subject}</div>
-      <div style={styles.Email.date}>
-        {new Date(Math.floor(thread.date * 1000)).toDateString()}
-      </div>
-      <div style={styles.Email.snippet}>{thread.snippet}</div>
-      {isOpen && (
-        <pre style={styles.Email.thread}>
-          <code>{JSON.stringify(thread, null, 4)}</code>
-        </pre>
-      )}
-    </li>
   );
 }
 
