@@ -33,7 +33,7 @@ exports.readEmails = async (req, res, nylasClient) => {
   }
 
   const nylas = nylasClient.with(user.accessToken);
-  const threads = await nylas.threads.list({ limit: 50 });
+  const threads = await nylas.threads.list({ limit: 5 });
 
   return res.writeHead(200).end(JSON.stringify(threads));
 };
