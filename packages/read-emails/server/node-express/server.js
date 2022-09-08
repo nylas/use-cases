@@ -62,7 +62,7 @@ app.use('/nylas', nylasMiddleware);
 expressBinding.on(WebhookTriggers.AccountConnected, (payload) => {
   console.log(
     'Webhook trigger received, account connected. Details: ',
-    payload.objectData
+    JSON.stringify(payload.objectData)
   );
 });
 
@@ -99,7 +99,7 @@ nylasClient
   .then((applicationDetails) => {
     console.log(
       'Application whitelisted. Application Details: ',
-      applicationDetails
+      JSON.stringify(applicationDetails)
     );
   });
 
