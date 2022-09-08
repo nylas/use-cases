@@ -8,12 +8,10 @@ function App() {
 
   const handleTokenExchange = (r) => {
     try {
-      const user = JSON.parse(r);
-      setUserId(user.id);
-      window.history.replaceState({}, '', `/?userId=${user.id}`);
+      const { id } = JSON.parse(r);
+      setUserId(id);
     } catch (e) {
       console.error('An error occurred parsing the response.');
-      window.history.replaceState({}, '', '/');
     }
   };
 
@@ -26,13 +24,15 @@ function App() {
     if (params.has('code')) {
       nylas.exchangeCodeFromUrlForToken().then(handleTokenExchange);
     }
-
-    const userId = params.get('userId');
-
-    if (userId) {
-      setUserId(userId);
-    }
   }, [nylas]);
+
+  useEffect(() => {
+    if (userId.length) {
+      window.history.replaceState({}, '', `/?userId=${userId}`);
+    } else {
+      window.history.replaceState({}, '', '/');
+    }
+  }, [userId]);
 
   return (
     <div
