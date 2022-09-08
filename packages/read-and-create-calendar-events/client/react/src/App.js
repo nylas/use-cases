@@ -9,27 +9,34 @@ function App() {
   const [primaryCalendar, setPrimaryCalendar] = useState(null);
 
   const serverBaseUrl = 'http://localhost:9000';
+
   const handleTokenExchange = (r) => {
     try {
-      const user = JSON.parse(r);
-      setUserId(user.id);
-      window.history.replaceState({}, '', `/?userId=${user.id}`);
-    } catch (err) {
-      console.warn('An error occurred parsing the response.');
-      window.history.replaceState({}, '', '/');
+      const { id } = JSON.parse(r);
+      setUserId(id);
+    } catch (e) {
+      console.error('An error occurred parsing the response.');
     }
   };
 
   useEffect(() => {
+    if (!nylas) {
+      return;
+    }
+
     const params = new URLSearchParams(window.location.search);
     if (params.has('code')) {
       nylas.exchangeCodeFromUrlForToken().then(handleTokenExchange);
     }
-
-    if (params.has('userId')) {
-      setUserId(params.get('userId'));
-    }
   }, [nylas]);
+
+  useEffect(() => {
+    if (userId.length) {
+      window.history.replaceState({}, '', `/?userId=${userId}`);
+    } else {
+      window.history.replaceState({}, '', '/');
+    }
+  }, [userId]);
 
   useEffect(() => {
     const getCalendars = async () => {
