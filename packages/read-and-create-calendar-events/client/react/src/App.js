@@ -146,13 +146,13 @@ function Agenda({ serverBaseUrl, userId, calendarId }) {
     const getCalendarEvents = async () => {
       if(calendarId) {
         try {
-          const starts_after = null; // applyTimezone(getLocalDateString(new Date(new Date().setDate(new Date().getDate() - 7))));
-          const ends_before = applyTimezone(getLocalDateString(new Date(new Date().setDate(new Date().getDate() + 7))));
+          const startsAfter = null; // applyTimezone(getLocalDateString(new Date(new Date().setDate(new Date().getDate() - 7))));
+          const endsBefore = applyTimezone(getLocalDateString(new Date(new Date().setDate(new Date().getDate() + 7))));
           const limit = 5;
 
           const url = `${serverBaseUrl}/nylas/read-events?${
             calendarId ? 'calendarId=' + calendarId : ''
-          }${starts_after ? '&starts_after=' + starts_after : ''}${ends_before ? '&ends_before=' + ends_before : ''}${limit ? '&limit=' + limit : ''}`;
+          }${startsAfter ? '&startsAfter=' + startsAfter : ''}${endsBefore ? '&endsBefore=' + endsBefore : ''}${limit ? '&limit=' + limit : ''}`;
 
           const res = await fetch(url, {
             method: 'GET',
