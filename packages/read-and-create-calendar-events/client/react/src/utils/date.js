@@ -10,8 +10,8 @@ export const displayMeetingTime = (timestamp) => {
   })}`;
 };
 
-export const getDateString = (date) => {
-  return date.toISOString().split(':').slice(0, 2).join(':');
+export const getLocalDateString = (date) => {
+  return date.toLocaleDateString("en-CA") + "T" + date.toLocaleTimeString("en-GB").split(":").slice(0, 2).join(":");
 };
 
 export const applyTimezone = (date) => {

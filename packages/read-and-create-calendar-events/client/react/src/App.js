@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNylas } from '@nylas/nylas-react';
 import { styles } from './styles';
-import { applyTimezone, displayMeetingTime, getDateString } from './utils/date';
+import { applyTimezone, displayMeetingTime, getLocalDateString } from './utils/date';
 
 function App() {
   const nylas = useNylas();
@@ -50,7 +50,11 @@ function App() {
 
         const data = await res.json();
 
-        const [calendar] = data.filter((calendar) => calendar.is_primary);
+        let [calendar] = data.filter((calendar) => calendar.is_primary);
+        // if no primary calendar, use the first one
+        if(!calendar && data.length) {
+          calendar = data[0];
+        }
 
         setPrimaryCalendar(calendar);
       } catch (err) {
@@ -140,33 +144,39 @@ function Agenda({ serverBaseUrl, userId, calendarId }) {
 
   useEffect(() => {
     const getCalendarEvents = async () => {
-      try {
-        const url = `${serverBaseUrl}/nylas/read-events?${
-          calendarId ? 'calendarId=' + calendarId : ''
-        }`;
+      if(calendarId) {
+        try {
+          const starts_after = null; // applyTimezone(getLocalDateString(new Date(new Date().setDate(new Date().getDate() - 7))));
+          const ends_before = applyTimezone(getLocalDateString(new Date(new Date().setDate(new Date().getDate() + 7))));
+          const limit = 5;
 
-        const res = await fetch(url, {
-          method: 'GET',
-          headers: {
-            Authorization: userId,
-            'Content-Type': 'application/json',
-          },
-          params: {
-            calendarId,
-          },
-        });
+          const url = `${serverBaseUrl}/nylas/read-events?${
+            calendarId ? 'calendarId=' + calendarId : ''
+          }${starts_after ? '&starts_after=' + starts_after : ''}${ends_before ? '&ends_before=' + ends_before : ''}${limit ? '&limit=' + limit : ''}`;
 
-        if (!res.ok) {
-          throw new Error(res.statusText);
+          const res = await fetch(url, {
+            method: 'GET',
+            headers: {
+              Authorization: userId,
+              'Content-Type': 'application/json',
+            },
+            params: {
+              calendarId,
+            },
+          });
+
+          if (!res.ok) {
+            throw new Error(res.statusText);
+          }
+
+          const data = await res.json();
+
+          console.log('Calendar events:', data);
+
+          setCalendarEvents(data);
+        } catch (err) {
+          console.warn(`Error reading calendar events:`, err);
         }
-
-        const data = await res.json();
-
-        console.log('Calendar events:', data);
-
-        setCalendarEvents(data);
-      } catch (err) {
-        console.warn(`Error reading calendar events:`, err);
       }
     };
 
@@ -219,8 +229,8 @@ function CalendarEventDate({ when }) {
 }
 
 function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
-  const [startTime, setStartTime] = useState(getDateString(new Date()));
-  const [endTime, setEndTime] = useState(getDateString(new Date()));
+  const [startTime, setStartTime] = useState(getLocalDateString(new Date()));
+  const [endTime, setEndTime] = useState(getLocalDateString(new Date(new Date().setMinutes(new Date().getMinutes() + 30))));
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
@@ -255,8 +265,8 @@ function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
       console.log('Event created:', data);
 
       // reset form fields
-      setStartTime(getDateString(new Date()));
-      setEndTime(getDateString(new Date()));
+      setStartTime(getLocalDateString(new Date()));
+      setEndTime(getLocalDateString(new Date()));
       setTitle('');
       setDescription('');
     } catch (err) {
@@ -277,7 +287,7 @@ function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
           setStartTime(event.target.value);
         }}
         value={startTime}
-        min={getDateString(now)}
+        min={getLocalDateString(now)}
       />
       <label style={styles.CreateEventForm.label} htmlFor="event-end-time">
         Choose an end time:
@@ -290,7 +300,7 @@ function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
           setEndTime(event.target.value);
         }}
         value={endTime}
-        min={getDateString(now)}
+        min={getLocalDateString(now)}
       />
       <label style={styles.CreateEventForm.label} htmlFor="title">
         Title:
