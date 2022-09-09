@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNylas } from '@nylas/nylas-react';
 import { styles } from './styles';
-import { applyTimezone, displayMeetingTime, getLocalDateString } from './utils/date';
+import {
+  applyTimezone,
+  displayMeetingTime,
+  getLocalDateString,
+} from './utils/date';
 
 function App() {
   const nylas = useNylas();
@@ -52,7 +56,7 @@ function App() {
 
         let [calendar] = data.filter((calendar) => calendar.is_primary);
         // if no primary calendar, use the first one
-        if(!calendar && data.length) {
+        if (!calendar && data.length) {
           calendar = data[0];
         }
 
@@ -144,15 +148,21 @@ function Agenda({ serverBaseUrl, userId, calendarId }) {
 
   useEffect(() => {
     const getCalendarEvents = async () => {
-      if(calendarId) {
+      if (calendarId) {
         try {
           const startsAfter = null; // applyTimezone(getLocalDateString(new Date(new Date().setDate(new Date().getDate() - 7))));
-          const endsBefore = applyTimezone(getLocalDateString(new Date(new Date().setDate(new Date().getDate() + 7))));
+          const endsBefore = applyTimezone(
+            getLocalDateString(
+              new Date(new Date().setDate(new Date().getDate() + 7))
+            )
+          );
           const limit = 5;
 
           const url = `${serverBaseUrl}/nylas/read-events?${
             calendarId ? 'calendarId=' + calendarId : ''
-          }${startsAfter ? '&startsAfter=' + startsAfter : ''}${endsBefore ? '&endsBefore=' + endsBefore : ''}${limit ? '&limit=' + limit : ''}`;
+          }${startsAfter ? '&startsAfter=' + startsAfter : ''}${
+            endsBefore ? '&endsBefore=' + endsBefore : ''
+          }${limit ? '&limit=' + limit : ''}`;
 
           const res = await fetch(url, {
             method: 'GET',
@@ -230,7 +240,11 @@ function CalendarEventDate({ when }) {
 
 function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
   const [startTime, setStartTime] = useState(getLocalDateString(new Date()));
-  const [endTime, setEndTime] = useState(getLocalDateString(new Date(new Date().setMinutes(new Date().getMinutes() + 30))));
+  const [endTime, setEndTime] = useState(
+    getLocalDateString(
+      new Date(new Date().setMinutes(new Date().getMinutes() + 30))
+    )
+  );
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 

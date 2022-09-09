@@ -11,7 +11,11 @@ export const displayMeetingTime = (timestamp) => {
 };
 
 export const getLocalDateString = (date) => {
-  return date.toLocaleDateString("en-CA") + "T" + date.toLocaleTimeString("en-GB").split(":").slice(0, 2).join(":");
+  return (
+    date.toLocaleDateString('en-CA') +
+    'T' +
+    date.toLocaleTimeString('en-GB').split(':').slice(0, 2).join(':')
+  );
 };
 
 export const applyTimezone = (date) => {
