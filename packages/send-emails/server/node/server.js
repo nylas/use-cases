@@ -112,26 +112,24 @@ const startServer = () => {
     return res.writeHead(200).end(JSON.stringify(message));
   });
 
-  if (process.env.NODE_ENV === 'development') {
-    // Handle when a new message is created (sent)
-    const handleEvent = (delta) => {
-      switch (delta.type) {
-        case WebhookTriggers.MessageCreated:
-          console.log(
-            'Webhook trigger received, message created. Details: ',
-            prettyPrintJSON(delta.objectData)
-          );
-          break;
-      }
-    };
+  // Handle when a new message is created (sent)
+  const handleEvent = (delta) => {
+    switch (delta.type) {
+      case WebhookTriggers.MessageCreated:
+        console.log(
+          'Webhook trigger received, message created. Details: ',
+          prettyPrintJSON(delta.objectData)
+        );
+        break;
+    }
+  };
 
-    // Start the Nylas webhook
-    openWebhookTunnel(nylasClient, {
-      onMessage: handleEvent,
-    }).then((webhookDetails) =>
-      console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id)
-    );
-  }
+  // Start the Nylas webhook
+  openWebhookTunnel(nylasClient, {
+    onMessage: handleEvent,
+  }).then((webhookDetails) =>
+    console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id)
+  );
 
   // Start listening on port 9000
   mockServer.init().listen(port);

@@ -73,32 +73,28 @@ const startExpress = () => {
   const nylasMiddleware = expressBinding.buildMiddleware();
   app.use('/nylas', nylasMiddleware);
 
-  if (process.env.NODE_ENV === 'development') {
-    // Handle when an account gets connected
-    expressBinding.on(WebhookTriggers.AccountConnected, (payload) => {
-      console.log(
-        'Webhook trigger received, account connected. Details: ',
-        prettyPrintJSON(payload.objectData)
-      );
-    });
+  // Handle when an account gets connected
+  expressBinding.on(WebhookTriggers.AccountConnected, (payload) => {
+    console.log(
+      'Webhook trigger received, account connected. Details: ',
+      prettyPrintJSON(payload.objectData)
+    );
+  });
 
-    // Handle when a calendar event is created
-    expressBinding.on(WebhookTriggers.EventCreated, (payload) => {
-      console.log(
-        'Webhook trigger received, calendar event created. Details: ',
-        prettyPrintJSON(payload.objectData)
-      );
-    });
+  // Handle when a calendar event is created
+  expressBinding.on(WebhookTriggers.EventCreated, (payload) => {
+    console.log(
+      'Webhook trigger received, calendar event created. Details: ',
+      prettyPrintJSON(payload.objectData)
+    );
+  });
 
-    // Start the Nylas webhook
-    expressBinding
-      .startDevelopmentWebsocket()
-      .then((webhookDetails) =>
-        console.log(
-          'Webhook tunnel registered. Webhook ID: ' + webhookDetails.id
-        )
-      );
-  }
+  // Start the Nylas webhook
+  expressBinding
+    .startDevelopmentWebsocket()
+    .then((webhookDetails) =>
+      console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id)
+    );
 
   // Add route for getting 20 latest calendar events
   app.get('/nylas/read-events', (req, res) =>
