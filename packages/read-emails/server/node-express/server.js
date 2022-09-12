@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 const { mockDb } = require('./utils/mock-db');
 
 const Nylas = require('nylas');
-const { WebhookTriggers } = require(' nylas/lib/models/webhook');
+const { WebhookTriggers } = require('nylas/lib/models/webhook');
 const { Scope } = require('nylas/lib/models/connect');
 const { ServerBindings } = require('nylas/lib/config');
 
