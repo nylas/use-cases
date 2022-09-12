@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const { mockDb } = require('./utils/mock-db');
-const { prettyPrintJSON } = require('./utils');
 const route = require('./route');
 
 const Nylas = require('nylas');
@@ -56,7 +55,7 @@ nylasClient
   .then((applicationDetails) => {
     console.log(
       'Application whitelisted. Application Details: ',
-      prettyPrintJSON(applicationDetails)
+      JSON.stringify(applicationDetails, undefined, 2)
     );
     startExpress();
   });
@@ -76,7 +75,7 @@ app.use('/nylas', nylasMiddleware);
 expressBinding.on(WebhookTriggers.AccountConnected, (payload) => {
   console.log(
     'Webhook trigger received, account connected. Details: ',
-    prettyPrintJSON(payload.objectData)
+    JSON.stringify(payload.objectData, undefined, 2)
   );
 });
 
@@ -84,7 +83,7 @@ expressBinding.on(WebhookTriggers.AccountConnected, (payload) => {
 expressBinding.on(WebhookTriggers.MessageCreated, (payload) => {
   console.log(
     'Webhook trigger received, message created. Details: ',
-    prettyPrintJSON(payload.objectData)
+    JSON.stringify(payload.objectData, undefined, 2)
   );
 });
 

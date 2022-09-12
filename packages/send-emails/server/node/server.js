@@ -1,7 +1,6 @@
 const dotenv = require('dotenv');
 const { mockDb } = require('./utils/mock-db');
 const { mockServer, getReqBody } = require('./utils/mock-server');
-const { prettyPrintJSON } = require('./utils/formatting');
 
 const Nylas = require('nylas');
 const { WebhookTriggers } = require('nylas/lib/models/webhook');
@@ -33,7 +32,7 @@ nylasClient
   .then((applicationDetails) => {
     console.log(
       'Application whitelisted. Application Details: ',
-      prettyPrintJSON(applicationDetails)
+      JSON.stringify(applicationDetails, undefined, 2)
     );
     startServer();
   });
@@ -118,7 +117,7 @@ const startServer = () => {
       case WebhookTriggers.MessageCreated:
         console.log(
           'Webhook trigger received, message created. Details: ',
-          prettyPrintJSON(delta.objectData)
+          JSON.stringify(delta.objectData, undefined, 2)
         );
         break;
     }
