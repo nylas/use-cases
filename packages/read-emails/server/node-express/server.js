@@ -72,24 +72,20 @@ const startExpress = () => {
   const nylasMiddleware = expressBinding.buildMiddleware();
   app.use('/nylas', nylasMiddleware);
 
-  if (process.env.NODE_ENV === 'development') {
-    // Handle when an account gets connected
-    expressBinding.on(WebhookTriggers.AccountConnected, (payload) => {
-      console.log(
-        'Webhook trigger received, account connected. Details: ',
-        prettyPrintJSON(payload.objectData)
-      );
-    });
+  // Handle when an account gets connected
+  expressBinding.on(WebhookTriggers.AccountConnected, (payload) => {
+    console.log(
+      'Webhook trigger received, account connected. Details: ',
+      prettyPrintJSON(payload.objectData)
+    );
+  });
 
-    // Start the Nylas webhook
-    expressBinding
-      .startDevelopmentWebsocket()
-      .then((webhookDetails) =>
-        console.log(
-          'Webhook tunnel registered. Webhook ID: ' + webhookDetails.id
-        )
-      );
-  }
+  // Start the Nylas webhook
+  expressBinding
+    .startDevelopmentWebsocket()
+    .then((webhookDetails) =>
+      console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id)
+    );
 
   // Add route for getting 5 latest emails
   app.get('/nylas/read-emails', async (req, res) => {
