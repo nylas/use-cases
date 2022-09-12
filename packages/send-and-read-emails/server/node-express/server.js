@@ -20,25 +20,6 @@ const nylasClient = new Nylas({
   clientSecret: process.env.NYLAS_CLIENT_SECRET,
 });
 
-const exchangeMailboxTokenCallback = async (accessTokenObj, res) => {
-  // Normally store the access token in the DB
-  const accessToken = accessTokenObj.accessToken;
-  const emailAddress = accessTokenObj.emailAddress;
-  console.log('Access Token was generated for: ' + accessTokenObj.emailAddress);
-
-  // Replace this mock code with your actual database operations
-  const user = await mockDb.createOrUpdateUser(emailAddress, {
-    accessToken,
-    emailAddress,
-  });
-
-  // Return an authorization object to the user
-  res.json({
-    id: user.id,
-    emailAddress: user.emailAddress,
-  });
-};
-
 const app = express();
 
 // Enable CORS
@@ -47,23 +28,32 @@ app.use(cors());
 // The uri for the frontend
 const CLIENT_URI = `http://localhost:${process.env.PORT || 3000}`;
 
-// Before we start our backend, we should whitelist our frontend as a redirect URI to ensure the auth completes
-nylasClient
-  .application({
-    redirectUris: [CLIENT_URI],
-  })
-  .then((applicationDetails) => {
-    console.log(
-      'Application whitelisted. Application Details: ',
-      JSON.stringify(applicationDetails, undefined, 2)
-    );
-    startExpress();
-  });
-
 // Use the express bindings provided by the SDK and pass in additional configuration such as auth scopes
 const expressBinding = new ServerBindings.express(nylasClient, {
   defaultScopes: [Scope.EmailModify, Scope.EmailSend, Scope.EmailReadOnly],
-  exchangeMailboxTokenCallback,
+  exchangeMailboxTokenCallback: async function exchangeMailboxTokenCallback(
+    accessTokenObj,
+    res
+  ) {
+    // Normally store the access token in the DB
+    const accessToken = accessTokenObj.accessToken;
+    const emailAddress = accessTokenObj.emailAddress;
+    console.log(
+      'Access Token was generated for: ' + accessTokenObj.emailAddress
+    );
+
+    // Replace this mock code with your actual database operations
+    const user = await mockDb.createOrUpdateUser(emailAddress, {
+      accessToken,
+      emailAddress,
+    });
+
+    // Return an authorization object to the user
+    res.json({
+      id: user.id,
+      emailAddress: user.emailAddress,
+    });
+  },
   clientUri: CLIENT_URI,
 });
 
@@ -75,7 +65,7 @@ app.use('/nylas', nylasMiddleware);
 expressBinding.on(WebhookTriggers.AccountConnected, (payload) => {
   console.log(
     'Webhook trigger received, account connected. Details: ',
-    JSON.stringify(payload.objectData, undefined, 2)
+    payload.objectData
   );
 });
 
@@ -83,7 +73,7 @@ expressBinding.on(WebhookTriggers.AccountConnected, (payload) => {
 expressBinding.on(WebhookTriggers.MessageCreated, (payload) => {
   console.log(
     'Webhook trigger received, message created. Details: ',
-    JSON.stringify(payload.objectData, undefined, 2)
+    payload.objectData
   );
 });
 
@@ -102,7 +92,17 @@ app.get('/nylas/read-emails', (req, res) =>
   route.readEmails(req, res, nylasClient)
 );
 
-const startExpress = () => {
-  // Start listening on port 9000
-  app.listen(port, () => console.log('App listening on port ' + port));
-};
+// Before we start our backend, we should whitelist our frontend as a redirect URI to ensure the auth completes
+nylasClient
+  .application({
+    redirectUris: [CLIENT_URI],
+  })
+  .then((applicationDetails) => {
+    console.log(
+      'Application whitelisted. Application Details: ',
+      applicationDetails
+    );
+  });
+
+// Start listening on port 9000
+app.listen(port, () => console.log('App listening on port ' + port));
