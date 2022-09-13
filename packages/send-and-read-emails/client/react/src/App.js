@@ -27,6 +27,14 @@ function App() {
     }
   }, [nylas]);
 
+  useEffect(() => {
+    if (userId.length) {
+      window.history.replaceState({}, '', `/?userId=${userId}`);
+    } else {
+      window.history.replaceState({}, '', '/');
+    }
+  }, [userId]);
+
   return userId ? <EmailClient userId={userId} /> : <NylasLogin />;
 }
 

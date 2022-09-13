@@ -67,7 +67,7 @@ mockServer.post(DefaultPaths.buildAuthUrl, async (req, res) => {
   const body = await getReqBody(req);
 
   const authUrl = await buildAuthUrl({
-    scopes: [Scope.EmailReadOnly],
+    scopes: [Scope.EmailModify, Scope.EmailSend, Scope.EmailReadOnly],
     emailAddress: body.email_address,
     successUrl: body.success_url,
     clientUri: CLIENT_URI,
