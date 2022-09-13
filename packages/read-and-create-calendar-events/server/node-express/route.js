@@ -14,7 +14,6 @@ exports.readEvents = async (req, res, nylasClient) => {
   const events = await nylasClient
     .with(user.accessToken)
     .events.list({
-      starts_after: Math.floor(new Date().getTime() / 1000),
       calendar_id: calendarId,
       starts_after: startsAfter,
       ends_before: endsBefore,
