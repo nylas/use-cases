@@ -3,8 +3,7 @@ const { mockDb } = require('./utils/mock-db');
 
 exports.sendEmail = async (req, res, nylasClient) => {
   if (!req.headers.authorization) {
-    console.log('no headers');
-    return res.json('Unauthorized');
+    return res.json({ message: 'Missing authorization header' });
   }
 
   const user = await mockDb.findUser(req.headers.authorization);
@@ -28,14 +27,13 @@ exports.sendEmail = async (req, res, nylasClient) => {
 
 exports.readEmails = async (req, res, nylasClient) => {
   if (!req.headers.authorization) {
-    console.log('no headers');
-    return res.json('Unauthorized');
+    return res.json({ message: 'Missing authorization header' });
   }
 
   const user = await mockDb.findUser(req.headers.authorization);
 
   if (!user) {
-    return res.json('Unauthorized');
+    return res.json({ message: 'Unauthorized' });
   }
 
   const nylas = nylasClient.with(user.accessToken);
