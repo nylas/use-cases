@@ -24,14 +24,16 @@ function SendEmails({ userId }) {
       const data = await res.json();
 
       return data;
-    } catch (e) {
-      console.warn(`Error sending emails:`, e);
+    } catch (error) {
+      console.warn(`Error sending emails:`, error);
 
       return false;
     }
   };
 
-  const send = async () => {
+  const send = async (e) => {
+    e.preventDefault();
+
     if (!userId) {
       return;
     }
@@ -46,15 +48,17 @@ function SendEmails({ userId }) {
   };
 
   return (
-    <div style={styles.SendEmails.container}>
+    <form style={styles.SendEmails.container} onSubmit={send}>
       <div style={styles.SendEmails.header}>New Message</div>
       <input
+        aria-label="To"
         style={styles.SendEmails.to}
         placeholder="To"
         value={to}
         onChange={(e) => setTo(e.target.value)}
       />
       <textarea
+        aria-label="Message body"
         style={styles.SendEmails.body}
         rows={30}
         value={body}
@@ -64,12 +68,12 @@ function SendEmails({ userId }) {
         <button
           style={styles.SendEmails.button}
           disabled={!to || !body}
-          onClick={send}
+          type="submit"
         >
           Send
         </button>
       </div>
-    </div>
+    </form>
   );
 }
 export default SendEmails;

@@ -18,14 +18,20 @@ function ReadEmails({ userId }) {
     requestHeaders.set('Authorization', userId);
     requestHeaders.set('Content-Type', 'application/json');
 
-    const res = await fetch(url, {
-      method: 'GET',
-      headers: requestHeaders,
-    });
+    try {
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: requestHeaders,
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    setThreads(data.threads);
+      setThreads(data.threads);
+    } catch (error) {
+      console.warn(`Error reading emails:`, error);
+
+      return false;
+    }
   };
 
   return (

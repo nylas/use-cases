@@ -2,7 +2,6 @@ export const styles = {
   EmailClient: {
     contentContainer: {
       display: 'flex',
-      flexDirection: 'row',
       width: '80vw',
       maxHeight: '50vh',
       margin: '10vh auto',

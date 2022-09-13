@@ -65,7 +65,7 @@ app.use('/nylas', nylasMiddleware);
 expressBinding.on(WebhookTriggers.AccountConnected, (payload) => {
   console.log(
     'Webhook trigger received, account connected. Details: ',
-    payload.objectData
+    JSON.stringify(payload.objectData)
   );
 });
 
@@ -73,7 +73,7 @@ expressBinding.on(WebhookTriggers.AccountConnected, (payload) => {
 expressBinding.on(WebhookTriggers.MessageCreated, (payload) => {
   console.log(
     'Webhook trigger received, message created. Details: ',
-    payload.objectData
+    JSON.stringify(payload.objectData)
   );
 });
 
