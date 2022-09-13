@@ -12,10 +12,11 @@ export const displayMeetingTime = (timestamp) => {
 
 export const getLocalDateString = (date) => {
   const localDate = date.toLocaleDateString('en-CA', {hour12: false});
+  const localTime = date.toLocaleTimeString('en-CA', {hour12: false});
   return (
     localDate +
     'T' +
-    localDate.split(':').slice(0, 2).join(':')
+    localTime.split(':').slice(0, 2).join(':')
   );
 };
 
@@ -25,15 +26,19 @@ export const applyTimezone = (date) => {
   return getUnixTimestamp(localizedDate);
 };
 
+export const getUnixTimestamp = (date) => {
+  return Math.floor(date.getTime() / 1000);
+};
+
 export const getTodaysDateTimestamp = () => {
   const date = new Date();
-  return applyTimezone(getLocalDateString(date));
+  return applyTimezone((getLocalDateString(date)));
 };
 
 export const getSevenDaysFromTodayDateTimestamp = () => {
   const date = new Date();
   date.setDate(date.getDate() + 7);
-  return applyTimezone(getLocalDateString(date));
+  return applyTimezone(getLocalDateString(new Date(date)));
 };
 
 export const currentTime = () => {
@@ -47,6 +52,3 @@ export const currentTimePlusHalfHour = () => {
   return getLocalDateString(date);
 };
 
-export const getUnixTimestamp = (date) => {
-  return Math.floor(date.getTime() / 1000);
-};
