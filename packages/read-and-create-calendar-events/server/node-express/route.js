@@ -15,10 +15,10 @@ exports.readEvents = async (req, res, nylasClient) => {
     .with(user.accessToken)
     .events.list({
       starts_after: Math.floor(new Date().getTime() / 1000),
-      limit: limit || 20,
-      ...(calendarId && { calendar_id: calendarId }),
-      ...(startsAfter && { starts_after: startsAfter }),
-      ...(endsBefore && { ends_before: endsBefore }),
+      calendar_id: calendarId,
+      starts_after: startsAfter,
+      ends_before: endsBefore,
+      limit: limit,
     })
     .then((events) => events);
 

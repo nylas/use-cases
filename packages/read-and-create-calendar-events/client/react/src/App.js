@@ -3,8 +3,12 @@ import { useNylas } from '@nylas/nylas-react';
 import { styles } from './styles';
 import {
   applyTimezone,
+  currentTime,
+  currentTimePlusHalfHour,
   displayMeetingTime,
   getLocalDateString,
+  getSevenDaysFromTodayDateTimestamp,
+  getTodaysDateTimestamp,
 } from './utils/date';
 
 function App() {
@@ -150,19 +154,12 @@ function Agenda({ serverBaseUrl, userId, calendarId }) {
     const getCalendarEvents = async () => {
       if (calendarId) {
         try {
-          const startsAfter = null; // applyTimezone(getLocalDateString(new Date(new Date().setDate(new Date().getDate() - 7))));
-          const endsBefore = applyTimezone(
-            getLocalDateString(
-              new Date(new Date().setDate(new Date().getDate() + 7))
-            )
-          );
-          const limit = 5;
+          const startsAfter = getTodaysDateTimestamp(); // today
+          const endsBefore = getSevenDaysFromTodayDateTimestamp(); // 7 days from today
 
-          const url = `${serverBaseUrl}/nylas/read-events?${
-            calendarId ? 'calendarId=' + calendarId : ''
-          }${startsAfter ? '&startsAfter=' + startsAfter : ''}${
-            endsBefore ? '&endsBefore=' + endsBefore : ''
-          }${limit ? '&limit=' + limit : ''}`;
+          const url = `${serverBaseUrl}/nylas/read-events?limit=5&startsAfter=${startsAfter}&endsBefore=${endsBefore}${
+            calendarId ? '&calendarId=' + calendarId : ''
+          }`;
 
           const res = await fetch(url, {
             method: 'GET',
@@ -239,12 +236,8 @@ function CalendarEventDate({ when }) {
 }
 
 function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
-  const [startTime, setStartTime] = useState(getLocalDateString(new Date()));
-  const [endTime, setEndTime] = useState(
-    getLocalDateString(
-      new Date(new Date().setMinutes(new Date().getMinutes() + 30))
-    )
-  );
+  const [startTime, setStartTime] = useState(currentTime());
+  const [endTime, setEndTime] = useState(currentTimePlusHalfHour());
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
