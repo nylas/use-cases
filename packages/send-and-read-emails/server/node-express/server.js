@@ -28,7 +28,10 @@ app.use(cors());
 // The uri for the frontend
 const CLIENT_URI = `http://localhost:${process.env.PORT || 3000}`;
 
-// Use the express bindings provided by the SDK and pass in additional configuration such as auth scopes
+/**
+ * Use the express bindings provided by the SDK and pass in additional
+ * configuration such as auth scopes
+ */
 const expressBinding = new ServerBindings.express(nylasClient, {
   defaultScopes: [Scope.EmailModify, Scope.EmailSend, Scope.EmailReadOnly],
   exchangeMailboxTokenCallback: async function exchangeMailboxTokenCallback(
@@ -92,7 +95,10 @@ app.get('/nylas/read-emails', (req, res) =>
   route.readEmails(req, res, nylasClient)
 );
 
-// Before we start our backend, we should whitelist our frontend as a redirect URI to ensure the auth completes
+/**
+ * Before we start our backend, we should whitelist our frontend as a redirect
+ * URI to ensure the auth completes
+ */
 nylasClient
   .application({
     redirectUris: [CLIENT_URI],

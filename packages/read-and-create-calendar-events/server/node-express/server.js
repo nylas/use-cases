@@ -23,7 +23,10 @@ const nylasClient = new Nylas({
 // The uri for the frontend
 const CLIENT_URI = `http://localhost:${process.env.PORT || 3000}`;
 
-// Before we start our backend, we should whitelist our frontend as a redirect URI to ensure the auth completes
+/**
+ * Before we start our backend, we should whitelist our frontend as a
+ * redirect URI to ensure the auth completes
+ */
 nylasClient
   .application({
     redirectUris: [CLIENT_URI],
@@ -61,7 +64,10 @@ const startExpress = () => {
   // Enable CORS
   app.use(cors());
 
-  // Use the express bindings provided by the SDK and pass in additional configuration such as auth scopes
+  /**
+   * Use the express bindings provided by the SDK and pass in additional
+   * configuration such as auth scopes
+   */
   const expressBinding = new ServerBindings.express(nylasClient, {
     defaultScopes: [Scope.Calendar],
     exchangeMailboxTokenCallback,

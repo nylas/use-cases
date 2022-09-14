@@ -15,9 +15,7 @@ module.exports = {
     ],
     'no-empty-function': 0,
     'no-undef': 'error',
-    'camelcase': [
-      'error',
-      { properties: 'never', ignoreDestructuring: true },
-    ],
+    camelcase: ['error', { properties: 'never', ignoreDestructuring: true }],
+    'max-len': ['error', { code: 80 }],
   },
 };
