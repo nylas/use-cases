@@ -10,13 +10,14 @@ exports.readEvents = async (req, res, nylasClient) => {
   if (!user) {
     return res.sendStatus(401);
   }
-
+  const { calendarId, startsAfter, endsBefore, limit } = req.query;
   const events = await nylasClient
     .with(user.accessToken)
     .events.list({
-      starts_after: Math.floor(new Date().getTime() / 1000),
-      limit: 20,
-      ...(req.query.calendarId && { calendar_id: req.query.calendarId }),
+      calendar_id: calendarId,
+      starts_after: startsAfter,
+      ends_before: endsBefore,
+      limit: limit,
     })
     .then((events) => events);
 
