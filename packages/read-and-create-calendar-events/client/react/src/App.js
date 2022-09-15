@@ -157,7 +157,12 @@ function Agenda({ serverBaseUrl, userId, calendarId }) {
           const startsAfter = getTodaysDateTimestamp(); // today
           const endsBefore = getSevenDaysFromTodayDateTimestamp(); // 7 days from today
 
-          const queryParams = new URLSearchParams({ limit: 5, startsAfter, endsBefore, calendarId });
+          const queryParams = new URLSearchParams({
+            limit: 5,
+            startsAfter,
+            endsBefore,
+            calendarId,
+          });
 
           const url = `${serverBaseUrl}/nylas/read-events?${queryParams.toString()}`;
 
