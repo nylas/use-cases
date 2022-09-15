@@ -20,8 +20,8 @@ function App() {
           const { id } = JSON.parse(user);
           setUserId(id);
         })
-        .catch((err) => {
-          console.error('An error occurred parsing the response:', err);
+        .catch((error) => {
+          console.error('An error occurred parsing the response:', error);
         });
     }
   }, [nylas]);
