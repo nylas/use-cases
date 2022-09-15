@@ -157,9 +157,9 @@ function Agenda({ serverBaseUrl, userId, calendarId }) {
           const startsAfter = getTodaysDateTimestamp(); // today
           const endsBefore = getSevenDaysFromTodayDateTimestamp(); // 7 days from today
 
-          const url = `${serverBaseUrl}/nylas/read-events?limit=5&startsAfter=${startsAfter}&endsBefore=${endsBefore}${
-            calendarId ? '&calendarId=' + calendarId : ''
-          }`;
+          const queryParams = new URLSearchParams({ limit: 5, startsAfter, endsBefore, calendarId });
+
+          const url = `${serverBaseUrl}/nylas/read-events?${queryParams.toString()}`;
 
           const res = await fetch(url, {
             method: 'GET',
