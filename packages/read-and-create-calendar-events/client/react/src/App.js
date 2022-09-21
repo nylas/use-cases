@@ -18,15 +18,6 @@ function App() {
 
   const serverBaseUrl = 'http://localhost:9000';
 
-  const handleTokenExchange = (r) => {
-    try {
-      const { id } = JSON.parse(r);
-      setUserId(id);
-    } catch (e) {
-      console.error('An error occurred parsing the response.');
-    }
-  };
-
   useEffect(() => {
     if (!nylas) {
       return;
@@ -34,7 +25,15 @@ function App() {
 
     const params = new URLSearchParams(window.location.search);
     if (params.has('code')) {
-      nylas.exchangeCodeFromUrlForToken().then(handleTokenExchange);
+      nylas
+        .exchangeCodeFromUrlForToken()
+        .then((user) => {
+          const { id } = JSON.parse(user);
+          setUserId(id);
+        })
+        .catch((err) => {
+          console.error('An error occurred parsing the response:', err);
+        });
     }
   }, [nylas]);
 
