@@ -51,9 +51,16 @@ export default {
   created() {
     const params = new URLSearchParams(window.location.search);
     if (params.has('code')) {
-      this.exchangeCodeFromUrlForToken().then((r) =>
-        this.handleTokenExchange(r)
-      );
+      this.exchangeCodeFromUrlForToken()
+        .then((r) => {
+          const user = JSON.parse(r);
+          this.userId = user.id;
+          window.history.replaceState({}, '', `/?userId=${user.id}`);
+        })
+        .catch(() => {
+          console.error('An error occurred parsing the response.');
+          window.history.replaceState({}, '', '/');
+        });
     }
 
     if (params.has('userId')) {
@@ -83,16 +90,6 @@ export default {
     expandEmail(event) {
       const threadId = event.currentTarget.getAttribute('data-thread-id');
       this.openEmails[threadId] = !this.openEmails[threadId];
-    },
-    handleTokenExchange(r) {
-      try {
-        const user = JSON.parse(r);
-        this.userId = user.id;
-        window.history.replaceState({}, '', `/?userId=${user.id}`);
-      } catch (e) {
-        console.error('An error occurred parsing the response.');
-        window.history.replaceState({}, '', '/');
-      }
     },
     async getEmails() {
       try {
