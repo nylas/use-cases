@@ -108,7 +108,7 @@ async function updateEnvironmentVars({ id, secret, usecase, server, client }) {
   const splitEnv = env.split('\n');
 
   const editedEnv = splitEnv.map((envVar) => {
-    if (envVar.includes('NYLAS_APP_ID=') && id.length > 0)
+    if (envVar.includes('NYLAS_CLIENT_ID=') && id.length > 0)
       envVar = envVar.split('=')[0] + `="${id}"`;
 
     if (envVar.includes('NYLAS_CLIENT_SECRET=') && secret.length > 0)

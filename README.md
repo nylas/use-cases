@@ -43,11 +43,11 @@ The minimum required Node version is `v18.0.0`. As a quick check, try running `n
    ```
 
 2. Copy `.env.sample` to `.env` on the root level of the project.
-3. Fill in the `NYLAS_APP_ID` and `NYLAS_CLIENT_SECRET` in `.env` file
+3. Fill in the `NYLAS_CLIENT_ID` and `NYLAS_CLIENT_SECRET` in `.env` file
 
    ```js
    // Nylas application credentials
-   NYLAS_APP_ID = '<NYLAS_APP_ID> from the Nylas Dashboard';
+   NYLAS_CLIENT_ID = '<NYLAS_CLIENT_ID> from the Nylas Dashboard';
    NYLAS_CLIENT_SECRET = '<NYLAS_CLIENT_SECRET> from the Nylas Dashboard';
    ```
 

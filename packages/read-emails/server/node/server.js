@@ -16,7 +16,7 @@ const port = 9000;
 
 // Initialize an instance of the Nylas SDK using the client credentials
 const nylasClient = new Nylas({
-  clientId: process.env.NYLAS_APP_ID,
+  clientId: process.env.NYLAS_CLIENT_ID,
   clientSecret: process.env.NYLAS_CLIENT_SECRET,
 });
 
