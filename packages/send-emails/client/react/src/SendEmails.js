@@ -1,6 +1,6 @@
-import { useNylas } from '@nylas/nylas-react';
-import { useState } from 'react';
-import { styles } from './styles';
+const { useNylas } = require('@nylas/nylas-react');
+const { useState } = require('react');
+const { styles } = require('./styles');
 
 function SendEmails({ userId }) {
   const nylas = useNylas();
@@ -24,8 +24,8 @@ function SendEmails({ userId }) {
       const data = await res.json();
 
       return data;
-    } catch (error) {
-      console.warn(`Error sending emails:`, error);
+    } catch (e) {
+      console.warn(`Error sending emails:`, e);
 
       return false;
     }
@@ -48,25 +48,25 @@ function SendEmails({ userId }) {
   };
 
   return (
-    <form style={styles.SendEmails.container} onSubmit={send}>
-      <div style={styles.SendEmails.header}>New Message</div>
+    <form style={styles.SendEmail.sendEmailForm} onSubmit={send}>
+      <div style={styles.SendEmail.sendEmailHeader}>New Message</div>
       <input
         aria-label="To"
-        style={styles.SendEmails.to}
+        style={styles.SendEmail.sendEmailTo}
         placeholder="To"
         value={to}
         onChange={(e) => setTo(e.target.value)}
       />
       <textarea
         aria-label="Message body"
-        style={styles.SendEmails.body}
+        style={styles.SendEmail.sendEmailBody}
         rows={20}
         value={body}
         onChange={(e) => setBody(e.target.value)}
       />
-      <div style={styles.SendEmails.cta}>
+      <div style={styles.SendEmail.sendEmailAction}>
         <button
-          style={styles.SendEmails.button}
+          style={styles.SendEmail.button}
           disabled={!to || !body}
           type="submit"
         >
@@ -76,4 +76,5 @@ function SendEmails({ userId }) {
     </form>
   );
 }
+
 export default SendEmails;
