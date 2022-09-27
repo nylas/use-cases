@@ -9,7 +9,7 @@ exports.sendEmail = async (req, res, nylasClient) => {
   const user = await mockDb.findUser(req.headers.authorization);
 
   if (!user) {
-    return res.json('Unauthorized');
+    return res.json({ message: 'Unauthorized' });
   }
 
   const { to, body } = req.body;

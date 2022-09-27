@@ -20,8 +20,80 @@ const nylasClient = new Nylas({
   clientSecret: process.env.NYLAS_CLIENT_SECRET,
 });
 
+const app = express();
+
+// Enable CORS
+app.use(cors());
+
 // The uri for the frontend
 const CLIENT_URI = `http://localhost:${process.env.PORT || 3000}`;
+
+// Use the express bindings provided by the SDK and pass in additional
+// configuration such as auth scopes
+const expressBinding = new ServerBindings.express(nylasClient, {
+  defaultScopes: [Scope.Calendar],
+  exchangeMailboxTokenCallback: async function exchangeMailboxTokenCallback(
+    accessTokenObj,
+    res
+  ) {
+    // Normally store the access token in the DB
+    const { accessToken, emailAddress } = accessTokenObj;
+    console.log('Access Token was generated for: ' + emailAddress);
+
+    // Replace this mock code with your actual database operations
+    const user = await mockDb.createOrUpdateUser(emailAddress, {
+      accessToken,
+      emailAddress,
+    });
+
+    // Return an authorization object to the user
+    res.json({
+      id: user.id,
+      emailAddress: user.emailAddress,
+    });
+  },
+  clientUri: CLIENT_URI,
+});
+
+// Mount the express middleware to your express app
+const nylasMiddleware = expressBinding.buildMiddleware();
+app.use('/nylas', nylasMiddleware);
+
+// Handle when an account gets connected
+expressBinding.on(WebhookTriggers.AccountConnected, (payload) => {
+  console.log(
+    'Webhook trigger received, account connected. Details: ',
+    JSON.stringify(payload.objectData)
+  );
+});
+
+// Handle when a calendar event is created
+expressBinding.on(WebhookTriggers.EventCreated, (payload) => {
+  console.log(
+    'Webhook trigger received, calendar event created. Details: ',
+    JSON.stringify(payload.objectData)
+  );
+});
+
+// Start the Nylas webhook
+expressBinding.startDevelopmentWebsocket().then((webhookDetails) => {
+  console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id);
+});
+
+// Add route for getting 20 latest calendar events
+app.get('/nylas/read-events', (req, res) =>
+  route.readEvents(req, res, nylasClient)
+);
+
+// Add route for getting 20 latest calendar events
+app.get('/nylas/read-calendars', (req, res) =>
+  route.readCalendars(req, res, nylasClient)
+);
+
+// Add route for creating calendar events
+app.post('/nylas/create-events', (req, res) =>
+  route.createEvents(req, res, nylasClient)
+);
 
 // Before we start our backend, we should whitelist our frontend as a
 // redirect URI to ensure the auth completes
@@ -32,86 +104,9 @@ nylasClient
   .then((applicationDetails) => {
     console.log(
       'Application whitelisted. Application Details: ',
-      JSON.stringify(applicationDetails, undefined, 2)
-    );
-    startExpress();
-  });
-
-const exchangeMailboxTokenCallback = async (accessTokenObj, res) => {
-  // Normally store the access token in the DB
-  const accessToken = accessTokenObj.accessToken;
-  const emailAddress = accessTokenObj.emailAddress;
-  console.log('Access Token was generated for: ' + accessTokenObj.emailAddress);
-
-  // Replace this mock code with your actual database operations
-  const user = await mockDb.createOrUpdateUser(emailAddress, {
-    accessToken,
-    emailAddress,
-  });
-
-  // Return an authorization object to the user
-  res.json({
-    id: user.id,
-    emailAddress: user.emailAddress,
-  });
-};
-
-const startExpress = () => {
-  const app = express();
-
-  // Enable CORS
-  app.use(cors());
-
-  // Use the express bindings provided by the SDK and pass in additional
-  // configuration such as auth scopes
-  const expressBinding = new ServerBindings.express(nylasClient, {
-    defaultScopes: [Scope.Calendar],
-    exchangeMailboxTokenCallback,
-    clientUri: CLIENT_URI,
-  });
-
-  // Mount the express middleware to your express app
-  const nylasMiddleware = expressBinding.buildMiddleware();
-  app.use('/nylas', nylasMiddleware);
-
-  // Handle when an account gets connected
-  expressBinding.on(WebhookTriggers.AccountConnected, (payload) => {
-    console.log(
-      'Webhook trigger received, account connected. Details: ',
-      JSON.stringify(payload.objectData, undefined, 2)
+      JSON.stringify(applicationDetails)
     );
   });
 
-  // Handle when a calendar event is created
-  expressBinding.on(WebhookTriggers.EventCreated, (payload) => {
-    console.log(
-      'Webhook trigger received, calendar event created. Details: ',
-      JSON.stringify(payload.objectData, undefined, 2)
-    );
-  });
-
-  // Start the Nylas webhook
-  expressBinding
-    .startDevelopmentWebsocket()
-    .then((webhookDetails) =>
-      console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id)
-    );
-
-  // Add route for getting 20 latest calendar events
-  app.get('/nylas/read-events', (req, res) =>
-    route.readEvents(req, res, nylasClient)
-  );
-
-  // Add route for getting 20 latest calendar events
-  app.get('/nylas/read-calendars', (req, res) =>
-    route.readCalendars(req, res, nylasClient)
-  );
-
-  // Add route for creating calendar events
-  app.post('/nylas/create-events', (req, res) =>
-    route.createEvents(req, res, nylasClient)
-  );
-
-  // Start listening on port 9000
-  app.listen(port, () => console.log('App listening on port ' + port));
-};
+// Start listening on port 9000
+app.listen(port, () => console.log('App listening on port ' + port));
