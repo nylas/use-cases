@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import inquirer from 'inquirer';
 import fs from 'fs';
 import concurrently from 'concurrently';

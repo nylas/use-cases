@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import fs from 'fs';
 import concurrently from 'concurrently';
 import dotenv from 'dotenv';
