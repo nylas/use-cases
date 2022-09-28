@@ -13,7 +13,9 @@ import {
 
 function App() {
   const nylas = useNylas();
-  const [userId, setUserId] = useState('');
+  const params = new URLSearchParams(window.location.search);
+  const userIdFromURL = params.get('userId') || '';
+  const [userId, setUserId] = useState(userIdFromURL);
   const [primaryCalendar, setPrimaryCalendar] = useState(null);
 
   const serverBaseUrl = 'http://localhost:9000';
@@ -75,8 +77,10 @@ function App() {
         console.warn(`Error reading calendars:`, err);
       }
     };
-
-    getCalendars();
+    if(userId) {
+      getCalendars();
+      // setTimeout(getCalendars, 2000);
+    }
   }, [userId]);
 
   return (

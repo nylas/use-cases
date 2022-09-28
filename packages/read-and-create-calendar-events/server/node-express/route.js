@@ -1,5 +1,5 @@
 const { default: Event } = require('nylas/lib/models/event');
-const { mockDb } = require('./utils/mock-db');
+const mockDb = require('./utils/mock-db');
 
 exports.readEvents = async (req, res, nylasClient) => {
   if (!req.headers.authorization) {

@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const { mockDb } = require('./utils/mock-db');
+const mockDb = require('./utils/mock-db');
 const route = require('./route');
 
 const Nylas = require('nylas');
