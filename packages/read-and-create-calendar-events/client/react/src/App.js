@@ -77,7 +77,7 @@ function App() {
         console.warn(`Error reading calendars:`, err);
       }
     };
-    if(userId) {
+    if (userId) {
       getCalendars();
     }
   }, [userId]);
