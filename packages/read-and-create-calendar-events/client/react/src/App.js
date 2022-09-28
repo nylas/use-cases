@@ -13,7 +13,7 @@ import {
 
 function App() {
   const nylas = useNylas();
-  const [userId, setUserId] = useState("");
+  const [userId, setUserId] = useState('');
   const [primaryCalendar, setPrimaryCalendar] = useState(null);
 
   const serverBaseUrl = 'http://localhost:9000';
