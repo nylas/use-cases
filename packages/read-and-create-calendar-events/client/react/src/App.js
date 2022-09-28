@@ -79,7 +79,6 @@ function App() {
     };
     if(userId) {
       getCalendars();
-      // setTimeout(getCalendars, 2000);
     }
   }, [userId]);
 
