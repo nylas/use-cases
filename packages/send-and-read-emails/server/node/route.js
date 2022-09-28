@@ -1,5 +1,5 @@
 const { default: Draft } = require('nylas/lib/models/draft');
-const { mockDb } = require('./utils/mock-db');
+const mockDb = require('./utils/mock-db');
 const { getReqBody } = require('./utils/mock-server');
 
 exports.sendEmail = async (req, res, nylasClient) => {
