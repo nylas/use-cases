@@ -13,9 +13,7 @@ import {
 
 function App() {
   const nylas = useNylas();
-  const params = new URLSearchParams(window.location.search);
-  const userIdFromURL = params.get('userId') || '';
-  const [userId, setUserId] = useState(userIdFromURL);
+  const [userId, setUserId] = useState("");
   const [primaryCalendar, setPrimaryCalendar] = useState(null);
 
   const serverBaseUrl = 'http://localhost:9000';
@@ -36,6 +34,9 @@ function App() {
         .catch((err) => {
           console.error('An error occurred parsing the response:', err);
         });
+    }
+    if (params.has('userId')) {
+      setUserId(params.get('userId'));
     }
   }, [nylas]);
 
