@@ -1,5 +1,5 @@
 const dotenv = require('dotenv');
-const { mockDb } = require('./utils/mock-db');
+const mockDb = require('./utils/mock-db');
 const { mockServer, getReqBody } = require('./utils/mock-server');
 
 const Nylas = require('nylas');
