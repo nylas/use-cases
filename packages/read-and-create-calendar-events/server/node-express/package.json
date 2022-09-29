@@ -8,6 +8,9 @@
   },
   "author": "Nylas Team",
   "license": "ISC",
+  "nodemonConfig": {
+    "ignore": ["datastore.json"]
+  },
   "devDependencies": {
     "nodemon": "^2.0.19"
   },

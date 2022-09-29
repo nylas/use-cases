@@ -38,7 +38,9 @@ function CalendarClient({ userId }) {
       }
     };
 
-    getCalendars();
+    if (userId) {
+      getCalendars();
+    }
   }, [userId, serverBaseUrl]);
 
   return (
