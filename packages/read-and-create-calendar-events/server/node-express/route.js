@@ -3,14 +3,17 @@ const mockDb = require('./utils/mock-db');
 
 exports.readEvents = async (req, res, nylasClient) => {
   if (!req.headers.authorization) {
-    return res.sendStatus(401);
+    return res.json({ message: 'Missing authorization header' });
   }
 
   const user = await mockDb.findUser(req.headers.authorization);
+
   if (!user) {
-    return res.sendStatus(401);
+    return res.json({ message: 'Unauthorized' });
   }
+
   const { calendarId, startsAfter, endsBefore, limit } = req.query;
+
   const events = await nylasClient
     .with(user.accessToken)
     .events.list({
@@ -26,12 +29,13 @@ exports.readEvents = async (req, res, nylasClient) => {
 
 exports.readCalendars = async (req, res, nylasClient) => {
   if (!req.headers.authorization) {
-    return res.sendStatus(401);
+    return res.json({ message: 'Missing authorization header' });
   }
 
   const user = await mockDb.findUser(req.headers.authorization);
+
   if (!user) {
-    return res.sendStatus(401);
+    return res.json({ message: 'Unauthorized' });
   }
 
   const calendars = await nylasClient
@@ -44,15 +48,17 @@ exports.readCalendars = async (req, res, nylasClient) => {
 
 exports.createEvents = async (req, res, nylasClient) => {
   if (!req.headers.authorization) {
-    return res.sendStatus(401);
+    return res.json({ message: 'Missing authorization header' });
   }
 
   const user = await mockDb.findUser(req.headers.authorization);
+
   if (!user) {
-    return res.sendStatus(401);
+    return res.json({ message: 'Unauthorized' });
   }
 
   const { calendarId, title, description, startTime, endTime } = req.body;
+
   if (!calendarId || !title || !startTime || !endTime) {
     return res.status(400).json({
       message:

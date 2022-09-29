@@ -37,11 +37,8 @@ const expressBinding = new ServerBindings.express(nylasClient, {
     res
   ) {
     // Normally store the access token in the DB
-    const accessToken = accessTokenObj.accessToken;
-    const emailAddress = accessTokenObj.emailAddress;
-    console.log(
-      'Access Token was generated for: ' + accessTokenObj.emailAddress
-    );
+    const { accessToken, emailAddress } = accessTokenObj;
+    console.log('Access Token was generated for: ' + emailAddress);
 
     // Replace this mock code with your actual database operations
     const user = await mockDb.createOrUpdateUser(emailAddress, {
@@ -79,11 +76,9 @@ expressBinding.on(WebhookTriggers.MessageCreated, (payload) => {
 });
 
 // Start the Nylas webhook
-expressBinding
-  .startDevelopmentWebsocket()
-  .then((webhookDetails) =>
-    console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id)
-  );
+expressBinding.startDevelopmentWebsocket().then((webhookDetails) => {
+  console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id);
+});
 
 // Handle routes
 app.post('/nylas/send-email', (req, res) =>
@@ -102,7 +97,7 @@ nylasClient
   .then((applicationDetails) => {
     console.log(
       'Application whitelisted. Application Details: ',
-      applicationDetails
+      JSON.stringify(applicationDetails)
     );
   });
 
