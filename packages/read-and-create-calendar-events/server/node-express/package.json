@@ -9,7 +9,9 @@
   "author": "Nylas Team",
   "license": "ISC",
   "nodemonConfig": {
-    "ignore": ["datastore.json"]
+    "ignore": [
+      "datastore.json"
+    ]
   },
   "devDependencies": {
     "nodemon": "^2.0.19"
@@ -19,7 +21,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.2",
     "express": "^4.14.0",
-    "nylas": "^7.0.0-canary.3",
+    "nylas": "7.0.0-beta.0",
     "request": "^2.74.0",
     "uuid": "^8.3.2"
   }
