@@ -13,7 +13,7 @@ function App() {
 
     // Handle the code that is passed in the query params from Nylas after a successful login
     const params = new URLSearchParams(window.location.search);
-    if (params.has('code') && !userId) {
+    if (params.has('code')) {
       nylas
         .exchangeCodeFromUrlForToken()
         .then((user) => {
@@ -23,9 +23,6 @@ function App() {
         .catch((error) => {
           console.error('An error occurred parsing the response:', error);
         });
-    }
-    if (params.has('userId')) {
-      setUserId(params.get('userId'));
     }
   }, [nylas]);
 
