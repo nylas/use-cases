@@ -74,6 +74,24 @@ mockServer.post(DefaultPaths.exchangeCodeForToken, async (req, res) => {
   }
 });
 
+// Start the Nylas webhook
+openWebhookTunnel(nylasClient, {
+  // Handle when a new message is created (sent)
+  onMessage: function handleEvent(delta) {
+    switch (delta.type) {
+      case WebhookTriggers.MessageCreated:
+        console.log(
+          'Webhook trigger received, message created. Details: ',
+          JSON.stringify(delta.objectData, undefined, 2)
+        );
+        break;
+    }
+  },
+}).then((webhookDetails) => {
+  console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id);
+});
+
+// Handle routes
 mockServer.post('/nylas/send-email', async (req, res) => {
   if (!req.headers.authorization) {
     return res.writeHead(401).end('Unauthorized');
@@ -97,23 +115,6 @@ mockServer.post('/nylas/send-email', async (req, res) => {
   return res.writeHead(200).end(JSON.stringify(message));
 });
 
-// Start the Nylas webhook
-openWebhookTunnel(nylasClient, {
-  // Handle when a new message is created (sent)
-  onMessage: function handleEvent(delta) {
-    switch (delta.type) {
-      case WebhookTriggers.MessageCreated:
-        console.log(
-          'Webhook trigger received, message created. Details: ',
-          JSON.stringify(delta.objectData)
-        );
-        break;
-    }
-  },
-}).then((webhookDetails) => {
-  console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id);
-});
-
 // Before we start our backend, we should whitelist our frontend
 // as a redirect URI to ensure the auth completes
 nylasClient
@@ -123,7 +124,7 @@ nylasClient
   .then((applicationDetails) => {
     console.log(
       'Application whitelisted. Application Details: ',
-      JSON.stringify(applicationDetails)
+      JSON.stringify(applicationDetails, undefined, 2)
     );
   });
 

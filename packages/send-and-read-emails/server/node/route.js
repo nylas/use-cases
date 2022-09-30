@@ -13,12 +13,15 @@ exports.sendEmail = async (req, res, nylasClient) => {
   }
 
   const { to, body } = await getReqBody(req);
+
   const draft = new Draft(nylasClient.with(user.accessToken));
+
   draft.from = [{ email: user.emailAddress }];
   draft.to = [{ email: to }];
   draft.body = body;
 
   const message = await draft.send();
+
   return res.writeHead(200).end(JSON.stringify(message));
 };
 
@@ -33,6 +36,7 @@ exports.readEmails = async (req, res, nylasClient) => {
   }
 
   const nylas = nylasClient.with(user.accessToken);
+
   const threads = await nylas.threads.list({ limit: 5 });
 
   return res.writeHead(200).end(JSON.stringify({ threads }));
