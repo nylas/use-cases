@@ -21,53 +21,16 @@ const nylasClient = new Nylas({
   clientSecret: process.env.NYLAS_CLIENT_SECRET,
 });
 
-const exchangeMailboxTokenCallback = async (accessTokenObj, res) => {
-  // Normally store the access token in the DB
-  const accessToken = accessTokenObj.accessToken;
-  const emailAddress = accessTokenObj.emailAddress;
-  console.log('Access Token was generated for: ' + accessTokenObj.emailAddress);
-
-  // Replace this mock code with your actual database operations
-  const user = await mockDb.createOrUpdateUser(emailAddress, {
-    accessToken,
-    emailAddress,
-  });
-
-  // Return an authorization object to the user
-  res.writeHead(200).end(
-    JSON.stringify({
-      id: user.id,
-      emailAddress: user.emailAddress,
-    })
-  );
-};
-
 // The uri for the frontend
 const CLIENT_URI = `http://localhost:${process.env.PORT || 3000}`;
 
-// Before we start our backend, we should whitelist our frontend as a redirect
-// URI to ensure the auth completes
-nylasClient
-  .application({
-    redirectUris: [CLIENT_URI],
-  })
-  .then((applicationDetails) => {
-    console.log(
-      'Application whitelisted. Application Details: ',
-      JSON.stringify(applicationDetails, undefined, 2)
-    );
-    startServer();
-  });
-
 // Use the routes provided by the Nylas Node SDK to quickly implement
 // the authentication flow
-
 const { buildAuthUrl, exchangeCodeForToken } = NylasRoutes(nylasClient);
 
 // Configure the Nylas routes using your flavour of backend framework
 // '/nylas/generate-auth-url': This route builds the URL for authenticating
 // users to your Nylas application via Hosted Authentication
-
 mockServer.post(DefaultPaths.buildAuthUrl, async (req, res) => {
   const body = await getReqBody(req);
 
@@ -87,29 +50,43 @@ mockServer.post(DefaultPaths.exchangeCodeForToken, async (req, res) => {
   const body = await getReqBody(req);
 
   try {
-    const accessTokenObj = await exchangeCodeForToken(body.token);
+    const { accessToken, emailAddress } = await exchangeCodeForToken(
+      body.token
+    );
 
-    await exchangeMailboxTokenCallback(accessTokenObj, res);
+    // Normally store the access token in the DB
+    console.log('Access Token was generated for: ' + emailAddress);
+    // Replace this mock code with your actual database operations
+    const user = await mockDb.createOrUpdateUser(emailAddress, {
+      accessToken,
+      emailAddress,
+    });
+
+    // Return an authorization object to the user
+    res.writeHead(200).end(
+      JSON.stringify({
+        id: user.id,
+        emailAddress: user.emailAddress,
+      })
+    );
   } catch (e) {
     res.writeHead(500).end(e.message);
   }
 });
 
-// Handle when a new message is created (sent)
-const handleEvent = (delta) => {
-  switch (delta.type) {
-    case WebhookTriggers.MessageCreated:
-      console.log(
-        'Webhook trigger received, message created. Details: ',
-        JSON.stringify(delta.objectData, undefined, 2)
-      );
-      break;
-  }
-};
-
 // Start the Nylas webhook
 openWebhookTunnel(nylasClient, {
-  onMessage: handleEvent,
+  // Handle when a new message is created (sent)
+  onMessage: function handleEvent(delta) {
+    switch (delta.type) {
+      case WebhookTriggers.MessageCreated:
+        console.log(
+          'Webhook trigger received, message created. Details: ',
+          JSON.stringify(delta.objectData, undefined, 2)
+        );
+        break;
+    }
+  },
 }).then((webhookDetails) =>
   console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id)
 );
@@ -122,8 +99,19 @@ mockServer.get('/nylas/read-emails', (req, res) =>
   route.readEmails(req, res, nylasClient)
 );
 
-const startServer = () => {
-  // Start listening on port 9000
-  mockServer.init().listen(port);
-  console.log('App listening on port ' + port);
-};
+// Before we start our backend, we should whitelist our frontend as a redirect
+// URI to ensure the auth completes
+nylasClient
+  .application({
+    redirectUris: [CLIENT_URI],
+  })
+  .then((applicationDetails) => {
+    console.log(
+      'Application whitelisted. Application Details: ',
+      JSON.stringify(applicationDetails, undefined, 2)
+    );
+  });
+
+// Start listening on port 9000
+mockServer.init().listen(port);
+console.log('App listening on port ' + port);
