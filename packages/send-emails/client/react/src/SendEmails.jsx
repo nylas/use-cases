@@ -1,6 +1,6 @@
-const { useNylas } = require('@nylas/nylas-react');
-const { useState } = require('react');
-const { styles } = require('./styles');
+import { useNylas } from '@nylas/nylas-react';
+import { useState } from 'react';
+import { styles } from './styles';
 
 function SendEmails({ userId }) {
   const nylas = useNylas();
