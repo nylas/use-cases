@@ -24,9 +24,6 @@ function App() {
           console.error('An error occurred parsing the response:', error);
         });
     }
-    if (params.has('userId')) {
-      setUserId(params.get('userId'));
-    }
   }, [nylas]);
 
   useEffect(() => {
