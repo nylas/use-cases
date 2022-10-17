@@ -14,8 +14,8 @@
     "lint": "npx eslint --ext .js -f visualstudio .",
     "lint:fix": "npm run lint -- --fix",
     "lint:ci": "npm run lint:fix -- --quiet",
-    "lint:prettier": "prettier --write '**/*.js'",
-    "lint:prettier:check": "prettier --check '**/*.js'",
+    "lint:prettier": "prettier --write '**/*{.js,.jsx}'",
+    "lint:prettier:check": "prettier --check '**/*{.js,.jsx}'",
     "lint:pretty-quick": "pretty-quick --staged",
     "prep:husky": "npx husky install"
   },
