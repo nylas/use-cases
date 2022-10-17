@@ -56,7 +56,7 @@ const expressBinding = new ServerBindings.express(nylasClient, {
 
 // Mount the express middleware to your express app
 const nylasMiddleware = expressBinding.buildMiddleware();
-app.use('/nylas', nylasMiddleware);
+app.use(nylasMiddleware);
 
 // Handle when an account gets connected
 expressBinding.on(WebhookTriggers.AccountConnected, (payload) => {
