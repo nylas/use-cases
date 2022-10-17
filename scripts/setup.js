@@ -69,11 +69,11 @@ async function getUseCases() {
 
 async function getFrameworkOptions(useCase) {
   const serverOptions = await fs
-    .readdirSync(`${projectRoot}/packages/${useCase}/server`)
+    .readdirSync(`${projectRoot}/packages/${useCase}/backend`)
     .filter((file) => !ignoreFiles.includes(file));
 
   const clientOptions = await fs
-    .readdirSync(`${projectRoot}/packages/${useCase}/client`)
+    .readdirSync(`${projectRoot}/packages/${useCase}/frontend`)
     .filter((file) => !ignoreFiles.includes(file));
 
   return { server: serverOptions, client: clientOptions };
@@ -85,15 +85,15 @@ function installDependencies({ usecase, client = null, server = null }) {
       name: 'installing client dependencies',
       command: `npm install`,
       cwd: client
-        ? `${projectRoot}/packages/${usecase}/client/${client}`
-        : `${projectRoot}/src/client`,
+        ? `${projectRoot}/packages/${usecase}/frontend/${client}`
+        : `${projectRoot}/src/frontend`,
     },
     {
       name: 'installing server dependencies',
       command: `npm install`,
       cwd: server
-        ? `${projectRoot}/packages/${usecase}/server/${server}`
-        : `${projectRoot}/src/server`,
+        ? `${projectRoot}/packages/${usecase}/backend/${server}`
+        : `${projectRoot}/src/backend`,
     },
   ]);
 

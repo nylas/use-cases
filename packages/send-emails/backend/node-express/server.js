@@ -53,12 +53,12 @@ const expressBinding = new ServerBindings.express(nylasClient, {
       emailAddress: user.emailAddress,
     });
   },
-  clientUri: CLIENT_URI,
+  clientUri: `CLIENT_URI,
 });
 
 // Mount the express middleware to your express app
 const nylasMiddleware = expressBinding.buildMiddleware();
-app.use(nylasMiddleware);
+app.use('/nylas', nylasMiddleware);
 
 // Handle when an account gets connected
 expressBinding.on(WebhookTriggers.AccountConnected, (payload) => {

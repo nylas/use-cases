@@ -26,12 +26,12 @@ async function startSourceRepo() {
     {
       command: 'npm run start',
       name: `start ${process.env.CLIENT_FRAMEWORK}`,
-      cwd: `${projectRoot}/packages/${process.env.USE_CASE}/client/${process.env.CLIENT_FRAMEWORK}`,
+      cwd: `${projectRoot}/packages/${process.env.USE_CASE}/frontend/${process.env.CLIENT_FRAMEWORK}`,
     },
     {
       command: 'npm run start',
       name: `start ${process.env.SERVER_FRAMEWORK}`,
-      cwd: `${projectRoot}/packages/${process.env.USE_CASE}/server/${process.env.SERVER_FRAMEWORK}`,
+      cwd: `${projectRoot}/packages/${process.env.USE_CASE}/backend/${process.env.SERVER_FRAMEWORK}`,
     },
   ]);
 
@@ -43,12 +43,12 @@ function startDownloadedRepo() {
     {
       command: 'npm run start',
       name: `start client`,
-      cwd: `${projectRoot}/src/client`,
+      cwd: `${projectRoot}/src/frontend`,
     },
     {
       command: 'npm run start',
       name: `start server`,
-      cwd: `${projectRoot}/src/server`,
+      cwd: `${projectRoot}/src/backend`,
     },
   ]);
 
