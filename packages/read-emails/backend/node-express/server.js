@@ -26,7 +26,7 @@ const nylasClient = new Nylas({
 
 // The uri for the frontend
 const CLIENT_URI =
-  process.env.REACT_APP_API || `http://localhost:${process.env.PORT || 3000}`;
+  process.env.CLIENT_URI || `http://localhost:${process.env.PORT || 3000}`;
 
 // Use the express bindings provided by the SDK and pass in
 // additional configuration such as auth scopes
