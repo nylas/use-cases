@@ -5,6 +5,7 @@ import EmailList from './EmailList';
 function App() {
   const nylas = useNylas();
   const [userId, setUserId] = useState('');
+  const SERVER_URI = import.meta.env.VITE_SERVER_URI || 'http://localhost:9000';
 
   useEffect(() => {
     if (!nylas) {
@@ -37,7 +38,7 @@ function App() {
   return !userId ? (
     <NylasLogin />
   ) : (
-    <EmailList serverBaseUrl={'http://localhost:9000'} userId={userId} />
+    <EmailList serverBaseUrl={SERVER_URI} userId={userId} />
   );
 }
 

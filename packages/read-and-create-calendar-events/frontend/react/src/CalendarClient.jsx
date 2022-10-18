@@ -5,7 +5,8 @@ import { styles } from './styles';
 
 function CalendarClient({ userId }) {
   const [primaryCalendar, setPrimaryCalendar] = useState(null);
-  const serverBaseUrl = 'http://localhost:9000';
+  const serverBaseUrl =
+    import.meta.env.VITE_SERVER_URI || 'http://localhost:9000';
 
   useEffect(() => {
     const getCalendars = async () => {
