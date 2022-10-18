@@ -37,7 +37,10 @@ function App() {
   return !userId ? (
     <NylasLogin />
   ) : (
-    <EmailList serverBaseUrl={'http://localhost:9000'} userId={userId} />
+    <EmailList
+      serverBaseUrl={import.meta.env.VITE_SERVER_URI || 'http://localhost:9000'}
+      userId={userId}
+    />
   );
 }
 
