@@ -5,10 +5,11 @@ import App from './App';
 import { NylasProvider } from '@nylas/nylas-react';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+const SERVER_URI = import.meta.env.VITE_SERVER_URI || 'http://localhost:9000';
 
 root.render(
   <React.StrictMode>
-    <NylasProvider serverBaseUrl="http://localhost:9000">
+    <NylasProvider serverBaseUrl={SERVER_URI}>
       <App />
     </NylasProvider>
   </React.StrictMode>
