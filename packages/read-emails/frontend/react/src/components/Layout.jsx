@@ -2,8 +2,9 @@ import React from 'react';
 import IconSync from './icons/icon-sync.svg';
 import IconLogout from './icons/icon-logout.svg';
 import NylasLogo from './icons/nylas-logo-horizontal.svg';
+import PropTypes from 'prop-types';
 
-const Layout = ({ children, showMenu = false }) => {
+const Layout = ({ children, showMenu = false, disconnectUser }) => {
   return (
     <div className="layout">
       <div className="title-menu">
@@ -15,7 +16,7 @@ const Layout = ({ children, showMenu = false }) => {
               Refresh
             </button>
             ·
-            <button>
+            <button onClick={disconnectUser}>
               <img src={IconLogout} alt="Your SVG" height="16" />
               Disconnect account
             </button>
@@ -31,6 +32,12 @@ const Layout = ({ children, showMenu = false }) => {
       </footer>
     </div>
   );
+};
+
+Layout.propTypes = {
+  children: PropTypes.element.isRequired,
+  showMenu: PropTypes.bool.isRequired,
+  disconnectUser: PropTypes.func,
 };
 
 export default Layout;
