@@ -18,6 +18,7 @@ button {
   cursor: pointer;
   padding: $spacing-12 $spacing-16;
   border-radius: 1rem;
+  gap: $spacing-8;
 }
 
 .layout {
@@ -80,6 +81,7 @@ button {
 
   main {
     width: 100%;
+    overflow: auto;
   }
 }
 

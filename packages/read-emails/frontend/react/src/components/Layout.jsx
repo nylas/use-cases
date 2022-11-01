@@ -7,7 +7,7 @@ const Layout = ({ children, showMenu = false }) => {
   return (
     <div className="layout">
       <div className="title-menu">
-        <h1>Send and read emails sample app</h1>
+        <h1>Email sample app</h1>
         {showMenu && (
           <div className="menu">
             <button>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNylas } from '@nylas/nylas-react';
 import EmailList from './EmailList';
+import NylasLogin from './NylasLogin';
 import Layout from './components/Layout';
 
 function App() {
@@ -36,48 +37,14 @@ function App() {
     }
   }, [userId]);
 
-  return !userId ? (
-    <NylasLogin />
-  ) : (
-    <EmailList serverBaseUrl={SERVER_URI} userId={userId} />
-  );
-}
-
-function NylasLogin() {
-  const nylas = useNylas();
-
-  const [email, setEmail] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-
-  const loginUser = (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    nylas.authWithRedirect({
-      emailAddress: email,
-      successRedirectUrl: '',
-    });
-  };
-
   return (
-    <>
-      <Layout>
-        <section className="login">
-          <form onSubmit={loginUser}>
-            <input
-              required
-              type="email"
-              placeholder="Email Address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <button type="submit" disabled={isLoading}>
-              {isLoading ? 'Connecting...' : 'Connect email'}
-            </button>
-          </form>
-        </section>
-      </Layout>
-    </>
+    <Layout showMenu={!!userId}>
+      {!userId ? (
+        <NylasLogin />
+      ) : (
+        <EmailList serverBaseUrl={SERVER_URI} userId={userId} />
+      )}
+    </Layout>
   );
 }
 
