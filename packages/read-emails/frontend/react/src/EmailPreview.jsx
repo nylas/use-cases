@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { formatPreviewDate } from './utils/date.js';
 
 function EmailPreview({ thread }) {
   const [emailFrom, setEmailFrom] = useState('Unknown');
@@ -23,7 +24,7 @@ function EmailPreview({ thread }) {
       </div>
       <div className="email-info">
         <div className="time">
-          {new Date(Math.floor(thread.date * 1000)).toDateString()}
+          {formatPreviewDate(new Date(Math.floor(thread.date * 1000)))}
         </div>
       </div>
     </li>
