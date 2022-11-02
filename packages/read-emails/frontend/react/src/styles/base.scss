@@ -78,3 +78,19 @@ $fs-22: 1.375rem; // 22px
 $fs-18: 1.125rem; // 18px
 $fs-16: 1rem; // 16px
 $fs-14: 0.875rem; // 14px
+
+// Media Queries
+$size-desktop: 960px;
+$desktop: '(min-width: 960px)';
+
+@media (min-width: $size-desktop) {
+  .hidden-desktop {
+    display: none !important;
+  }
+}
+
+@media (max-width: $size-desktop) {
+  .hidden-mobile {
+    display: none !important;
+  }
+}

@@ -1,24 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import IconSync from './icons/icon-sync.svg';
 import IconLogout from './icons/icon-logout.svg';
 import NylasLogo from './icons/nylas-logo-horizontal.svg';
 import PropTypes from 'prop-types';
 
-const Layout = ({ children, showMenu = false, disconnectUser }) => {
+const Layout = ({ children, showMenu = false, disconnectUser, refresh }) => {
+  const handleRefresh = (e) => {
+    e.preventDefault();
+    refresh();
+  };
+
+  const handleDisconnect = (e) => {
+    e.preventDefault();
+    disconnectUser();
+  };
+
   return (
     <div className="layout">
       <div className="title-menu">
         <h1>Email sample app</h1>
         {showMenu && (
           <div className="menu">
-            <button>
-              <img src={IconSync} alt="Your SVG" height="18" />
-              Refresh
+            <button onClick={handleRefresh}>
+              <img src={IconSync} alt="Sync" height="18" />
+              <span className="hidden-mobile">Refresh</span>
             </button>
-            ·
-            <button onClick={disconnectUser}>
-              <img src={IconLogout} alt="Your SVG" height="16" />
-              Disconnect account
+            <div className="hidden-mobile">·</div>
+            <button onClick={handleDisconnect}>
+              <img src={IconLogout} alt="Logout" height="16" />
+              <span className="hidden-mobile">Disconnect account</span>
             </button>
           </div>
         )}
@@ -27,7 +37,7 @@ const Layout = ({ children, showMenu = false, disconnectUser }) => {
       <footer>
         <div className="logo">
           POWERED BY
-          <img src={NylasLogo} alt="Your SVG" />
+          <img src={NylasLogo} alt="Nylas Logo" />
         </div>
       </footer>
     </div>
@@ -38,6 +48,7 @@ Layout.propTypes = {
   children: PropTypes.element.isRequired,
   showMenu: PropTypes.bool.isRequired,
   disconnectUser: PropTypes.func,
+  refresh: PropTypes.func,
 };
 
 export default Layout;
