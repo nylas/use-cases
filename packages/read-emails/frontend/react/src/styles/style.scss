@@ -82,7 +82,8 @@ button {
 
   main {
     width: 100%;
-    overflow: auto;
+    min-height: 0;
+    flex: 1 0 0;
   }
 }
 
@@ -122,6 +123,15 @@ section.login form {
       cursor: default;
     }
   }
+}
+
+.app-card {
+  width: 100%;
+  height: 100%;
+  color: $color-grey-900;
+  background-color: $color-white;
+  padding: $spacing-32 $spacing-48;
+  border-radius: $spacing-32;
 }
 
 @media #{$desktop} {
