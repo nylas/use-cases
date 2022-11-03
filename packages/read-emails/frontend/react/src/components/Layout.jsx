@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import IconSync from './icons/icon-sync.svg';
 import IconLogout from './icons/icon-logout.svg';
 import NylasLogo from './icons/nylas-logo-horizontal.svg';
 import PropTypes from 'prop-types';
 
 const Layout = ({ children, showMenu = false, disconnectUser, refresh }) => {
+  const [isDisconnecting, setIsDisconnecting] = useState(false);
   const handleRefresh = (e) => {
     e.preventDefault();
     refresh();
@@ -12,7 +13,11 @@ const Layout = ({ children, showMenu = false, disconnectUser, refresh }) => {
 
   const handleDisconnect = (e) => {
     e.preventDefault();
-    disconnectUser();
+    setIsDisconnecting(true);
+    setTimeout(() => {
+      disconnectUser();
+      setIsDisconnecting(false);
+    }, 1500);
   };
 
   return (
@@ -26,9 +31,11 @@ const Layout = ({ children, showMenu = false, disconnectUser, refresh }) => {
               <span className="hidden-mobile">Refresh</span>
             </button>
             <div className="hidden-mobile">·</div>
-            <button onClick={handleDisconnect}>
+            <button onClick={handleDisconnect} disabled={isDisconnecting}>
               <img src={IconLogout} alt="Logout" height="16" />
-              <span className="hidden-mobile">Disconnect account</span>
+              <span className="hidden-mobile">
+                {isDisconnecting ? 'Disconnect...' : 'Disconnect account'}
+              </span>
             </button>
           </div>
         )}
