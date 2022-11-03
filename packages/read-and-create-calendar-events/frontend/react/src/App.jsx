@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNylas } from '@nylas/nylas-react';
 import CalendarClient from './CalendarClient';
+import NylasLogin from './NylasLogin';
+import Layout from './components/Layout';
 
 function App() {
   const nylas = useNylas();
@@ -37,39 +39,10 @@ function App() {
     }
   }, [userId]);
 
-  return userId ? <CalendarClient userId={userId} /> : <NylasLogin />;
-}
-
-function NylasLogin() {
-  const nylas = useNylas();
-
-  const [email, setEmail] = useState('');
-
   return (
-    <section style={{ width: '80vw', margin: '40px auto' }}>
-      <h1>Read and send calendar events sample app</h1>
-      <p>Authenticate your email to read</p>
-      <div style={{ marginTop: '30px' }}>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            nylas.authWithRedirect({
-              emailAddress: email,
-              successRedirectUrl: '',
-            });
-          }}
-        >
-          <input
-            required
-            type="email"
-            placeholder="Email Address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <button type="submit">Connect</button>
-        </form>
-      </div>
-    </section>
+    <Layout showMenu={!!userId}>
+      {!userId ? <NylasLogin /> : <CalendarClient userId={userId} />}
+    </Layout>
   );
 }
 
