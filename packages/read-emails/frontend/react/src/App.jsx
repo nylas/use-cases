@@ -10,6 +10,13 @@ function App() {
   const SERVER_URI = import.meta.env.VITE_SERVER_URI || 'http://localhost:9000';
 
   useEffect(() => {
+    const userIdString = sessionStorage.getItem('userId');
+    if (userIdString) {
+      setUserId(userIdString);
+    }
+  }, []);
+
+  useEffect(() => {
     if (!nylas) {
       return;
     }
@@ -22,6 +29,7 @@ function App() {
         .then((user) => {
           const { id } = JSON.parse(user);
           setUserId(id);
+          sessionStorage.setItem('userId', id);
         })
         .catch((error) => {
           console.error('An error occurred parsing the response:', error);
@@ -30,15 +38,20 @@ function App() {
   }, [nylas]);
 
   useEffect(() => {
-    if (userId.length) {
+    if (userId?.length) {
       window.history.replaceState({}, '', `/?userId=${userId}`);
     } else {
       window.history.replaceState({}, '', '/');
     }
   }, [userId]);
 
+  const disconnectUser = () => {
+    sessionStorage.removeItem('userId');
+    setUserId('');
+  };
+
   return (
-    <Layout showMenu={!!userId}>
+    <Layout showMenu={!!userId} disconnectUser={disconnectUser}>
       {!userId ? (
         <NylasLogin />
       ) : (

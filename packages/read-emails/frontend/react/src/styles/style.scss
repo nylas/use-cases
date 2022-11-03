@@ -26,13 +26,14 @@ button {
   height: 100vh;
   background-color: $color-blue-900;
   color: $color-white;
-  padding: 3rem 8rem;
+  padding: 1rem;
 
   display: flex;
   flex-flow: column;
   justify-content: space-between;
   align-items: flex-start;
   gap: 2rem;
+
   .title-menu {
     width: 100%;
     display: flex;
@@ -55,7 +56,7 @@ button {
         background-color: transparent;
         color: $color-white;
         border-radius: 0.5rem;
-        padding: $spacing-8 $spacing-16;
+        padding: $spacing-8;
         font-weight: 500;
         font-size: $fs-14;
         line-height: 1.5;
@@ -93,7 +94,7 @@ section.login form {
   gap: $spacing-24;
 
   input {
-    width: 320px;
+    width: 100%;
     outline: none;
     border: 1px solid $color-grey-400;
     color: $color-grey-900;
@@ -105,10 +106,10 @@ section.login form {
   }
 
   button {
+    width: 100%;
     font-size: $fs-16;
     font-weight: 500;
     line-height: 1.5;
-    width: 320px;
     color: $color-white;
     background-color: $color-blue-500;
 
@@ -119,6 +120,29 @@ section.login form {
     &[disabled] {
       background-color: $color-blue-700;
       cursor: default;
+    }
+  }
+}
+
+@media #{$desktop} {
+  .layout {
+    padding: 3rem 8rem;
+
+    .title-menu {
+      .menu {
+        button {
+          padding: $spacing-8 $spacing-16;
+        }
+      }
+    }
+  }
+
+  section.login form {
+    input {
+      max-width: 320px;
+    }
+    button {
+      max-width: 320px;
     }
   }
 }
