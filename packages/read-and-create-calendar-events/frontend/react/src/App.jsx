@@ -39,8 +39,13 @@ function App() {
     }
   }, [userId]);
 
+  const disconnectUser = () => {
+    sessionStorage.removeItem('userId');
+    setUserId('');
+  };
+
   return (
-    <Layout showMenu={!!userId}>
+    <Layout showMenu={!!userId} disconnectUser={disconnectUser}>
       {!userId ? <NylasLogin /> : <CalendarClient userId={userId} />}
     </Layout>
   );
