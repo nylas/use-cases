@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNylas } from '@nylas/nylas-react';
-import EmailList from './EmailList';
 import NylasLogin from './NylasLogin';
 import Layout from './components/Layout';
+import Email from './Email';
 
 function App() {
   const nylas = useNylas();
@@ -55,7 +55,9 @@ function App() {
       {!userId ? (
         <NylasLogin />
       ) : (
-        <EmailList serverBaseUrl={SERVER_URI} userId={userId} />
+        <div className="app-card">
+          <Email serverBaseUrl={SERVER_URI} userId={userId} />
+        </div>
       )}
     </Layout>
   );
