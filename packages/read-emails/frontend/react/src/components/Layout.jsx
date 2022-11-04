@@ -34,7 +34,7 @@ const Layout = ({ children, showMenu = false, disconnectUser, refresh }) => {
             <button onClick={handleDisconnect} disabled={isDisconnecting}>
               <img src={IconLogout} alt="Logout" height="16" />
               <span className="hidden-mobile">
-                {isDisconnecting ? 'Disconnect...' : 'Disconnect account'}
+                {isDisconnecting ? 'Disconnecting...' : 'Disconnect account'}
               </span>
             </button>
           </div>
