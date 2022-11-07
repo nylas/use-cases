@@ -26,19 +26,36 @@
   }
 
   .event-list-container {
-    // overflow-x: hidden;
-    overflow-y: auto;
+    height: 100%;
     width: 100%;
+    padding: $spacing-12 0px $spacing-24;
 
     ul.event-list {
       width: 100%;
       height: 100%;
       overflow-y: scroll;
-      padding: 0 $spacing-32 0 0;
+      padding: 0 $spacing-12 0 0;
       box-sizing: content-box;
       display: flex;
       flex-flow: column;
       gap: $spacing-8;
+
+      scrollbar-face-color: #d9d9d9; /* Firefox 63 compatibility */
+      scrollbar-track-color: transparent; /* Firefox 63 compatibility */
+      scrollbar-color: #d9d9d9 transparent;
+
+      &::-webkit-scrollbar {
+        background: transparent;
+      }
+      &::-webkit-scrollbar-track {
+        margin: -1px 0px;
+      }
+      &::-webkit-scrollbar-thumb {
+        background-color: #d9d9d9;
+        border: 3px solid transparent;
+        border-radius: 8px;
+        background-clip: content-box;
+      }
     }
 
     li.event-preview-container {
