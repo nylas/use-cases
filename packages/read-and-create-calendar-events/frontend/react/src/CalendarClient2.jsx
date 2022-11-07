@@ -58,45 +58,12 @@ function CalendarClient({ userId }) {
       </div>
       <div className="mobile-warning hidden-desktop">
         <h2>
-          Email sample app is currently designed for a desktop experience.
+          Calendar sample app is currently designed for a desktop experience.
         </h2>
         <p>
           Visit Nylas dashboard for more use-cases: https://dashboard.nylas.com
         </p>
       </div>
-      {/* <CreateEventForm
-          userId={userId}
-          serverBaseUrl={serverBaseUrl}
-          calendarId={primaryCalendar?.id}
-        /> */}
-      {/* <div className="mobile-warning hidden-desktop">
-          <h2>
-            Calendar sample app is currently designed for a desktop experience.
-          </h2>
-          <p>
-            Vist Nylas dashboard for more use-cases: https://dashboard.nylas.com
-          </p>
-        </div> */}
-      {/* </div> */}
-
-      {/* <section style={styles.CalendarClient.statusBar}>
-        <p style={styles.CalendarClient.statusBarText}>
-          ✨ Connected to Nylas!
-        </p>
-      </section> */}
-      {/* <section style={styles.CalendarClient.contentContainer}> */}
-      {/* <Agenda
-        primaryCalendar={primaryCalendar}
-        serverBaseUrl={serverBaseUrl}
-        userId={userId}
-        calendarId={primaryCalendar?.id}
-      /> */}
-      {/* <CreateEventForm
-        userId={userId}
-        serverBaseUrl={serverBaseUrl}
-        calendarId={primaryCalendar?.id}
-      /> */}
-      {/* </section> */}
     </>
   );
 }

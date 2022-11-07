@@ -6,14 +6,17 @@ import {
   getSevenDaysFromTodayDateTimestamp,
   getTodaysDateTimestamp,
 } from './utils/date';
-// import CalendarEventDate from './CalendarEventDate';
+import EventPreview from './EventPreview';
 
 function EventList({ serverBaseUrl, userId, calendarId, primaryCalendar }) {
   const [calendarEvents, setCalendarEvents] = useState([]);
 
+  let loading = true;
+
   useEffect(() => {
     const getCalendarEvents = async () => {
       if (calendarId) {
+        loading = true;
         try {
           const startsAfter = getTodaysDateTimestamp(); // today
           const endsBefore = getSevenDaysFromTodayDateTimestamp(); // 7 days from today
@@ -50,47 +53,69 @@ function EventList({ serverBaseUrl, userId, calendarId, primaryCalendar }) {
         } catch (err) {
           console.warn(`Error reading calendar events:`, err);
         }
+        loading = false;
       }
     };
 
     getCalendarEvents();
   }, [serverBaseUrl, userId, calendarId]);
 
-  console.log({ primaryCalendar });
+  console.log({ primaryCalendar }); // TODO: delete
+
+  const handleEventSelect = (calendarEvent) => {
+    alert(calendarEvent + ' selected!');
+  };
 
   return (
     <div className="email-list-view">
       <section>
-        <p className="title">Agenda for {primaryCalendar?.name}</p>
+        <p className="title">Upcoming events</p>
+        {/* <p className="title">Agenda for {primaryCalendar?.name}</p> */}
       </section>
-      <section>
-        {/* <section style={styles.Agenda.container}> */}
-        {/* <h2 style={styles.Agenda.header}>Agenda for {primaryCalendar?.name}</h2> */}
-
-        <div>
-          {/* <div style={styles.Agenda.eventsContainer}> */}
-          {calendarEvents.map((calendarEvent) => (
-            <article key={calendarEvent.title}>
-              {/* <article key={calendarEvent.title} style={styles.Agenda.event}> */}
-              <div>
-                {/* <div style={styles.Agenda.eventDate}> */}
-                {/* <CalendarEventDate when={calendarEvent.when} /> */}
-                <p>test</p>
+      <section className="email-list-container">
+        {calendarEvents.length === 0 ? (
+          <p>{loading ? 'Loading events.' : 'No events scheduled.'}</p> // TODO: not sure about this.
+        ) : (
+          <ul className="email-list">
+            {calendarEvents.map((calendarEvent) => (
+              <div
+                key={calendarEvent.id}
+                onClick={() => handleEventSelect(calendarEvent.id)}
+              >
+                <EventPreview calendarEvent={calendarEvent} />
               </div>
-              {/* <h2 style={styles.Agenda.eventTitle}>{calendarEvent.title}</h2>
-            <div
-              style={styles.Agenda.eventContent}
-              dangerouslySetInnerHTML={{
-                __html: calendarEvent.description,
-              }}
-            /> */}
-            </article>
-          ))}
-        </div>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   );
 }
+
+//   {/* <section style={styles.Agenda.container}> */}
+//   {/* <h2 style={styles.Agenda.header}>Agenda for {primaryCalendar?.name}</h2> */}
+
+//   {/* <div> */}
+//     {/* <div style={styles.Agenda.eventsContainer}> */}
+//     {calendarEvents.map((calendarEvent) => (
+//       <article key={calendarEvent.title}>
+//         {/* <article key={calendarEvent.title} style={styles.Agenda.event}> */}
+//         <div>
+//           {/* <div style={styles.Agenda.eventDate}> */}
+//           {/* <CalendarEventDate when={calendarEvent.when} /> */}
+//           <p>test</p>
+//         </div>
+//         {/* <h2 style={styles.Agenda.eventTitle}>{calendarEvent.title}</h2>
+//       <div
+//         style={styles.Agenda.eventContent}
+//         dangerouslySetInnerHTML={{
+//           __html: calendarEvent.description,
+//         }}
+//       /> */}
+//       {/* </article> */}
+//     {/* // ))} */}
+//   {/* </div> */}
+// {/* </section> */}
 
 EventList.propTypes = {
   serverBaseUrl: PropTypes.string.isRequired,
