@@ -42,7 +42,7 @@ function EmailApp({ serverBaseUrl, userId, userEmail }) {
           Email sample app is currently designed for a desktop experience.
         </h2>
         <p>
-          Vist Nylas dashboard for more use-cases: https://dashboard.nylas.com
+          Visit Nylas dashboard for more use-cases: https://dashboard.nylas.com
         </p>
       </div>
     </>
