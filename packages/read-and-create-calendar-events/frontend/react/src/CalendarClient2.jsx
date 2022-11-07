@@ -55,6 +55,10 @@ function CalendarClient({ userId }) {
           userId={userId}
           calendarId={primaryCalendar?.id}
         />
+        <div className="email-detail-view">
+          <h3>Event Details</h3>
+          <span>Placeholder</span>
+        </div>
       </div>
       <div className="mobile-warning hidden-desktop">
         <h2>
