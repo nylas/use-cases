@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNylas } from '@nylas/nylas-react';
-import CalendarClient from './CalendarClient';
+import CalendarClient from './CalendarClient2';
 import NylasLogin from './NylasLogin';
 import Layout from './components/Layout';
 
@@ -46,7 +46,13 @@ function App() {
 
   return (
     <Layout showMenu={!!userId} disconnectUser={disconnectUser}>
-      {!userId ? <NylasLogin /> : <CalendarClient userId={userId} />}
+      {!userId ? (
+        <NylasLogin />
+      ) : (
+        <div className="app-card">
+          <CalendarClient userId={userId} />
+        </div>
+      )}
     </Layout>
   );
 }

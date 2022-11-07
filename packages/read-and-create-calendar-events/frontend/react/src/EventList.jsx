@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
-import { styles } from './styles';
+import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import './styles/calendar.scss';
+// import { styles } from './styles';
 import {
   getSevenDaysFromTodayDateTimestamp,
   getTodaysDateTimestamp,
 } from './utils/date';
-import CalendarEventDate from './CalendarEventDate';
+// import CalendarEventDate from './CalendarEventDate';
 
-function Agenda({ serverBaseUrl, userId, calendarId, primaryCalendar }) {
+function EventList({ serverBaseUrl, userId, calendarId, primaryCalendar }) {
   const [calendarEvents, setCalendarEvents] = useState([]);
 
   useEffect(() => {
@@ -54,27 +56,47 @@ function Agenda({ serverBaseUrl, userId, calendarId, primaryCalendar }) {
     getCalendarEvents();
   }, [serverBaseUrl, userId, calendarId]);
 
+  console.log({ primaryCalendar });
+
   return (
-    <section style={styles.Agenda.container}>
-      <h2 style={styles.Agenda.header}>Agenda for {primaryCalendar?.name}</h2>
-      <div style={styles.Agenda.eventsContainer}>
-        {calendarEvents.map((calendarEvent) => (
-          <article key={calendarEvent.title} style={styles.Agenda.event}>
-            <div style={styles.Agenda.eventDate}>
-              <CalendarEventDate when={calendarEvent.when} />
-            </div>
-            <h2 style={styles.Agenda.eventTitle}>{calendarEvent.title}</h2>
+    <div className="email-list-view">
+      <section>
+        <p className="title">Agenda for {primaryCalendar?.name}</p>
+      </section>
+      <section>
+        {/* <section style={styles.Agenda.container}> */}
+        {/* <h2 style={styles.Agenda.header}>Agenda for {primaryCalendar?.name}</h2> */}
+
+        <div>
+          {/* <div style={styles.Agenda.eventsContainer}> */}
+          {calendarEvents.map((calendarEvent) => (
+            <article key={calendarEvent.title}>
+              {/* <article key={calendarEvent.title} style={styles.Agenda.event}> */}
+              <div>
+                {/* <div style={styles.Agenda.eventDate}> */}
+                {/* <CalendarEventDate when={calendarEvent.when} /> */}
+                <p>test</p>
+              </div>
+              {/* <h2 style={styles.Agenda.eventTitle}>{calendarEvent.title}</h2>
             <div
               style={styles.Agenda.eventContent}
               dangerouslySetInnerHTML={{
                 __html: calendarEvent.description,
               }}
-            />
-          </article>
-        ))}
-      </div>
-    </section>
+            /> */}
+            </article>
+          ))}
+        </div>
+      </section>
+    </div>
   );
 }
 
-export default Agenda;
+EventList.propTypes = {
+  serverBaseUrl: PropTypes.string.isRequired,
+  userId: PropTypes.string.isRequired,
+  calendarId: PropTypes.string.isRequired,
+  primaryCalendar: PropTypes.object.isRequired,
+};
+
+export default EventList;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import Agenda from './Agenda';
+import Agenda from './EventList';
 import CreateEventForm from './CreateEventForm';
 import { styles } from './styles';
 
