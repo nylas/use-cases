@@ -25,8 +25,8 @@ function EmailDetail({ selectedEmail, userEmail }) {
 
     if (selectedEmail?.to?.length) {
       for (let i = 0; i < selectedEmail.to.length; i++) {
-        if (i === 2) {
-          receiverList.push(`+${(selectedEmail.to.length - 2).toString()}`);
+        if (i === 3) {
+          receiverList.push(`+${(selectedEmail.to.length - 3).toString()}`);
           break;
         }
 
