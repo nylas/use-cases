@@ -7,14 +7,19 @@ function EventPreview({ calendarEvent }) {
   return (
     <li className="event-preview-container">
       <div className="event-content">
-        <p className="sender">sender</p>
-        <div className="subject-container">
-          <p className="subject">subject</p>
+        <div className="date">
+          <div className="day">18</div>
+          <div className="month">Aug</div>
         </div>
-        <p className="snippet">snippet</p>
-      </div>
-      <div className="event-info">
-        <div className="time">12:00 AM</div>
+        <div className="summary">
+          <div className="title">Dashboard 3.0 Sync</div>
+          {/* TODO: Handle all day events */}
+          <div className="time">8:00 - 9:00 am</div>
+        </div>
+        {/* <p className="snippet">Dashboard 3.0 Sync</p> */}
+        {/* <div className="event-info">
+        <div className="time">8:00 - 9:00 am</div>
+      </div> */}
       </div>
     </li>
   );

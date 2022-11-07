@@ -20,6 +20,8 @@ function EventList({ serverBaseUrl, userId, calendarId, primaryCalendar }) {
         try {
           const startsAfter = getTodaysDateTimestamp(); // today
           const endsBefore = getSevenDaysFromTodayDateTimestamp(); // 7 days from today
+          console.log('=====');
+          console.log({ startsAfter });
 
           const queryParams = new URLSearchParams({
             limit: 5,
@@ -49,7 +51,7 @@ function EventList({ serverBaseUrl, userId, calendarId, primaryCalendar }) {
 
           console.log('Calendar events:', data);
 
-          setCalendarEvents(data);
+          setCalendarEvents([...data, ...data]);
         } catch (err) {
           console.warn(`Error reading calendar events:`, err);
         }
