@@ -5,15 +5,15 @@ import { displayMeetingTime } from './utils/date';
 
 function EventPreview({ calendarEvent }) {
   return (
-    <li className="email-preview-container">
-      <div className="email-content">
+    <li className="event-preview-container">
+      <div className="event-content">
         <p className="sender">sender</p>
         <div className="subject-container">
           <p className="subject">subject</p>
         </div>
         <p className="snippet">snippet</p>
       </div>
-      <div className="email-info">
+      <div className="event-info">
         <div className="time">12:00 AM</div>
       </div>
     </li>

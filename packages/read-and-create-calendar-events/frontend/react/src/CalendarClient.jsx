@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import Agenda from './EventList';
-import CreateEventForm from './CreateEventForm';
-import { styles } from './styles';
+import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import EventList from './EventList';
+import './styles/calendar.scss';
 
 function CalendarClient({ userId }) {
   const [primaryCalendar, setPrimaryCalendar] = useState(null);
@@ -46,26 +46,32 @@ function CalendarClient({ userId }) {
 
   return (
     <>
-      <section style={styles.CalendarClient.statusBar}>
-        <p style={styles.CalendarClient.statusBarText}>
-          ✨ Connected to Nylas!
-        </p>
-      </section>
-      <section style={styles.CalendarClient.contentContainer}>
-        <Agenda
+      <div className="calendar-app">
+        <EventList
           primaryCalendar={primaryCalendar}
           serverBaseUrl={serverBaseUrl}
           userId={userId}
           calendarId={primaryCalendar?.id}
         />
-        <CreateEventForm
-          userId={userId}
-          serverBaseUrl={serverBaseUrl}
-          calendarId={primaryCalendar?.id}
-        />
-      </section>
+        <div className="event-detail-view">
+          <h3>Event Details</h3>
+          <span>Placeholder</span>
+        </div>
+      </div>
+      <div className="mobile-warning hidden-desktop">
+        <h2>
+          Calendar sample app is currently designed for a desktop experience.
+        </h2>
+        <p>
+          Visit Nylas dashboard for more use-cases: https://dashboard.nylas.com
+        </p>
+      </div>
     </>
   );
 }
+
+CalendarClient.propTypes = {
+  userId: PropTypes.string.isRequired,
+};
 
 export default CalendarClient;

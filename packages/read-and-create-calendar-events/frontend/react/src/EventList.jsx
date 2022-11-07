@@ -67,16 +67,15 @@ function EventList({ serverBaseUrl, userId, calendarId, primaryCalendar }) {
   };
 
   return (
-    <div className="email-list-view">
+    <div className="event-list-view">
       <section>
         <p className="title">Upcoming events</p>
-        {/* <p className="title">Agenda for {primaryCalendar?.name}</p> */}
       </section>
-      <section className="email-list-container">
+      <section className="event-list-container">
         {calendarEvents.length === 0 ? (
-          <p>{loading ? 'Loading events.' : 'No events scheduled.'}</p> // TODO: not sure about this.
+          <p>{loading ? 'Loading events.' : 'No events scheduled.'}</p>
         ) : (
-          <ul className="email-list">
+          <ul className="event-list">
             {calendarEvents.map((calendarEvent) => (
               <div
                 key={calendarEvent.id}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNylas } from '@nylas/nylas-react';
-import CalendarClient from './CalendarClient2';
+import CalendarClient from './CalendarClient';
 import NylasLogin from './NylasLogin';
 import Layout from './components/Layout';
 
