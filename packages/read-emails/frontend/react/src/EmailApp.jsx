@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import EmailList from './EmailList';
+import EmailDetail from './EmailDetail';
 import './styles/email.scss';
 
-function Email({ serverBaseUrl, userId }) {
+function EmailApp({ serverBaseUrl, userId, userEmail }) {
   const [emails, setEmails] = useState([]);
-  const [selectedEmail, setSelectedEmail] = useState('');
+  const [selectedEmail, setSelectedEmail] = useState(null);
 
   useEffect(() => {
     const getEmails = async () => {
@@ -31,19 +32,27 @@ function Email({ serverBaseUrl, userId }) {
   }, [serverBaseUrl, userId]);
 
   return (
-    <div className="email-app">
-      <EmailList emails={emails} setSelectedEmail={setSelectedEmail} />
-      <div className="email-detail-view">
-        <h3>Email Details</h3>
-        <span>{selectedEmail.subject}</span>
+    <>
+      <div className="email-app">
+        <EmailList emails={emails} setSelectedEmail={setSelectedEmail} />
+        <EmailDetail selectedEmail={selectedEmail} userEmail={userEmail} />
       </div>
-    </div>
+      <div className="mobile-warning hidden-desktop">
+        <h2>
+          Email sample app is currently designed for a desktop experience.
+        </h2>
+        <p>
+          Visit Nylas dashboard for more use-cases: https://dashboard.nylas.com
+        </p>
+      </div>
+    </>
   );
 }
 
-Email.propTypes = {
+EmailApp.propTypes = {
   serverBaseUrl: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired,
+  userEmail: PropTypes.string.isRequired,
 };
 
-export default Email;
+export default EmailApp;
