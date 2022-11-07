@@ -7,7 +7,9 @@ import EmailApp from './EmailApp';
 function App() {
   const nylas = useNylas();
   const [userId, setUserId] = useState('');
-  const [email, setEmail] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [emails, setEmails] = useState([]);
   const SERVER_URI = import.meta.env.VITE_SERVER_URI || 'http://localhost:9000';
 
   useEffect(() => {
@@ -17,7 +19,7 @@ function App() {
       setUserId(userIdString);
     }
     if (userEmail) {
-      setEmail(userEmail);
+      setUserEmail(userEmail);
     }
   }, []);
 
@@ -45,28 +47,58 @@ function App() {
   useEffect(() => {
     if (userId?.length) {
       window.history.replaceState({}, '', `/?userId=${userId}`);
+      getEmails();
     } else {
       window.history.replaceState({}, '', '/');
     }
   }, [userId]);
 
+  const getEmails = async () => {
+    setIsLoading(true);
+    try {
+      const url = SERVER_URI + '/nylas/read-emails';
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Authorization: userId,
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await res.json();
+      setEmails(data);
+    } catch (e) {
+      console.warn(`Error retrieving emails:`, e);
+      return false;
+    }
+    setIsLoading(false);
+  };
+
   const disconnectUser = () => {
     sessionStorage.removeItem('userId');
     sessionStorage.removeItem('userEmail');
     setUserId('');
-    setEmail('');
+    setUserEmail('');
+  };
+
+  const refresh = () => {
+    getEmails();
   };
 
   return (
-    <Layout showMenu={!!userId} disconnectUser={disconnectUser}>
+    <Layout
+      showMenu={!!userId}
+      disconnectUser={disconnectUser}
+      refresh={refresh}
+      isLoading={isLoading}
+    >
       {!userId ? (
-        <NylasLogin email={email} setEmail={setEmail} />
+        <NylasLogin email={userEmail} setEmail={setUserEmail} />
       ) : (
         <div className="app-card">
           <EmailApp
-            serverBaseUrl={SERVER_URI}
-            userId={userId}
-            userEmail={email}
+            userEmail={userEmail}
+            emails={emails}
+            isLoading={isLoading}
           />
         </div>
       )}
