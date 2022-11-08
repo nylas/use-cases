@@ -96,8 +96,15 @@
       justify-content: space-between;
       gap: $spacing-16;
       transition: all 200ms ease-out;
+      box-sizing: border-box;
+      border: 2px solid transparent;
 
       &:hover {
+        border: 2px solid $color-blue-500;
+      }
+
+      &.active {
+        // &:hover {
         background-color: $color-blue-500;
         * {
           color: $color-white !important;
@@ -106,7 +113,19 @@
         .event-content .summary {
           border-left-color: $color-white;
         }
+        // }
       }
+
+      // &:hover {
+      //   background-color: $color-blue-500;
+      //   * {
+      //     color: $color-white !important;
+      //   }
+
+      //   .event-content .summary {
+      //     border-left-color: $color-white;
+      //   }
+      // }
 
       .event-content {
         // border: 1px solid red;

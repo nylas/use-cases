@@ -3,11 +3,12 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { displayMeetingTime, getEventDate } from './utils/date';
 
-function EventPreview({ calendarEvent }) {
+function EventPreview({ calendarEvent, selectedEvent }) {
   const eventDate = getEventDate(calendarEvent);
+  const isActiveEvent = calendarEvent.id === selectedEvent?.id;
 
   return (
-    <li className="event-preview-container">
+    <li className={`event-preview-container${isActiveEvent ? ' active' : ''}`}>
       <div className="event-content">
         <div className="date">
           <div className="day">{eventDate.getDate()}</div>
@@ -56,6 +57,7 @@ function EventPreview({ calendarEvent }) {
 
 EventPreview.propTypes = {
   calendarEvent: PropTypes.object.isRequired,
+  selectedEvent: PropTypes.object.isRequired,
 };
 
 export default EventPreview;

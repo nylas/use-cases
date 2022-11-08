@@ -7,8 +7,9 @@ import {
 } from './utils/date';
 import EventPreview from './EventPreview';
 
-function EventList({ serverBaseUrl, userId, calendarId, primaryCalendar }) {
+function EventList({ serverBaseUrl, userId, calendarId }) {
   const [calendarEvents, setCalendarEvents] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState({});
   const [showTopScrollShadow, setShowTopScrollShadow] = useState(false);
   const [showBottomScrollShadow, setShowBottomScrollShadow] = useState(false);
 
@@ -17,8 +18,8 @@ function EventList({ serverBaseUrl, userId, calendarId, primaryCalendar }) {
   useEffect(() => {
     const getCalendarEvents = async () => {
       if (calendarId) {
-        // setLoading(true);
         loading = true;
+
         try {
           const startsAfter = getTodaysDateTimestamp(); // today
           const endsBefore = getSevenDaysFromTodayDateTimestamp(); // 7 days from today
@@ -49,8 +50,6 @@ function EventList({ serverBaseUrl, userId, calendarId, primaryCalendar }) {
 
           const data = await res.json();
 
-          console.log('Calendar events:', data);
-
           setCalendarEvents(data);
 
           loading = false;
@@ -72,7 +71,9 @@ function EventList({ serverBaseUrl, userId, calendarId, primaryCalendar }) {
   }, [calendarEvents]);
 
   const handleEventSelect = (calendarEvent) => {
-    alert(calendarEvent + ' selected!');
+    // alert(calendarEvent + ' selected!');
+    setSelectedEvent(calendarEvent);
+    console.log({ selectedEvent });
   };
 
   const handleScrollShadows = (event) => {
@@ -100,9 +101,12 @@ function EventList({ serverBaseUrl, userId, calendarId, primaryCalendar }) {
             {calendarEvents.map((calendarEvent) => (
               <div
                 key={calendarEvent.id}
-                onClick={() => handleEventSelect(calendarEvent.id)}
+                onClick={() => handleEventSelect(calendarEvent)}
               >
-                <EventPreview calendarEvent={calendarEvent} />
+                <EventPreview
+                  calendarEvent={calendarEvent}
+                  selectedEvent={selectedEvent}
+                />
               </div>
             ))}
           </ul>
@@ -113,36 +117,10 @@ function EventList({ serverBaseUrl, userId, calendarId, primaryCalendar }) {
   );
 }
 
-//   {/* <section style={styles.Agenda.container}> */}
-//   {/* <h2 style={styles.Agenda.header}>Agenda for {primaryCalendar?.name}</h2> */}
-
-//   {/* <div> */}
-//     {/* <div style={styles.Agenda.eventsContainer}> */}
-//     {calendarEvents.map((calendarEvent) => (
-//       <article key={calendarEvent.title}>
-//         {/* <article key={calendarEvent.title} style={styles.Agenda.event}> */}
-//         <div>
-//           {/* <div style={styles.Agenda.eventDate}> */}
-//           {/* <CalendarEventDate when={calendarEvent.when} /> */}
-//           <p>test</p>
-//         </div>
-//         {/* <h2 style={styles.Agenda.eventTitle}>{calendarEvent.title}</h2>
-//       <div
-//         style={styles.Agenda.eventContent}
-//         dangerouslySetInnerHTML={{
-//           __html: calendarEvent.description,
-//         }}
-//       /> */}
-//       {/* </article> */}
-//     {/* // ))} */}
-//   {/* </div> */}
-// {/* </section> */}
-
 EventList.propTypes = {
   serverBaseUrl: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired,
   calendarId: PropTypes.string.isRequired,
-  primaryCalendar: PropTypes.object.isRequired,
 };
 
 export default EventList;
