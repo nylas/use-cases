@@ -91,6 +91,25 @@ app.get('/nylas/read-emails', async (req, res) => {
   return res.json(messages);
 });
 
+// Add route for download file
+app.get('/nylas/file', async (req, res) => {
+  if (!req.headers.authorization) {
+    return res.json('Unauthorized');
+  }
+
+  const user = await mockDb.findUser(req.headers.authorization);
+  if (!user) {
+    return res.json('Unauthorized');
+  }
+
+  const { id } = req.query;
+  const file = await nylasClient.with(user.accessToken).files.find(id);
+
+  // Files will be returned as a binary object
+  const fileData = await file.download();
+  return res.json(fileData?.body);
+});
+
 // Before we start our backend, we should whitelist our frontend
 // as a redirect URI to ensure the auth completes
 nylasClient

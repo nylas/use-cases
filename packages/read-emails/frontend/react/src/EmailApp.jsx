@@ -4,7 +4,7 @@ import EmailList from './EmailList';
 import EmailDetail from './EmailDetail';
 import './styles/email.scss';
 
-function EmailApp({ userEmail, emails, isLoading }) {
+function EmailApp({ userEmail, emails, isLoading, serverBaseUrl, userId }) {
   const [selectedEmail, setSelectedEmail] = useState(null);
 
   useEffect(() => {
@@ -19,7 +19,12 @@ function EmailApp({ userEmail, emails, isLoading }) {
         ) : emails.length ? (
           <>
             <EmailList emails={emails} setSelectedEmail={setSelectedEmail} />
-            <EmailDetail selectedEmail={selectedEmail} userEmail={userEmail} />
+            <EmailDetail
+              selectedEmail={selectedEmail}
+              userEmail={userEmail}
+              serverBaseUrl={serverBaseUrl}
+              userId={userId}
+            />
           </>
         ) : (
           <p className="loading-text">No available email</p>
@@ -41,6 +46,8 @@ EmailApp.propTypes = {
   userEmail: PropTypes.string.isRequired,
   emails: PropTypes.array.isRequired,
   isLoading: PropTypes.bool.isRequired,
+  serverBaseUrl: PropTypes.string.isRequired,
+  userId: PropTypes.string.isRequired,
 };
 
 export default EmailApp;

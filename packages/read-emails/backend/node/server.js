@@ -1,4 +1,5 @@
 const dotenv = require('dotenv');
+const url = require('url');
 const mockDb = require('./utils/mock-db');
 const { mockServer, getReqBody } = require('./utils/mock-server');
 
@@ -91,6 +92,26 @@ mockServer.get('/nylas/read-emails', async (req, res) => {
     .messages.list({ limit: 5 });
 
   return res.writeHead(200).end(JSON.stringify(messages));
+});
+
+// Add route for download file
+mockServer.get('/nylas/file', async (req, res) => {
+  if (!req.headers.authorization) {
+    return res.writeHead(401).end('Unauthorized');
+  }
+
+  const user = await mockDb.findUser(req.headers.authorization);
+  if (!user) {
+    return res.writeHead(401).end('Unauthorized');
+  }
+
+  const { id } = url.parse(req.url, true).query;
+  const file = await nylasClient.with(user.accessToken).files.find(id);
+
+  // Files will be returned as a binary object
+  const fileData = await file.download();
+
+  return res.writeHead(200).end(JSON.stringify(fileData?.body));
 });
 
 // Start the Nylas webhook

@@ -6,7 +6,7 @@ import AttachmentIcon from './components/icons/icon-attachment.svg';
 import { formatPreviewDate } from './utils/date.js';
 import { cleanEmailBody } from './utils/email.js';
 
-function EmailDetail({ selectedEmail, userEmail }) {
+function EmailDetail({ selectedEmail, userEmail, serverBaseUrl, userId }) {
   const [emailSender, setEmailSender] = useState('');
   const [emailReceivers, setEmailReceivers] = useState('');
   const [showParticipants, setShowParticipants] = useState(false);
@@ -52,6 +52,38 @@ function EmailDetail({ selectedEmail, userEmail }) {
     receiversStr = receiverList.join(', ');
     setEmailReceivers(receiversStr);
   };
+
+  const downloadAttachment = async (file) => {
+    try {
+      const queryParams = new URLSearchParams({ id: file.id });
+      const url = `${serverBaseUrl}/nylas/file?${queryParams.toString()}`;
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Authorization: userId,
+          'Content-Type': 'application/json',
+        },
+      });
+      const fileBuffer = await res.json();
+      if (fileBuffer) downloadAttachedFile(fileBuffer, file);
+    } catch (e) {
+      console.warn(`Error retrieving emails:`, e);
+      return false;
+    }
+  };
+
+  function downloadAttachedFile(fileBuffer, file) {
+    const buffer = Uint8Array.from(fileBuffer.data);
+    const blob = new Blob([buffer], { type: file.content_type });
+    const blobFile = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = blobFile;
+    a.download = file.filename ?? file.id;
+    a.target = '_blank';
+    a.click();
+    a.remove();
+  }
 
   return (
     <div className="email-detail-view">
@@ -149,7 +181,11 @@ function EmailDetail({ selectedEmail, userEmail }) {
 
                 <div className="attachment-files">
                   {attachments.map((f) => (
-                    <div className="attachment" key={f.id}>
+                    <div
+                      className="attachment"
+                      key={f.id}
+                      onClick={() => downloadAttachment(f)}
+                    >
                       <img
                         src={AttachmentIcon}
                         alt="attachment icon"
@@ -176,6 +212,8 @@ function EmailDetail({ selectedEmail, userEmail }) {
 EmailDetail.propTypes = {
   selectedEmail: PropTypes.object,
   userEmail: PropTypes.string.isRequired,
+  serverBaseUrl: PropTypes.string.isRequired,
+  userId: PropTypes.string.isRequired,
 };
 
 export default EmailDetail;
