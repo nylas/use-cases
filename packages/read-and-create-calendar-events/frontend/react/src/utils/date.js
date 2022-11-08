@@ -68,13 +68,13 @@ export const getEventDate = (calendarEvent) => {
   );
 };
 
-export const getFormattedEventDetails = (event) => {
-  const space = `\u00a0`;
+export const getFormattedDate = (event) => {
   const date = getEventDate(event);
   const month = date.toLocaleString('en-US', { month: 'long' });
   const day = date.getDate();
-  const time =
-    event.when.object === 'date' ? 'all day' : displayMeetingTime(event.when);
-  const timezone = DateTime.local().toFormat('ZZZZ');
-  return `${month} ${day} ${space}· ${space} ${time} (${timezone}) ${space}·${space} ${event.location}`;
+  return `${month} ${day}`;
+};
+
+export const getTimezoneCode = () => {
+  return DateTime.local().toFormat('ZZZZ');
 };

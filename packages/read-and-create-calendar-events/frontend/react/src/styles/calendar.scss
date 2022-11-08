@@ -9,6 +9,12 @@
   color: $color-grey-900;
 }
 
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .event-list-view {
   flex: 1 0;
   height: 100%;
@@ -18,6 +24,7 @@
   flex-flow: column;
   gap: $spacing-8;
   background-color: $color-white;
+  padding-top: $spacing-4;
 
   .event-header {
     margin-right: $spacing-28;
@@ -147,9 +154,6 @@
 
           .title {
             @include font-style('Heading M');
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
           }
 
           .time {
@@ -168,14 +172,6 @@
           font-weight: 600;
           font-size: $fs-14;
           line-height: 1.5;
-        }
-        .snippet {
-          font-weight: 400;
-          font-size: $fs-14;
-          line-height: 1.5;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
         }
         .subject-container {
           display: flex;
@@ -207,14 +203,39 @@
     gap: $spacing-8;
     width: 100%;
     height: 100%;
-  }
+    // min-height: 0;
 
-  h3.title {
-    margin-top: $spacing-32;
-    color: $color-grey-900;
-    font-weight: 600;
-    font-size: $fs-16;
-    line-height: 1.5;
+    .title {
+      @include font-style('Heading L');
+      // overflow: hidden;
+      // width: 100%;
+      // // height: 30px;
+      // background-color: pink;
+      // overflow: hidden;
+      // // display: block;
+      // text-overflow: ellipsis;
+      // white-space: nowrap;
+      // text-overflow: ellipsis;
+      // white-space: nowrap;
+      // margin-top: $spacing-32;
+      // color: $color-grey-900;
+    }
+
+    .event-details {
+      // background-color: pink;
+      display: flex;
+
+      p,
+      span {
+        @include font-style('Body L');
+
+        &.location {
+          flex: 1;
+          // white-space: nowrap;
+          // overflow: hidden;
+        }
+      }
+    }
   }
 
   .label-container {

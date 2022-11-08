@@ -93,7 +93,6 @@ $desktop: '(min-width: 960px)';
 @mixin font-style($type, $fontSize: 1.88rem) {
   @if $type == 'Heading L' {
     font: Heading L;
-    stylename: Heading L;
     font-family: 'Poppins', sans-serif;
     font-size: $fs-22;
     font-style: normal;

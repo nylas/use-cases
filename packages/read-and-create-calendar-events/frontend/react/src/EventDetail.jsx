@@ -6,14 +6,17 @@ import CalendarIllustration from './components/icons/illustration-calendar.svg';
 // import { cleanEmailBody } from './utils/email.js';
 import {
   displayMeetingTime,
-  getEventDate,
-  getFormattedEventDetails,
+  // getEventDate,
+  // getFormattedEventDetails,
+  getFormattedDate,
+  getTimezoneCode,
 } from './utils/date';
 
 import {
   getOrganizerString,
   getParticipantsString,
   cleanDescription,
+  dividerBullet,
 } from './utils/calendar';
 
 function EventDetail({ selectedEvent }) {
@@ -57,12 +60,32 @@ function EventDetail({ selectedEvent }) {
     <div className="event-detail-view">
       {selectedEvent ? (
         <div className="selected">
-          <h3 className="title">{selectedEvent.title}</h3>
-          <h3 className="title">{getFormattedEventDetails(selectedEvent)}</h3>
-          <h3 className="title">
+          {/* TODO: Change element type? */}
+          <div className="title">{selectedEvent.title}</div>
+          {/* <p className="event-detail">
+            {getFormattedEventDetails(selectedEvent)}
+          </p> */}
+          <div className="event-details">
+            <span className="event-detail">
+              {getFormattedDate(selectedEvent)}
+            </span>
+            {dividerBullet}
+            <span>
+              {selectedEvent.when.object === 'date'
+                ? 'all day'
+                : displayMeetingTime(selectedEvent.when)}
+              {` (${getTimezoneCode()})`}
+            </span>
+            {dividerBullet}
+            <span className="location truncate">{selectedEvent.location}</span>
+          </div>
+
+          <p className="event-details">
             Organized by {getOrganizerString(selectedEvent)}
-          </h3>
-          <h3 className="title">{getParticipantsString(selectedEvent)}</h3>
+          </p>
+          <p className="event-details">
+            {getParticipantsString(selectedEvent)}
+          </p>
           <p
             dangerouslySetInnerHTML={{
               __html: cleanDescription(selectedEvent.description),

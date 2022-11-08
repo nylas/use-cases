@@ -139,7 +139,7 @@ function EventList({
 EventList.propTypes = {
   serverBaseUrl: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired,
-  calendarId: PropTypes.string.isRequired,
+  calendarId: PropTypes.string,
   setSelectedEvent: PropTypes.func,
   selectedEvent: PropTypes.object,
 };

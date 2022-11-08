@@ -19,3 +19,5 @@ export const cleanDescription = (description) => {
   });
   return cleanedDescription;
 };
+
+export const dividerBullet = `\u00a0 · \u00a0`;
