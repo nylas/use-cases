@@ -46,6 +46,7 @@ function EventDetail({ selectedEvent }) {
     <div className="event-detail-view">
       {selectedEvent ? (
         <div className="selected">
+<<<<<<< HEAD
           <div className="details">
             <div className="event-detail">
               <span className="title truncate">{selectedEvent.title}</span>
@@ -111,6 +112,49 @@ function EventDetail({ selectedEvent }) {
               }`}
             ></div>
           </div>
+=======
+          <div className="event-detail">
+            <span className="title truncate">{selectedEvent.title}</span>
+          </div>
+          <div className="event-detail">
+            <span>{getFormattedDate(selectedEvent)}</span>
+            {dividerBullet}
+            <span>
+              {selectedEvent.when.object === 'date'
+                ? 'all day'
+                : displayMeetingTime(selectedEvent.when)}
+              {` (${getTimezoneCode()})`}
+            </span>
+            {dividerBullet}
+            <span className="location truncate">
+              {isValidUrl(selectedEvent.location) ? (
+                <a
+                  href={selectedEvent.location}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  {selectedEvent.location}
+                </a>
+              ) : (
+                selectedEvent.location
+              )}
+            </span>
+          </div>
+
+          <div className="event-detail">
+            <p className="truncate">
+              Organized by {getOrganizerString(selectedEvent)}
+            </p>
+          </div>
+          <p className="event-details">
+            {getParticipantsString(selectedEvent)}
+          </p>
+          <p
+            dangerouslySetInnerHTML={{
+              __html: cleanDescription(selectedEvent.description),
+            }}
+          ></p>
+>>>>>>> c810cd9 (truncate event details)
         </div>
       ) : (
         <div className="empty-event">

@@ -213,7 +213,40 @@ a {
     align-items: flex-start;
     height: 100%;
 
+<<<<<<< HEAD
     .details {
+=======
+    // .title {
+    //   display: flex;
+    //   background-color: pink;
+
+    //   // overflow: hidden;
+    //   // width: 100%;
+    //   // // height: 30px;
+    //   // background-color: pink;
+    //   // overflow: hidden;
+    //   // // display: block;
+    //   // text-overflow: ellipsis;
+    //   // white-space: nowrap;
+    //   // text-overflow: ellipsis;
+    //   // white-space: nowrap;
+    //   // margin-top: $spacing-32;
+    //   // color: $color-grey-900;
+    // }
+
+    .title {
+      // span.title {
+      @include font-style('Heading L');
+      width: 100%;
+      background-color: pink;
+      // flex: 1;
+      // }
+    }
+
+    .event-detail {
+      // background-color: pink;
+      width: 100%;
+>>>>>>> c810cd9 (truncate event details)
       display: flex;
       flex-flow: column;
       justify-content: flex-start;
@@ -227,6 +260,7 @@ a {
         width: 100%;
         display: flex;
 
+<<<<<<< HEAD
         p,
         span {
           @include font-style('Body L');
@@ -239,6 +273,20 @@ a {
             @include font-style('Heading L');
             flex: 1;
           }
+=======
+        &.location {
+          flex: 1;
+
+          // white-space: nowrap;
+          // overflow: hidden;
+>>>>>>> c810cd9 (truncate event details)
+        }
+
+        &.title {
+          // span.title {
+          @include font-style('Heading L');
+          flex: 1;
+          // }
         }
       }
     }
