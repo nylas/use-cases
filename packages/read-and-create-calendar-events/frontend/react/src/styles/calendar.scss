@@ -248,6 +248,15 @@ a {
           // }
         }
       }
+
+      &:last-of-type {
+        border-bottom: 1px solid $color-grey-400;
+        padding-bottom: $spacing-24;
+      }
+    }
+
+    .description-header {
+      @include font-style('Strong L');
     }
 
     .description-container {
