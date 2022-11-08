@@ -4,13 +4,21 @@ import PropTypes from 'prop-types';
 import { displayMeetingTime } from './utils/date';
 
 function EventPreview({ calendarEvent }) {
-  console.log(new Date(calendarEvent.when.date).toLocaleDateString());
+  // console.log(new Date(calendarEvent.when.date).toLocaleDateString());
+  const date = new Date(
+    calendarEvent.when.object === 'date'
+      ? calendarEvent.when.date
+      : calendarEvent.when.start_time * 1000
+  );
+  console.log(date.getDate());
   return (
     <li className="event-preview-container">
       <div className="event-content">
         <div className="date">
-          <div className="day">18</div>
-          <div className="month">Aug</div>
+          <div className="day">{date.getDate()}</div>
+          <div className="month">
+            {date.toLocaleString('en-US', { month: 'short' })}
+          </div>
         </div>
         <div className="summary">
           <div className="title">{calendarEvent.title}</div>
