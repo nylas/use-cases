@@ -1,13 +1,22 @@
-export const displayMeetingTime = (timestamp) => {
-  const date = new Date(timestamp * 1000);
+export const displayMeetingTime = (timeframe) => {
+  console.log(timeframe);
+  const [startTime, endTime] = [timeframe.start_time, timeframe.end_time].map(
+    (timestamp) => {
+      return new Date(timestamp * 1000)
+        .toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: true,
+        })
+        .toLowerCase();
+    }
+  );
 
-  return `${date.toLocaleDateString('en-US', {
-    dateStyle: 'medium',
-  })} ${date.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: 'numeric',
-    hour12: true,
-  })}`;
+  return `${
+    startTime.slice(-2) === endTime.slice(-2)
+      ? startTime.slice(0, -3)
+      : startTime
+  } - ${endTime}`;
 };
 
 export const getLocalDateString = (date) => {

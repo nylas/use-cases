@@ -51,8 +51,8 @@ function EventList({ serverBaseUrl, userId, calendarId, primaryCalendar }) {
 
           console.log('Calendar events:', data);
 
-          setCalendarEvents([...data, ...data]);
-          // setCalendarEvents(data);
+          setCalendarEvents(data);
+
           loading = false;
         } catch (err) {
           console.warn(`Error reading calendar events:`, err);

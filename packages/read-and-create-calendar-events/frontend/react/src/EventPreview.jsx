@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { displayMeetingTime } from './utils/date';
 
 function EventPreview({ calendarEvent }) {
+  console.log(new Date(calendarEvent.when.date).toLocaleDateString());
   return (
     <li className="event-preview-container">
       <div className="event-content">
@@ -12,9 +13,13 @@ function EventPreview({ calendarEvent }) {
           <div className="month">Aug</div>
         </div>
         <div className="summary">
-          <div className="title">Dashboard 3.0 Sync</div>
+          <div className="title">{calendarEvent.title}</div>
           {/* TODO: Handle all day events */}
-          <div className="time">8:00 - 9:00 am</div>
+          <div className="time">
+            {calendarEvent.when.object === 'date'
+              ? 'all day'
+              : displayMeetingTime(calendarEvent.when)}
+          </div>
         </div>
         {/* <p className="snippet">Dashboard 3.0 Sync</p> */}
         {/* <div className="event-info">
@@ -47,7 +52,7 @@ function EventPreview({ calendarEvent }) {
   // return null;
 }
 
-EventPreview.PropTypes = {
+EventPreview.propTypes = {
   calendarEvent: PropTypes.object.isRequired,
 };
 
