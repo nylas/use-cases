@@ -18,50 +18,74 @@
   gap: $spacing-8;
   background-color: $color-white;
 
-  .title {
-    color: $color-grey-900;
-    font-weight: 600;
-    font-size: $fs-22;
-    line-height: 1.25;
+  .event-header {
+    margin-right: $spacing-28;
+    padding-bottom: $spacing-28;
+    border-bottom: 1px solid $color-grey-400;
+
+    .title {
+      color: $color-grey-900;
+      font-weight: 600;
+      font-size: $fs-22;
+      line-height: 1.25;
+    }
   }
 
   .event-list-container {
-    height: 100%;
+    flex: 1;
+    overflow-y: scroll;
     width: 100%;
-    padding: $spacing-12 0px $spacing-24;
+    margin-top: $spacing-12;
+
+    scrollbar-face-color: #d9d9d9; /* Firefox 63 compatibility */
+    scrollbar-track-color: transparent; /* Firefox 63 compatibility */
+    scrollbar-color: #d9d9d9 transparent;
+
+    &::-webkit-scrollbar {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-track {
+      margin: -1px 0px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: #d9d9d9;
+      border: 3px solid transparent;
+      border-radius: 8px;
+      background-clip: content-box;
+    }
+
+    .top-scroll-shadow {
+      position: sticky;
+      top: 0;
+      height: 10px;
+      width: calc(100% - #{$spacing-12});
+      -webkit-box-shadow: inset 0 5px 10px -10px #000000;
+      -moz-box-shadow: inset 0 5px 10px -10px #000000;
+      box-shadow: inset 0 5px 10px -10px #000000;
+      z-index: 1;
+    }
+
+    .bottom-scroll-shadow {
+      position: sticky;
+      bottom: 0;
+      height: 10px;
+      width: calc(100% - #{$spacing-12});
+      -webkit-box-shadow: inset 0 -5px 10px -10px #000000;
+      -moz-box-shadow: inset 0 -5px 10px -10px #000000;
+      box-shadow: inset 0 -5px 10px -10px #000000;
+    }
 
     ul.event-list {
-      width: 100%;
-      height: 100%;
-      overflow-y: scroll;
       padding: 0 $spacing-12 0 0;
       box-sizing: content-box;
       display: flex;
       flex-flow: column;
       gap: $spacing-8;
-
-      scrollbar-face-color: #d9d9d9; /* Firefox 63 compatibility */
-      scrollbar-track-color: transparent; /* Firefox 63 compatibility */
-      scrollbar-color: #d9d9d9 transparent;
-
-      &::-webkit-scrollbar {
-        background: transparent;
-      }
-      &::-webkit-scrollbar-track {
-        margin: -1px 0px;
-      }
-      &::-webkit-scrollbar-thumb {
-        background-color: #d9d9d9;
-        border: 3px solid transparent;
-        border-radius: 8px;
-        background-clip: content-box;
-      }
     }
 
     li.event-preview-container {
       position: relative;
       background-color: $color-blue-50;
-      // border: 1.5px solid $color-blue-100;
       border-radius: $spacing-16;
       padding: $spacing-16;
       cursor: pointer;
@@ -74,7 +98,6 @@
 
       &:hover {
         background-color: $color-blue-500;
-        // border: 1.5px solid $color-blue-700;
         * {
           color: $color-white;
         }

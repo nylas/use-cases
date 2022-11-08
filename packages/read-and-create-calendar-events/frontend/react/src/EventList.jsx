@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import './styles/calendar.scss';
-// import { styles } from './styles';
 import {
   getSevenDaysFromTodayDateTimestamp,
   getTodaysDateTimestamp,
@@ -10,18 +9,19 @@ import EventPreview from './EventPreview';
 
 function EventList({ serverBaseUrl, userId, calendarId, primaryCalendar }) {
   const [calendarEvents, setCalendarEvents] = useState([]);
+  const [showTopScrollShadow, setShowTopScrollShadow] = useState(false);
+  const [showBottomScrollShadow, setShowBottomScrollShadow] = useState(false);
 
   let loading = true;
 
   useEffect(() => {
     const getCalendarEvents = async () => {
       if (calendarId) {
+        // setLoading(true);
         loading = true;
         try {
           const startsAfter = getTodaysDateTimestamp(); // today
           const endsBefore = getSevenDaysFromTodayDateTimestamp(); // 7 days from today
-          console.log('=====');
-          console.log({ startsAfter });
 
           const queryParams = new URLSearchParams({
             limit: 5,
@@ -52,28 +52,47 @@ function EventList({ serverBaseUrl, userId, calendarId, primaryCalendar }) {
           console.log('Calendar events:', data);
 
           setCalendarEvents([...data, ...data]);
+          // setCalendarEvents(data);
+          loading = false;
         } catch (err) {
           console.warn(`Error reading calendar events:`, err);
         }
-        loading = false;
       }
     };
 
     getCalendarEvents();
   }, [serverBaseUrl, userId, calendarId]);
 
-  console.log({ primaryCalendar }); // TODO: delete
+  useEffect(() => {
+    const scrollElement = document.querySelector('.event-list-container');
+    const isScrollable =
+      scrollElement.scrollHeight !== scrollElement.clientHeight;
+
+    setShowBottomScrollShadow(isScrollable);
+  }, [calendarEvents]);
 
   const handleEventSelect = (calendarEvent) => {
     alert(calendarEvent + ' selected!');
   };
 
+  const handleScrollShadows = (event) => {
+    const element = event.target;
+
+    const atTop = element.scrollTop < 12;
+    const atBottom =
+      element.clientHeight + element.scrollTop + 12 > element.scrollHeight;
+
+    setShowTopScrollShadow(!atTop);
+    setShowBottomScrollShadow(!atBottom);
+  };
+
   return (
     <div className="event-list-view">
-      <section>
+      <section className="event-header">
         <p className="title">Upcoming events</p>
       </section>
-      <section className="event-list-container">
+      <section className="event-list-container" onScroll={handleScrollShadows}>
+        {showTopScrollShadow && <div className="top-scroll-shadow"></div>}
         {calendarEvents.length === 0 ? (
           <p>{loading ? 'Loading events.' : 'No events scheduled.'}</p>
         ) : (
@@ -88,6 +107,7 @@ function EventList({ serverBaseUrl, userId, calendarId, primaryCalendar }) {
             ))}
           </ul>
         )}
+        {showBottomScrollShadow && <div className="bottom-scroll-shadow"></div>}
       </section>
     </div>
   );
