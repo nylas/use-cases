@@ -68,8 +68,6 @@ export const getEventDate = (calendarEvent) => {
   );
 };
 
-// August 18  ·   8:00 - 9:00 am (Timezone)  ·  Location
-
 export const getFormattedEventDetails = (event) => {
   const space = `\u00a0`;
   const date = getEventDate(event);
@@ -78,6 +76,5 @@ export const getFormattedEventDetails = (event) => {
   const time =
     event.when.object === 'date' ? 'all day' : displayMeetingTime(event.when);
   const timezone = DateTime.local().toFormat('ZZZZ');
-  const location = 'location';
-  return `${month} ${day} ${space}· ${space} ${time} (${timezone}) ${space}·${space} ${location}`;
+  return `${month} ${day} ${space}· ${space} ${time} (${timezone}) ${space}·${space} ${event.location}`;
 };

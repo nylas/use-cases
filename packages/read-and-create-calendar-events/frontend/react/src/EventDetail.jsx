@@ -10,12 +10,19 @@ import {
   getFormattedEventDetails,
 } from './utils/date';
 
+import {
+  getOrganizerString,
+  getParticipantsString,
+  cleanDescription,
+} from './utils/calendar';
+
 function EventDetail({ selectedEvent }) {
   // const eventDate = getEventDate(selectedEvent);
   // function EventDetail({ selectedEmail, userEmail }) {
   // const [emailSender, setEmailSender] = useState('');
   // const [emailReceivers, setEmailReceivers] = useState('');
   // const [showParticipants, setShowParticipants] = useState(false);
+  // const organizer = getOrganizerString(selectedEvent);
 
   // useEffect(() => {
   //   if (selectedEmail?.from?.length) {
@@ -45,8 +52,6 @@ function EventDetail({ selectedEvent }) {
   //   setEmailReceivers(receiversStr);
   // };
 
-  console.log({ selectedEvent });
-  console.log(Intl.DateTimeFormat().resolvedOptions().timeZone);
   // console.log(getFormattedMonthAndDay(eventDate));
   return (
     <div className="event-detail-view">
@@ -54,6 +59,15 @@ function EventDetail({ selectedEvent }) {
         <div className="selected">
           <h3 className="title">{selectedEvent.title}</h3>
           <h3 className="title">{getFormattedEventDetails(selectedEvent)}</h3>
+          <h3 className="title">
+            Organized by {getOrganizerString(selectedEvent)}
+          </h3>
+          <h3 className="title">{getParticipantsString(selectedEvent)}</h3>
+          <p
+            dangerouslySetInnerHTML={{
+              __html: cleanDescription(selectedEvent.description),
+            }}
+          ></p>
         </div>
       ) : (
         // <div className="day">{eventDate.getDate()}</div>
