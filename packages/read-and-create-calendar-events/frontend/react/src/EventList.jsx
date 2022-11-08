@@ -71,9 +71,7 @@ function EventList({ serverBaseUrl, userId, calendarId }) {
   }, [calendarEvents]);
 
   const handleEventSelect = (calendarEvent) => {
-    // alert(calendarEvent + ' selected!');
     setSelectedEvent(calendarEvent);
-    console.log({ selectedEvent });
   };
 
   const handleScrollShadows = (event) => {

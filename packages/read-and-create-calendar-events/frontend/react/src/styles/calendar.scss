@@ -104,8 +104,8 @@
       }
 
       &.active {
-        // &:hover {
         background-color: $color-blue-500;
+
         * {
           color: $color-white !important;
         }
@@ -113,44 +113,23 @@
         .event-content .summary {
           border-left-color: $color-white;
         }
-        // }
       }
 
-      // &:hover {
-      //   background-color: $color-blue-500;
-      //   * {
-      //     color: $color-white !important;
-      //   }
-
-      //   .event-content .summary {
-      //     border-left-color: $color-white;
-      //   }
-      // }
-
       .event-content {
-        // border: 1px solid red;
         display: flex;
         width: 100%;
-        // width: 80px;
 
         .date {
-          // width: 80px;
           width: $spacing-32;
-          // margin: $spacing-24;
           margin: 0 $spacing-24 0 $spacing-16;
-          // border: 1px solid blue;
-          text-align: center; // display: flex;
-          // align-items: center;
+          text-align: center;
+
           .day {
             @include font-style('Heading L');
-            // padding: $spacing-24;
-            // margin: 0px auto;
-            // text-align: center;
           }
+
           .month {
             @include font-style('Heading S');
-            // padding: $spacing-24;
-            // margin: 0px auto;
           }
         }
 
@@ -162,7 +141,6 @@
 
           .title {
             @include font-style('Heading M');
-            // width: 100%;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -251,101 +229,6 @@
       }
     }
   }
-
-  .email-info {
-    width: 100%;
-    margin-top: $spacing-24;
-    display: flex;
-    flex-flow: column;
-    font-weight: 400;
-    font-size: $fs-14;
-    line-height: 1.5;
-
-    .sender-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-
-      .sender {
-        display: flex;
-        align-items: center;
-        gap: $spacing-8;
-
-        .sender-name {
-          color: $color-grey-900;
-          font-weight: 600;
-        }
-      }
-    }
-
-    .receiver-container {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-
-      button.collapse-button {
-        margin-left: $spacing-4;
-        border-radius: $spacing-4;
-        padding: $spacing-8 $spacing-4;
-        border: none;
-        background-color: transparent;
-
-        .collapse-icon {
-          transition: all 100ms ease-out;
-          &.open {
-            transform: rotate(180deg);
-          }
-        }
-      }
-
-      &:hover button.collapse-button {
-        background-color: $color-blue-100;
-      }
-    }
-
-    .participants-container {
-      width: 100%;
-      padding: $spacing-16 $spacing-32;
-      border: 1px solid $color-blue-100;
-      border-radius: $spacing-16;
-      margin-top: $spacing-16;
-
-      gap: $spacing-8;
-      display: grid;
-      grid-template: 1fr auto / auto 1fr;
-
-      .participants-title {
-        display: flex;
-        align-items: flex-start;
-        color: $color-grey-900;
-        font-weight: 600;
-        font-size: $fs-14;
-        line-height: 1.5;
-      }
-
-      .participants-list {
-        display: flex;
-        flex-flow: column;
-        align-items: flex-start;
-        gap: $spacing-4;
-      }
-    }
-  }
-
-  // .event-body {
-  //   width: 100%;
-  //   min-height: 0;
-  //   overflow-y: auto;
-  //   margin-top: $spacing-16;
-
-  //   .event-body-text {
-  //     word-break: break-word;
-  //     font-weight: 400;
-  //     font-size: $fs-16;
-  //     line-height: 1.5;
-  //   }
-  // }
 
   .empty-event {
     height: 100%;
