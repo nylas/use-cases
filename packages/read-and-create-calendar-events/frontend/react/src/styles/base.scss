@@ -66,6 +66,7 @@ $spacing-8: 0.5rem; // 8px
 $spacing-12: 0.75rem; // 12px
 $spacing-16: 1rem; // 16px
 $spacing-24: 1.5rem; // 24px
+$spacing-28: 1.75rem; // 24px
 $spacing-32: 2rem; // 32px
 $spacing-48: 3rem; // 48px
 $spacing-96: 6rem; // 96px
@@ -78,10 +79,59 @@ $fs-22: 1.375rem; // 22px
 $fs-18: 1.125rem; // 18px
 $fs-16: 1rem; // 16px
 $fs-14: 0.875rem; // 14px
+$fs-12: 0.75rem; // 12px
 
 // Media Queries
 $size-desktop: 960px;
 $desktop: '(min-width: 960px)';
+
+// Typography
+@mixin font-family() {
+  font-family: 'Poppins', sans-serif;
+}
+
+@mixin font-style($type, $fontSize: 1.88rem) {
+  @if $type == 'Heading L' {
+    font: Heading L;
+    stylename: Heading L;
+    font-family: 'Poppins', sans-serif;
+    font-size: $fs-22;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: 0px;
+  }
+
+  @if $type == 'Heading M' {
+    font: Heading M;
+    font-family: 'Poppins', sans-serif;
+    font-size: $fs-18;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: 0px;
+  }
+
+  @if $type == 'Heading S' {
+    font: Heading S;
+    font-family: 'Poppins', sans-serif;
+    font-size: $fs-16;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: 0px;
+  }
+
+  @if $type == 'Body M' {
+    font: Body M;
+    font-family: 'Poppins', sans-serif;
+    font-size: $fs-16;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0px;
+  }
+}
 
 @media (min-width: $size-desktop) {
   .hidden-desktop {

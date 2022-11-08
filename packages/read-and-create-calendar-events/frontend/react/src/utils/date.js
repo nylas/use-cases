@@ -1,13 +1,23 @@
-export const displayMeetingTime = (timestamp) => {
-  const date = new Date(timestamp * 1000);
-
-  return `${date.toLocaleDateString('en-US', {
-    dateStyle: 'medium',
-  })} ${date.toLocaleTimeString('en-US', {
+export const get12HourTime = (timestamp) => {
+  return new Date(timestamp * 1000).toLocaleTimeString('en-US', {
     hour: 'numeric',
     minute: 'numeric',
     hour12: true,
-  })}`;
+  });
+};
+
+export const displayMeetingTime = (timeframe) => {
+  const [startTime, endTime] = [timeframe.start_time, timeframe.end_time].map(
+    (timestamp) => {
+      return get12HourTime(timestamp).toLowerCase();
+    }
+  );
+
+  return `${
+    startTime.slice(-2) === endTime.slice(-2)
+      ? startTime.slice(0, -3)
+      : startTime
+  } - ${endTime}`;
 };
 
 export const getLocalDateString = (date) => {
@@ -46,4 +56,12 @@ export const currentTimePlusHalfHour = () => {
   const date = new Date();
   date.setMinutes(date.getMinutes() + 30);
   return getLocalDateString(date);
+};
+
+export const getEventDate = (calendarEvent) => {
+  return new Date(
+    calendarEvent.when.object === 'date'
+      ? calendarEvent.when.date
+      : calendarEvent.when.start_time * 1000
+  );
 };
