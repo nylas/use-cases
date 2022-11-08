@@ -231,6 +231,10 @@
 
         &.location {
           flex: 1;
+          a {
+            color: $color-blue-500;
+            text-decoration: none;
+          }
           // white-space: nowrap;
           // overflow: hidden;
         }

@@ -20,4 +20,13 @@ export const cleanDescription = (description) => {
   return cleanedDescription;
 };
 
+export const isValidUrl = (str) => {
+  let url;
+  try {
+    url = new URL(str);
+  } catch (_) {
+    return false;
+  }
+  return url;
+};
 export const dividerBullet = `\u00a0 · \u00a0`;

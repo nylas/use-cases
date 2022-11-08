@@ -13,6 +13,7 @@ import {
 } from './utils/date';
 
 import {
+  isValidUrl,
   getOrganizerString,
   getParticipantsString,
   cleanDescription,
@@ -77,7 +78,19 @@ function EventDetail({ selectedEvent }) {
               {` (${getTimezoneCode()})`}
             </span>
             {dividerBullet}
-            <span className="location truncate">{selectedEvent.location}</span>
+            <span className="location truncate">
+              {isValidUrl(selectedEvent.location) ? (
+                <a
+                  href={selectedEvent.location}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  {selectedEvent.location}
+                </a>
+              ) : (
+                selectedEvent.location
+              )}
+            </span>
           </div>
 
           <p className="event-details">
