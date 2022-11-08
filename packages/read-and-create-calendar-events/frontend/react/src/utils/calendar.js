@@ -12,7 +12,7 @@ export const getParticipantsString = (event) => {
 };
 
 export const cleanDescription = (description) => {
-  if (!description) return '';
+  if (!description) return 'No description.';
 
   let cleanedDescription = DOMPurify.sanitize(description, {
     USE_PROFILES: { html: true },

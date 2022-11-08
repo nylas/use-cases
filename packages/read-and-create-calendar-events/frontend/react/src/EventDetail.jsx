@@ -94,9 +94,10 @@ function EventDetail({ selectedEvent }) {
               Organized by {getOrganizerString(selectedEvent)}
             </p>
           </div>
-          <p className="event-details">
+          <div className="event-detail">
             {getParticipantsString(selectedEvent)}
-          </p>
+          </div>
+          <p className="description-header">Description</p>
           <p
             dangerouslySetInnerHTML={{
               __html: cleanDescription(selectedEvent.description),

@@ -162,7 +162,7 @@ a {
           }
 
           .time {
-            @include font-style('body M');
+            @include font-style('Body M');
             color: $color-grey-800;
           }
         }
@@ -228,14 +228,14 @@ a {
     //   // color: $color-grey-900;
     // }
 
-    .title {
-      // span.title {
-      @include font-style('Heading L');
-      width: 100%;
-      background-color: pink;
-      // flex: 1;
-      // }
-    }
+    // .title {
+    //   // span.title {
+    //   @include font-style('Heading L');
+    //   width: 100%;
+    //   background-color: pink;
+    //   // flex: 1;
+    //   // }
+    // }
 
     .event-detail {
       // background-color: pink;
@@ -260,6 +260,15 @@ a {
           // }
         }
       }
+
+      &:last-of-type {
+        border-bottom: 1px solid $color-grey-400;
+        padding-bottom: $spacing-24;
+      }
+    }
+
+    .description-header {
+      @include font-style('Strong L');
     }
   }
 
