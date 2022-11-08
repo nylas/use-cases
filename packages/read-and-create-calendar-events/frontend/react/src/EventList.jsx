@@ -7,9 +7,15 @@ import {
 } from './utils/date';
 import EventPreview from './EventPreview';
 
-function EventList({ serverBaseUrl, userId, calendarId }) {
+function EventList({
+  serverBaseUrl,
+  userId,
+  calendarId,
+  setSelectedEvent,
+  selectedEvent,
+}) {
   const [calendarEvents, setCalendarEvents] = useState([]);
-  const [selectedEvent, setSelectedEvent] = useState({});
+  // const [selectedEvent, setSelectedEvent] = useState({});
   const [showTopScrollShadow, setShowTopScrollShadow] = useState(false);
   const [showBottomScrollShadow, setShowBottomScrollShadow] = useState(false);
 
@@ -134,6 +140,8 @@ EventList.propTypes = {
   serverBaseUrl: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired,
   calendarId: PropTypes.string.isRequired,
+  setSelectedEvent: PropTypes.func,
+  selectedEvent: PropTypes.object,
 };
 
 export default EventList;

@@ -6,6 +6,7 @@ import './styles/calendar.scss';
 
 function CalendarClient({ userId }) {
   const [primaryCalendar, setPrimaryCalendar] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const serverBaseUrl =
     import.meta.env.VITE_SERVER_URI || 'http://localhost:9000';
 
@@ -60,9 +61,11 @@ function CalendarClient({ userId }) {
             serverBaseUrl={serverBaseUrl}
             userId={userId}
             calendarId={primaryCalendar?.id}
+            setSelectedEvent={setSelectedEvent}
+            selectedEvent={selectedEvent}
           />
           {/* <EventDetail selectedEmail={selectedEmail} userEmail={userEmail} /> */}
-          <EventDetail />
+          <EventDetail selectedEvent={selectedEvent} />
         </>
         {/* <div className="event-detail-view">
           <h3>Event Details</h3>

@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 export const get12HourTime = (timestamp) => {
   return new Date(timestamp * 1000).toLocaleTimeString('en-US', {
     hour: 'numeric',
@@ -64,4 +66,18 @@ export const getEventDate = (calendarEvent) => {
       ? calendarEvent.when.date
       : calendarEvent.when.start_time * 1000
   );
+};
+
+// August 18  ·   8:00 - 9:00 am (Timezone)  ·  Location
+
+export const getFormattedEventDetails = (event) => {
+  const space = `\u00a0`;
+  const date = getEventDate(event);
+  const month = date.toLocaleString('en-US', { month: 'long' });
+  const day = date.getDate();
+  const time =
+    event.when.object === 'date' ? 'all day' : displayMeetingTime(event.when);
+  const timezone = DateTime.local().toFormat('ZZZZ');
+  const location = 'location';
+  return `${month} ${day} ${space}· ${space} ${time} (${timezone}) ${space}·${space} ${location}`;
 };

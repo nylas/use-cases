@@ -30,7 +30,7 @@ function EventPreview({ calendarEvent, selectedEvent }) {
 
 EventPreview.propTypes = {
   calendarEvent: PropTypes.object.isRequired,
-  selectedEvent: PropTypes.object.isRequired,
+  selectedEvent: PropTypes.object,
 };
 
 export default EventPreview;
