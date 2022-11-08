@@ -50,7 +50,8 @@ function EventList({ serverBaseUrl, userId, calendarId }) {
 
           const data = await res.json();
 
-          setCalendarEvents(data);
+          setCalendarEvents([...data, ...data]);
+          // setCalendarEvents(data);
 
           loading = false;
         } catch (err) {
@@ -91,7 +92,9 @@ function EventList({ serverBaseUrl, userId, calendarId }) {
         <p className="title">Upcoming events</p>
       </section>
       <section className="event-list-container" onScroll={handleScrollShadows}>
-        {showTopScrollShadow && <div className="top-scroll-shadow"></div>}
+        <div
+          className={`scroll-shadow top${showTopScrollShadow ? '' : ' hidden'}`}
+        ></div>
         {calendarEvents.length === 0 ? (
           <p>{loading ? 'Loading events.' : 'No events scheduled.'}</p>
         ) : (
@@ -109,7 +112,12 @@ function EventList({ serverBaseUrl, userId, calendarId }) {
             ))}
           </ul>
         )}
-        {showBottomScrollShadow && <div className="bottom-scroll-shadow"></div>}
+        <div
+          className={`scroll-shadow bottom${
+            showBottomScrollShadow ? '' : ' hidden'
+          }`}
+        ></div>
+        {/* {showBottomScrollShadow && <div className="scroll-shadow"></div>} */}
       </section>
     </div>
   );

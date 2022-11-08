@@ -55,25 +55,31 @@
       background-clip: content-box;
     }
 
-    .top-scroll-shadow {
+    .scroll-shadow {
       position: sticky;
-      top: 0;
       height: 10px;
       width: calc(100% - #{$spacing-12});
-      -webkit-box-shadow: inset 0 5px 10px -10px #000000;
-      -moz-box-shadow: inset 0 5px 10px -10px #000000;
-      box-shadow: inset 0 5px 10px -10px #000000;
-      z-index: 1;
-    }
+      transition: opacity 500ms ease-out;
+      opacity: 1;
 
-    .bottom-scroll-shadow {
-      position: sticky;
-      bottom: 0;
-      height: 10px;
-      width: calc(100% - #{$spacing-12});
-      -webkit-box-shadow: inset 0 -5px 10px -10px #000000;
-      -moz-box-shadow: inset 0 -5px 10px -10px #000000;
-      box-shadow: inset 0 -5px 10px -10px #000000;
+      &.top {
+        top: 0;
+        -webkit-box-shadow: inset 0 5px 10px -10px #000000;
+        -moz-box-shadow: inset 0 5px 10px -10px #000000;
+        box-shadow: inset 0 5px 10px -10px #000000;
+        z-index: 1;
+      }
+
+      &.bottom {
+        bottom: 0;
+        -webkit-box-shadow: inset 0 -5px 10px -10px #000000;
+        -moz-box-shadow: inset 0 -5px 10px -10px #000000;
+        box-shadow: inset 0 -5px 10px -10px #000000;
+      }
+
+      &.hidden {
+        opacity: 0;
+      }
     }
 
     ul.event-list {
