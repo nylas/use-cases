@@ -61,15 +61,11 @@ function EventDetail({ selectedEvent }) {
     <div className="event-detail-view">
       {selectedEvent ? (
         <div className="selected">
-          {/* TODO: Change element type? */}
-          <div className="title">{selectedEvent.title}</div>
-          {/* <p className="event-detail">
-            {getFormattedEventDetails(selectedEvent)}
-          </p> */}
-          <div className="event-details">
-            <span className="event-detail">
-              {getFormattedDate(selectedEvent)}
-            </span>
+          <div className="event-detail">
+            <span className="title truncate">{selectedEvent.title}</span>
+          </div>
+          <div className="event-detail">
+            <span>{getFormattedDate(selectedEvent)}</span>
             {dividerBullet}
             <span>
               {selectedEvent.when.object === 'date'
@@ -93,9 +89,11 @@ function EventDetail({ selectedEvent }) {
             </span>
           </div>
 
-          <p className="event-details">
-            Organized by {getOrganizerString(selectedEvent)}
-          </p>
+          <div className="event-detail">
+            <p className="truncate">
+              Organized by {getOrganizerString(selectedEvent)}
+            </p>
+          </div>
           <p className="event-details">
             {getParticipantsString(selectedEvent)}
           </p>
