@@ -1,14 +1,15 @@
+export const get12HourTime = (timestamp) => {
+  return new Date(timestamp * 1000).toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+  });
+};
+
 export const displayMeetingTime = (timeframe) => {
-  console.log(timeframe);
   const [startTime, endTime] = [timeframe.start_time, timeframe.end_time].map(
     (timestamp) => {
-      return new Date(timestamp * 1000)
-        .toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: 'numeric',
-          hour12: true,
-        })
-        .toLowerCase();
+      return get12HourTime(timestamp).toLowerCase();
     }
   );
 
