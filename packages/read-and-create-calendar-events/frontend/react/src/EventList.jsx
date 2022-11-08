@@ -50,8 +50,7 @@ function EventList({ serverBaseUrl, userId, calendarId }) {
 
           const data = await res.json();
 
-          setCalendarEvents([...data, ...data]);
-          // setCalendarEvents(data);
+          setCalendarEvents(data);
 
           loading = false;
         } catch (err) {
@@ -63,13 +62,21 @@ function EventList({ serverBaseUrl, userId, calendarId }) {
     getCalendarEvents();
   }, [serverBaseUrl, userId, calendarId]);
 
-  useEffect(() => {
+  const initializeScrollShadow = () => {
     const scrollElement = document.querySelector('.event-list-container');
     const isScrollable =
       scrollElement.scrollHeight !== scrollElement.clientHeight;
 
     setShowBottomScrollShadow(isScrollable);
+  };
+
+  useEffect(() => {
+    initializeScrollShadow();
   }, [calendarEvents]);
+
+  useEffect(() => {
+    window.addEventListener('resize', initializeScrollShadow);
+  }, []);
 
   const handleEventSelect = (calendarEvent) => {
     setSelectedEvent(calendarEvent);
