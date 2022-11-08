@@ -6,6 +6,7 @@
   height: 100%;
   display: none;
   gap: $spacing-48;
+  color: $color-grey-900;
 }
 
 .event-list-view {
@@ -99,7 +100,7 @@
       &:hover {
         background-color: $color-blue-500;
         * {
-          color: $color-white;
+          color: $color-white !important;
         }
 
         .event-content .summary {
@@ -138,13 +139,19 @@
           flex: 1;
           padding-left: $spacing-24;
           border-left: 1px solid $color-grey-200;
+          min-width: 0;
 
           .title {
             @include font-style('Heading M');
+            // width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
           }
 
           .time {
             @include font-style('body M');
+            color: $color-grey-800;
           }
         }
         .sender {

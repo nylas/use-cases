@@ -57,3 +57,11 @@ export const currentTimePlusHalfHour = () => {
   date.setMinutes(date.getMinutes() + 30);
   return getLocalDateString(date);
 };
+
+export const getEventDate = (calendarEvent) => {
+  return new Date(
+    calendarEvent.when.object === 'date'
+      ? calendarEvent.when.date
+      : calendarEvent.when.start_time * 1000
+  );
+};

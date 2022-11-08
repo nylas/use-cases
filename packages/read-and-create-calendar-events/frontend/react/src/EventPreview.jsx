@@ -1,28 +1,22 @@
 // import { styles } from './styles';
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { displayMeetingTime } from './utils/date';
+import { displayMeetingTime, getEventDate } from './utils/date';
 
 function EventPreview({ calendarEvent }) {
-  // console.log(new Date(calendarEvent.when.date).toLocaleDateString());
-  const date = new Date(
-    calendarEvent.when.object === 'date'
-      ? calendarEvent.when.date
-      : calendarEvent.when.start_time * 1000
-  );
-  console.log(date.getDate());
+  const eventDate = getEventDate(calendarEvent);
+
   return (
     <li className="event-preview-container">
       <div className="event-content">
         <div className="date">
-          <div className="day">{date.getDate()}</div>
+          <div className="day">{eventDate.getDate()}</div>
           <div className="month">
-            {date.toLocaleString('en-US', { month: 'short' })}
+            {eventDate.toLocaleString('en-US', { month: 'short' })}
           </div>
         </div>
         <div className="summary">
           <div className="title">{calendarEvent.title}</div>
-          {/* TODO: Handle all day events */}
           <div className="time">
             {calendarEvent.when.object === 'date'
               ? 'all day'
