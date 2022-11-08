@@ -42,6 +42,9 @@ function EventDetail({ selectedEvent }) {
     };
   }, []);
 
+  console.log({ selectedEvent });
+  console.log(Intl.DateTimeFormat().resolvedOptions().timeZone);
+  // console.log(getFormattedMonthAndDay(eventDate));
   return (
     <div className="event-detail-view">
       {selectedEvent ? (
