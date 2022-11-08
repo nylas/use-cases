@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import EventList from './EventList';
+import EventDetail from './EventDetail';
 import './styles/calendar.scss';
 
 function CalendarClient({ userId }) {
@@ -47,16 +48,26 @@ function CalendarClient({ userId }) {
   return (
     <>
       <div className="calendar-app">
-        <EventList
+        {/* <EventList
           primaryCalendar={primaryCalendar}
           serverBaseUrl={serverBaseUrl}
           userId={userId}
           calendarId={primaryCalendar?.id}
-        />
-        <div className="event-detail-view">
+        /> */}
+        <>
+          <EventList
+            primaryCalendar={primaryCalendar}
+            serverBaseUrl={serverBaseUrl}
+            userId={userId}
+            calendarId={primaryCalendar?.id}
+          />
+          {/* <EventDetail selectedEmail={selectedEmail} userEmail={userEmail} /> */}
+          <EventDetail />
+        </>
+        {/* <div className="event-detail-view">
           <h3>Event Details</h3>
           <span>Placeholder</span>
-        </div>
+        </div> */}
       </div>
       <div className="mobile-warning hidden-desktop">
         <h2>
