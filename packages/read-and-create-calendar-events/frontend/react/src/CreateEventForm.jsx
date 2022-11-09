@@ -8,6 +8,7 @@ function CreateEventForm({
   serverBaseUrl,
   setShowCreateEventForm,
   setToastNotification,
+  refresh,
 }) {
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
@@ -53,6 +54,7 @@ function CreateEventForm({
       setDescription('');
       setShowCreateEventForm(false);
       setToastNotification('success');
+      refresh();
     } catch (err) {
       console.warn(`Error creating event:`, err);
     }
@@ -163,6 +165,7 @@ CreateEventForm.propTypes = {
   setShowCreateEventForm: PropTypes.func,
   toastNotification: PropTypes.string,
   setToastNotification: PropTypes.func,
+  refresh: PropTypes.func,
 };
 
 export default CreateEventForm;

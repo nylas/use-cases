@@ -163,11 +163,12 @@ function App() {
         <div className="app-card">
           <CalendarApp
             userId={userId}
-            calendarId={primaryCalendar}
+            calendarId={primaryCalendar?.id}
             serverBaseUrl={serverBaseUrl}
             isLoading={isLoading}
             setIsLoading={setIsLoading}
             events={events}
+            refresh={refresh}
           />
         </div>
       )}

@@ -13,6 +13,7 @@ function CalendarApp({
   isLoading,
   setIsLoading,
   events,
+  refresh,
 }) {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showCreateEventForm, setShowCreateEventForm] = useState(false);
@@ -56,6 +57,7 @@ function CalendarApp({
               setShowCreateEventForm={setShowCreateEventForm}
               toastNotification={toastNotification}
               setToastNotification={setToastNotification}
+              refresh={refresh}
             />
           ) : (
             <EventDetail selectedEvent={selectedEvent} />
@@ -76,11 +78,12 @@ function CalendarApp({
 
 CalendarApp.propTypes = {
   userId: PropTypes.string.isRequired,
-  calendarId: PropTypes.string.isRequired,
+  calendarId: PropTypes.string.isRequried,
   serverBaseUrl: PropTypes.string.isRequired,
   isLoading: PropTypes.bool.isRequired,
   setIsLoading: PropTypes.func.isRequired,
   events: PropTypes.array.isRequired,
+  refresh: PropTypes.func,
 };
 
 export default CalendarApp;
