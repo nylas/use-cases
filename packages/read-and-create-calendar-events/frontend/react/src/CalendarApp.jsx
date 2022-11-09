@@ -21,12 +21,10 @@ function CalendarApp({
 
   return (
     <>
-      {toastNotification && (
-        <Toast
-          toastNotification={toastNotification}
-          setToastNotification={setToastNotification}
-        />
-      )}
+      <Toast
+        toastNotification={toastNotification}
+        setToastNotification={setToastNotification}
+      />
 
       <div className="calendar-app">
         <>

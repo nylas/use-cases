@@ -26,16 +26,18 @@ function Toast({ toastNotification, setToastNotification }) {
   };
 
   return (
-    <div className={`toast ${toastNotification}`}>
-      <img src={icons[toastNotification]} alt={toastNotification} />
-      {message[toastNotification]}
-      <img
-        src={icons.close}
-        alt="Close"
-        className="close"
-        onClick={() => setToastNotification('')}
-      />
-    </div>
+    toastNotification && (
+      <div className={`toast ${toastNotification}`}>
+        <img src={icons[toastNotification]} alt={toastNotification} />
+        {message[toastNotification]}
+        <img
+          src={icons.close}
+          alt="Close"
+          className="close"
+          onClick={() => setToastNotification('')}
+        />
+      </div>
+    )
   );
 }
 
