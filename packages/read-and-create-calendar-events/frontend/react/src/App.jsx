@@ -51,15 +51,6 @@ function App() {
   useEffect(() => {
     if (userId?.length) {
       window.history.replaceState({}, '', `/?userId=${userId}`);
-      // const getPrimaryCalendarEvents = async () => {
-      //   const calendar = await getPrimaryCalendar();
-      //   // console.log(calendar);
-      //   getCalendarEvents(calendar?.id);
-      //   // console.log(events);
-      //   // events.forEach((event) => console.log(event));
-      //   // alert('hello');
-      // };
-      // console.log()
       getPrimaryCalendarEvents();
     } else {
       window.history.replaceState({}, '', '/');

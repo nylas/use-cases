@@ -49,7 +49,7 @@ const Layout = ({
               onClick={handleDisconnect}
               disabled={isLoading || isDisconnecting}
             >
-              <div className={`menu-icon ${isLoading ? 'syncing' : ''}`}>
+              <div className="menu-icon">
                 <IconLogout />
               </div>
               <span className="hidden-mobile">

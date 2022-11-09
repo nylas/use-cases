@@ -1,78 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import './styles/calendar.scss';
-// import {
-//   getSevenDaysFromTodayDateTimestamp,
-//   getTodaysDateTimestamp,
-// } from './utils/date';
 import EventPreview from './EventPreview';
 import { initializeScrollShadow, handleScrollShadows } from './utils/calendar';
 
-function EventList({
-  // serverBaseUrl,
-  // userId,
-  // calendarId,
-  setSelectedEvent,
-  selectedEvent,
-  isLoading,
-  // setIsLoading,
-  events,
-}) {
-  // const [calendarEvents, setCalendarEvents] = useState([]);
+function EventList({ setSelectedEvent, selectedEvent, isLoading, events }) {
   const [showTopScrollShadow, setShowTopScrollShadow] = useState(false);
   const [showBottomScrollShadow, setShowBottomScrollShadow] = useState(false);
-
-  // let loading = true;
-  console.log(isLoading);
-
-  // useEffect(() => {
-  //   setIsLoading(true);
-  //   const getCalendarEvents = async () => {
-  //     if (calendarId) {
-  //       // loading = true;
-
-  //       try {
-  //         const startsAfter = getTodaysDateTimestamp(); // today
-  //         const endsBefore = getSevenDaysFromTodayDateTimestamp(); // 7 days from today
-
-  //         const queryParams = new URLSearchParams({
-  //           limit: 5,
-  //           startsAfter,
-  //           endsBefore,
-  //           calendarId,
-  //         });
-
-  //         const url = `${serverBaseUrl}/nylas/read-events?${queryParams.toString()}`;
-
-  //         const res = await fetch(url, {
-  //           method: 'GET',
-  //           headers: {
-  //             Authorization: userId,
-  //             'Content-Type': 'application/json',
-  //           },
-  //           params: {
-  //             calendarId,
-  //           },
-  //         });
-
-  //         if (!res.ok) {
-  //           throw new Error(res.statusText);
-  //         }
-
-  //         const data = await res.json();
-
-  //         setCalendarEvents(data);
-
-  //         // loading = false;
-  //         setIsLoading(false);
-  //       } catch (err) {
-  //         console.warn(`Error reading calendar events:`, err);
-  //       }
-  //     }
-  //   };
-
-  //   getCalendarEvents();
-  // }, [serverBaseUrl, userId, calendarId]);
 
   useEffect(() => {
     initializeScrollShadow('.event-list-container', setShowBottomScrollShadow);
@@ -103,7 +37,11 @@ function EventList({
         className={`scroll-shadow top${showTopScrollShadow ? '' : ' hidden'}`}
       ></div>
       {events.length === 0 ? (
-        <p>{isLoading ? 'Loading events.' : 'No events scheduled.'}</p>
+        <p className="loading-text">
+          {isLoading
+            ? 'Loading events.'
+            : 'No events scheduled for the next 7 days.'}
+        </p>
       ) : (
         <ul className="event-list">
           {events.map((calendarEvent) => (
@@ -129,13 +67,9 @@ function EventList({
 }
 
 EventList.propTypes = {
-  // serverBaseUrl: PropTypes.string.isRequired,
-  // userId: PropTypes.string.isRequired,
-  // calendarId: PropTypes.string,
   setSelectedEvent: PropTypes.func,
   selectedEvent: PropTypes.object,
   isLoading: PropTypes.bool.isRequired,
-  // setIsLoading: PropTypes.func.isRequired,
   events: PropTypes.array.isRequired,
 };
 
