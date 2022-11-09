@@ -4,10 +4,19 @@ import CalendarClient from './CalendarClient';
 import NylasLogin from './NylasLogin';
 import Layout from './components/Layout';
 
+import {
+  getSevenDaysFromTodayDateTimestamp,
+  getTodaysDateTimestamp,
+} from './utils/date';
+
 function App() {
   const nylas = useNylas();
+  // const [primaryCalendar, setPrimaryCalendar] = useState(null);
   const [userId, setUserId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [events, setEvents] = useState([]);
+  const serverBaseUrl =
+    import.meta.env.VITE_SERVER_URI || 'http://localhost:9000';
 
   useEffect(() => {
     const userIdString = sessionStorage.getItem('userId');
@@ -42,14 +51,117 @@ function App() {
   useEffect(() => {
     if (userId?.length) {
       window.history.replaceState({}, '', `/?userId=${userId}`);
+      // const getPrimaryCalendarEvents = async () => {
+      //   const calendar = await getPrimaryCalendar();
+      //   // console.log(calendar);
+      //   getCalendarEvents(calendar?.id);
+      //   // console.log(events);
+      //   // events.forEach((event) => console.log(event));
+      //   // alert('hello');
+      // };
+      // console.log()
+      getPrimaryCalendarEvents();
     } else {
       window.history.replaceState({}, '', '/');
     }
   }, [userId]);
 
+  const getPrimaryCalendar = async () => {
+    try {
+      const url = serverBaseUrl + '/nylas/read-calendars';
+
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Authorization: userId,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error(res.statusText);
+      }
+
+      const data = await res.json();
+
+      let [calendar] = data.filter((calendar) => calendar.is_primary);
+      // if no primary calendar, use the first one
+      if (!calendar && data.length) {
+        calendar = data[0];
+      }
+
+      // setPrimaryCalendar(calendar);
+      return await calendar;
+    } catch (err) {
+      console.warn(`Error reading calendars:`, err);
+    }
+  };
+
+  const getCalendarEvents = async (calendarId) => {
+    // console.log(calendarId);
+    // alert('in getCalendarEvents');
+    if (calendarId) {
+      // loading = true;
+
+      try {
+        const startsAfter = getTodaysDateTimestamp(); // today
+        const endsBefore = getSevenDaysFromTodayDateTimestamp(); // 7 days from today
+
+        const queryParams = new URLSearchParams({
+          limit: 5,
+          startsAfter,
+          endsBefore,
+          calendarId,
+        });
+
+        const url = `${serverBaseUrl}/nylas/read-events?${queryParams.toString()}`;
+
+        const res = await fetch(url, {
+          method: 'GET',
+          headers: {
+            Authorization: userId,
+            'Content-Type': 'application/json',
+          },
+          params: {
+            calendarId,
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error(res.statusText);
+        }
+
+        const data = await res.json();
+
+        setEvents(data);
+
+        // loading = false;
+        setIsLoading(false);
+      } catch (err) {
+        console.warn(`Error reading calendar events:`, err);
+      }
+    }
+  };
+
+  const getPrimaryCalendarEvents = async () => {
+    const primaryCalendar = await getPrimaryCalendar();
+    getCalendarEvents(primaryCalendar?.id);
+    // console.log(events);
+    // events.forEach((event) => console.log(event));
+    // alert('hello');
+  };
+
+  // if (userId) {
+  //   getCalendars();
+  // }
+
   const disconnectUser = () => {
     sessionStorage.removeItem('userId');
     setUserId('');
+  };
+
+  const refresh = () => {
+    getPrimaryCalendarEvents();
   };
 
   return (
@@ -57,6 +169,7 @@ function App() {
       showMenu={!!userId}
       disconnectUser={disconnectUser}
       isLoading={isLoading}
+      refresh={refresh}
     >
       {!userId ? (
         <NylasLogin />
@@ -66,6 +179,8 @@ function App() {
             userId={userId}
             isLoading={isLoading}
             setIsLoading={setIsLoading}
+            events={events}
+            // serverBaseUrl={serverBaseUrl}
           />
         </div>
       )}

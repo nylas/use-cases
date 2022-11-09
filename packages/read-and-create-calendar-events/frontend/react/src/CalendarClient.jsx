@@ -6,50 +6,51 @@ import Toast from './components/Toast';
 import CreateEventForm from './CreateEventForm';
 import './styles/calendar.scss';
 
-function CalendarClient({ userId, isLoading, setIsLoading }) {
-  const [primaryCalendar, setPrimaryCalendar] = useState(null);
+function CalendarClient({ userId, isLoading, setIsLoading, events }) {
+  // const [primaryCalendar, setPrimaryCalendar] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showCreateEventForm, setShowCreateEventForm] = useState(false);
   const [toastNotification, setToastNotification] = useState(false);
 
-  const serverBaseUrl =
-    import.meta.env.VITE_SERVER_URI || 'http://localhost:9000';
+  // console.log({ events });
+  // const serverBaseUrl =
+  //   import.meta.env.VITE_SERVER_URI || 'http://localhost:9000';
 
-  useEffect(() => {
-    const getCalendars = async () => {
-      try {
-        const url = serverBaseUrl + '/nylas/read-calendars';
+  // useEffect(() => {
+  //   const getCalendars = async () => {
+  //     try {
+  //       const url = serverBaseUrl + '/nylas/read-calendars';
 
-        const res = await fetch(url, {
-          method: 'GET',
-          headers: {
-            Authorization: userId,
-            'Content-Type': 'application/json',
-          },
-        });
+  //       const res = await fetch(url, {
+  //         method: 'GET',
+  //         headers: {
+  //           Authorization: userId,
+  //           'Content-Type': 'application/json',
+  //         },
+  //       });
 
-        if (!res.ok) {
-          throw new Error(res.statusText);
-        }
+  //       if (!res.ok) {
+  //         throw new Error(res.statusText);
+  //       }
 
-        const data = await res.json();
+  //       const data = await res.json();
 
-        let [calendar] = data.filter((calendar) => calendar.is_primary);
-        // if no primary calendar, use the first one
-        if (!calendar && data.length) {
-          calendar = data[0];
-        }
+  //       let [calendar] = data.filter((calendar) => calendar.is_primary);
+  //       // if no primary calendar, use the first one
+  //       if (!calendar && data.length) {
+  //         calendar = data[0];
+  //       }
 
-        setPrimaryCalendar(calendar);
-      } catch (err) {
-        console.warn(`Error reading calendars:`, err);
-      }
-    };
+  //       setPrimaryCalendar(calendar);
+  //     } catch (err) {
+  //       console.warn(`Error reading calendars:`, err);
+  //     }
+  //   };
 
-    if (userId) {
-      getCalendars();
-    }
-  }, [userId, serverBaseUrl]);
+  //   if (userId) {
+  //     getCalendars();
+  //   }
+  // }, [userId, serverBaseUrl]);
 
   return (
     <>
@@ -73,17 +74,18 @@ function CalendarClient({ userId, isLoading, setIsLoading }) {
               </p>
             </section>
             <EventList
-              primaryCalendar={primaryCalendar}
-              serverBaseUrl={serverBaseUrl}
+              events={events}
+              // primaryCalendar={primaryCalendar}
+              // serverBaseUrl={serverBaseUrl}
               userId={userId}
-              calendarId={primaryCalendar?.id}
+              // calendarId={primaryCalendar?.id}
               setSelectedEvent={setSelectedEvent}
               selectedEvent={selectedEvent}
               setIsLoading={setIsLoading}
               isLoading={isLoading}
             />
           </div>
-          {showCreateEventForm ? (
+          {/* {showCreateEventForm ? (
             <CreateEventForm
               serverBaseUrl={serverBaseUrl}
               userId={userId}
@@ -91,9 +93,8 @@ function CalendarClient({ userId, isLoading, setIsLoading }) {
               setShowCreateEventForm={setShowCreateEventForm}
               toastNotification={toastNotification}
               setToastNotification={setToastNotification}
-            />
-          ) : (
-            <EventDetail selectedEvent={selectedEvent} />
+            /> */}
+          ) : ({/* <EventDetail selectedEvent={selectedEvent} /> */}
           )}
         </>
       </div>
@@ -113,6 +114,7 @@ CalendarClient.propTypes = {
   userId: PropTypes.string.isRequired,
   isLoading: PropTypes.bool.isRequired,
   setIsLoading: PropTypes.func.isRequired,
+  events: PropTypes.array.isRequired,
 };
 
 export default CalendarClient;
