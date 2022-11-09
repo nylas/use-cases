@@ -6,9 +6,18 @@ import CloseIcon from './icons/icon-close.svg';
 import { useEffect } from 'react';
 
 function Toast({ toastNotification, setToastNotification }) {
+  let timer = null;
+
   useEffect(() => {
-    setTimeout(() => setToastNotification(''), 3000);
-  }, []);
+    if (timer) {
+      time = clearTimeout(timer);
+    } else {
+      setTimeout(() => {
+        timer = null;
+        setToastNotification('');
+      }, 3000);
+    }
+  }, [toastNotification]);
 
   const icons = { success: SuccessIcon, error: ErrorIcon, close: CloseIcon };
   const message = {
