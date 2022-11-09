@@ -72,7 +72,7 @@ function CalendarClient({ userId }) {
             />
           </div>
           {showCreateEventForm ? (
-            <CreateEventForm />
+            <CreateEventForm setShowCreateEventForm={setShowCreateEventForm} />
           ) : (
             <EventDetail selectedEvent={selectedEvent} />
           )}

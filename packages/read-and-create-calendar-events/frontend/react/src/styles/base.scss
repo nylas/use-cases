@@ -154,16 +154,6 @@ $desktop: '(min-width: 960px)';
     text-decoration: none;
     cursor: pointer;
     transition: all 150ms ease-out;
-
-    &:hover,
-    &:focus {
-      color: $color-blue-900;
-    }
-
-    &:focus {
-      border: 1px solid $color-grey-900;
-      border-radius: 8px;
-    }
   }
 }
 

@@ -8,6 +8,7 @@
 }
 
 button {
+  @include font-style('Link M');
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -16,7 +17,7 @@ button {
   border: none;
   outline: none;
   cursor: pointer;
-  padding: $spacing-12 $spacing-16;
+  padding: $spacing-8 $spacing-16;
   border-radius: 1rem;
   gap: $spacing-8;
 }

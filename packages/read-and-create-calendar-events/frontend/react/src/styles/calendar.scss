@@ -216,8 +216,6 @@ a {
 .event-detail-view {
   flex: 1 0;
   min-width: 0;
-  // margin-left: $spacing-24;
-  // // margin-left: $spacing-24;
 
   .selected {
     display: flex;
@@ -389,6 +387,121 @@ a {
     font-size: $fs-14;
     line-height: 1.5;
   }
+}
+
+.create-event-view {
+  flex: 1 0;
+  min-width: 0;
+
+  .header {
+    display: flex;
+    padding: calc(#{$spacing-4} / 2) 0 $spacing-12;
+    justify-content: space-between;
+    border-bottom: 1px solid $color-grey-400;
+
+    .title {
+      @include font-style('Heading L');
+    }
+    .button-container {
+      display: flex;
+      gap: $spacing-12;
+
+      button {
+        @include font-style('Link M');
+        &.blue {
+          background-color: $color-blue-500;
+          color: $color-white;
+
+          &:hover,
+          &:focus {
+            background-color: $color-blue-700;
+          }
+
+          &:active {
+            background-color: $color-blue-900;
+          }
+        }
+
+        &.outline {
+          background-color: transparent;
+          color: $color-grey-800;
+          outline: 1px solid $color-grey-400;
+
+          &:hover,
+          &:focus {
+            outline: 1px solid $color-blue-900;
+          }
+
+          &:active {
+            outline: 2px solid $color-blue-900;
+          }
+        }
+      }
+    }
+  }
+
+  // .selected {
+  //   display: flex;
+  //   flex-flow: column;
+  //   justify-content: flex-start;
+  //   align-items: flex-start;
+  //   height: 100%;
+
+  //   .details {
+  //     display: flex;
+  //     flex-flow: column;
+  //     justify-content: flex-start;
+  //     align-items: flex-start;
+  //     gap: $spacing-8;
+  //     width: 100%;
+  //     padding-bottom: $spacing-24;
+  //     border-bottom: 1px solid $color-grey-400;
+
+  //     .event-detail {
+  //       width: 100%;
+  //       display: flex;
+
+  //       p,
+  //       span {
+  //         @include font-style('Body L');
+
+  //         &.location {
+  //           flex: 1;
+  //         }
+
+  //         &.title {
+  //           @include font-style('Heading L');
+  //           flex: 1;
+  //         }
+  //       }
+  //     }
+  // }
+
+  // .description-container {
+  //   overflow-y: scroll;
+  //   width: calc(100% + #{$spacing-16});
+
+  //   .title {
+  //     padding-top: $spacing-24;
+  //   }
+
+  //   &::-webkit-scrollbar-track {
+  //     margin-top: $spacing-32;
+  //   }
+  // }
+  // }
+
+  // .empty-event {
+  //   height: 100%;
+  //   display: flex;
+  //   flex-flow: column;
+  //   justify-content: center;
+  //   align-items: center;
+  //   gap: $spacing-8;
+  //   font-weight: 400;
+  //   font-size: $fs-14;
+  //   line-height: 1.5;
+  // }
 }
 
 .mobile-warning {

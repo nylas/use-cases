@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-// import { styles } from './styles';
+import PropTypes from 'prop-types';
 import {
   applyTimezone,
   currentTime,
@@ -7,7 +7,7 @@ import {
   getLocalDateString,
 } from './utils/date';
 
-function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
+function CreateEventForm({ setShowCreateEventForm }) {
   const [startTime, setStartTime] = useState(currentTime());
   const [endTime, setEndTime] = useState(currentTimePlusHalfHour());
   const [title, setTitle] = useState('');
@@ -54,7 +54,23 @@ function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
     }
   };
 
-  return <h1>Create event</h1>;
+  return (
+    <div className="create-event-view">
+      <div className="header">
+        <div className="title">Create event</div>
+        <div className="button-container">
+          <button
+            type="button"
+            className="outline"
+            onClick={() => setShowCreateEventForm(false)}
+          >
+            Cancel
+          </button>
+          <button className="blue">Create</button>
+        </div>
+      </div>
+    </div>
+  );
 
   // return (
   //   <div style={styles.CreateEventForm.container}>
@@ -124,5 +140,9 @@ function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
   //   </div>
   // );
 }
+
+CreateEventForm.propTypes = {
+  setShowCreateEventForm: PropTypes.func,
+};
 
 export default CreateEventForm;
