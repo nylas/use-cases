@@ -86,6 +86,9 @@ function EventList({
     <div className="event-list-view">
       <section className="event-header">
         <p className="title">Upcoming events</p>
+        <p className="create-event" onClick={() => alert('hello!')}>
+          Create event
+        </p>
       </section>
       <section
         className="event-list-container scrollbar"

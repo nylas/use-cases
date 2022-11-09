@@ -82,15 +82,22 @@ a {
   padding-top: $spacing-4;
 
   .event-header {
+    display: flex;
     margin-right: $spacing-28;
     padding-bottom: $spacing-28;
     border-bottom: 1px solid $color-grey-400;
+    justify-content: space-between;
+    align-items: center;
 
     .title {
       color: $color-grey-900;
       font-weight: 600;
       font-size: $fs-22;
       line-height: 1.25;
+    }
+
+    .create-event {
+      @include font-style('Link M');
     }
   }
 
