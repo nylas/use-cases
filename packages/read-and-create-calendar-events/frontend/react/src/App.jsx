@@ -89,17 +89,13 @@ function App() {
   };
 
   const getCalendarEvents = async (calendarId) => {
-    // console.log(calendarId);
-    // alert('in getCalendarEvents');
     if (calendarId) {
-      // loading = true;
-
       try {
         const startsAfter = getTodaysDateTimestamp(); // today
         const endsBefore = getSevenDaysFromTodayDateTimestamp(); // 7 days from today
 
         const queryParams = new URLSearchParams({
-          limit: 5,
+          limit: 50,
           startsAfter,
           endsBefore,
           calendarId,
