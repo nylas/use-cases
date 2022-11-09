@@ -10,7 +10,7 @@ function CalendarClient({ userId }) {
   const [primaryCalendar, setPrimaryCalendar] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showCreateEventForm, setShowCreateEventForm] = useState(false);
-  const [toastNotification, setToastNotification] = useState('error');
+  const [toastNotification, setToastNotification] = useState('');
   const serverBaseUrl =
     import.meta.env.VITE_SERVER_URI || 'http://localhost:9000';
 
