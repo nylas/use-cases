@@ -240,23 +240,33 @@ a {
             flex: 1;
           }
         }
-
-        &.title {
-          // span.title {
-          @include font-style('Heading L');
-          flex: 1;
-          // }
-        }
-      }
-
-      &:last-of-type {
-        border-bottom: 1px solid $color-grey-400;
-        padding-bottom: $spacing-24;
       }
     }
 
-    .description-header {
-      @include font-style('Strong L');
+    // .event-detail:last-of-type {
+    //   // width: 100%;
+    //   border-bottom: 10px solid green;
+    //   padding-bottom: $spacing-24;
+    // }
+
+    // .description-container::before {
+    //   content: '';
+    //   width: 100%;
+    //   border-bottom: solid 10px green;
+    //   // position: absolute;
+    //   left: 0;
+    //   top: 0;
+    //   z-index: 1;
+    // }
+
+    .description-container {
+      padding-top: $spacing-24;
+      overflow-y: scroll;
+      // width: 100%;
+      width: calc(100% + #{$spacing-16});
+      &::-webkit-scrollbar-track {
+        margin-top: $spacing-32;
+      }
     }
 
     .description-container {
