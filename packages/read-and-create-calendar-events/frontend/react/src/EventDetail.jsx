@@ -22,7 +22,7 @@ function EventDetail({ selectedEvent }) {
 
   useEffect(() => {
     initializeScrollShadow('.description-container', setShowBottomScrollShadow);
-  }, []);
+  }, [selectedEvent]);
 
   useEffect(() => {
     window.addEventListener('resize', () =>
