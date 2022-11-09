@@ -440,6 +440,54 @@ a {
     }
   }
 
+  form {
+    padding-top: $spacing-24;
+    // height: 100%;
+    display: flex;
+    flex-flow: column;
+    // justify-content: center;
+    // align-items: center;
+    gap: $spacing-24;
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: calc(#{$spacing-48} + #{$spacing-8});
+      .field-container {
+        flex: 1;
+        label {
+          @include font-style('Body S');
+        }
+        input {
+          width: 100%;
+          outline: none;
+          border: 1px solid $color-grey-400;
+          color: $color-grey-900;
+          border-radius: 16px;
+          padding: $spacing-8 $spacing-16;
+          font-size: $fs-16;
+          font-weight: 400;
+          line-height: 1.5;
+
+          &::placeholder {
+            color: $color-grey-700;
+          }
+
+          &.placeholder {
+            color: $color-grey-700;
+          }
+        }
+
+        input[type='datetime-local']::-webkit-calendar-picker-indicator {
+          color: rgba(0, 0, 0, 0);
+          opacity: 1;
+          display: block;
+          background: url('../components/icons/date-input-icon.svg') no-repeat;
+        }
+      }
+    }
+  }
+
   // .selected {
   //   display: flex;
   //   flex-flow: column;
