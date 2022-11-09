@@ -144,16 +144,11 @@ function App() {
   };
 
   const getPrimaryCalendarEvents = async () => {
+    setIsLoading(true);
     const primaryCalendar = await getPrimaryCalendar();
     getCalendarEvents(primaryCalendar?.id);
-    // console.log(events);
-    // events.forEach((event) => console.log(event));
-    // alert('hello');
+    setIsLoading(false);
   };
-
-  // if (userId) {
-  //   getCalendars();
-  // }
 
   const disconnectUser = () => {
     sessionStorage.removeItem('userId');
@@ -182,7 +177,6 @@ function App() {
             isLoading={isLoading}
             setIsLoading={setIsLoading}
             events={events}
-            // serverBaseUrl={serverBaseUrl}
           />
         </div>
       )}

@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-
-// import IconSync from './icons/icon-sync.svg';
 import IconSync from './icons/IconSync.jsx';
-// import IconLogout from './icons/icon-logout.svg';
 import IconLogout from './icons/IconLogout.jsx';
 import NylasLogo from './icons/nylas-logo-horizontal.svg';
 import PropTypes from 'prop-types';
@@ -15,6 +12,7 @@ const Layout = ({
   isLoading,
 }) => {
   const [isDisconnecting, setIsDisconnecting] = useState(false);
+
   const handleRefresh = (e) => {
     e.preventDefault();
     refresh();
