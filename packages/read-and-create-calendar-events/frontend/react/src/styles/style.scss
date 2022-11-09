@@ -22,6 +22,70 @@ button {
   gap: $spacing-8;
 }
 
+@-webkit-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.toast {
+  @include font-style('Heading S');
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 21px);
+  color: $color-grey-900;
+  padding: calc(#{$spacing-16} + #{$spacing-4}/ 2);
+  border-radius: $spacing-16;
+  display: flex;
+  align-items: center;
+  gap: calc(#{$spacing-16} + #{$spacing-4}/ 2);
+  -webkit-animation: fadeIn 0.5s, fadeOut 0.5s 2.5s;
+  animation: fadeIn 0.5s, fadeOut 0.5s 2.5s;
+
+  &.success {
+    background-color: $color-green-50;
+  }
+
+  &.error {
+    background-color: $color-red-50;
+  }
+
+  img.close {
+    margin-left: $spacing-28;
+    cursor: pointer;
+  }
+}
+
 .layout {
   width: 100vw;
   height: 100vh;
@@ -132,6 +196,7 @@ section.login {
 }
 
 .app-card {
+  position: relative;
   width: 100%;
   height: 100%;
   color: $color-grey-800;

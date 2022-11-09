@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import EventList from './EventList';
 import EventDetail from './EventDetail';
+import Toast from './components/Toast';
 import CreateEventForm from './CreateEventForm';
 import './styles/calendar.scss';
 
@@ -9,6 +10,7 @@ function CalendarClient({ userId }) {
   const [primaryCalendar, setPrimaryCalendar] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showCreateEventForm, setShowCreateEventForm] = useState(false);
+  const [toastNotification, setToastNotification] = useState('error');
   const serverBaseUrl =
     import.meta.env.VITE_SERVER_URI || 'http://localhost:9000';
 
@@ -50,6 +52,13 @@ function CalendarClient({ userId }) {
 
   return (
     <>
+      {toastNotification && (
+        <Toast
+          toastNotification={toastNotification}
+          setToastNotification={setToastNotification}
+        />
+      )}
+
       <div className="calendar-app">
         <>
           <div className="event-list-view">
@@ -72,7 +81,14 @@ function CalendarClient({ userId }) {
             />
           </div>
           {showCreateEventForm ? (
-            <CreateEventForm setShowCreateEventForm={setShowCreateEventForm} />
+            <CreateEventForm
+              serverBaseUrl={serverBaseUrl}
+              userId={userId}
+              calendarId={primaryCalendar?.id}
+              setShowCreateEventForm={setShowCreateEventForm}
+              toastNotification={toastNotification}
+              setToastNotification={setToastNotification}
+            />
           ) : (
             <EventDetail selectedEvent={selectedEvent} />
           )}

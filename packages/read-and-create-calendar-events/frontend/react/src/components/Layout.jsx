@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import IconSync from './icons/icon-sync.svg';
 import IconLogout from './icons/icon-logout.svg';
 import NylasLogo from './icons/nylas-logo-horizontal.svg';

@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  applyTimezone,
-  currentTime,
-  currentTimePlusHalfHour,
-  getLocalDateString,
-} from './utils/date';
+import { applyTimezone, getLocalDateString } from './utils/date';
 
-function CreateEventForm({ setShowCreateEventForm }) {
+function CreateEventForm({
+  userId,
+  calendarId,
+  serverBaseUrl,
+  setShowCreateEventForm,
+  setToastNotification,
+}) {
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [title, setTitle] = useState('');
@@ -15,44 +16,47 @@ function CreateEventForm({ setShowCreateEventForm }) {
 
   const now = new Date();
 
-  // const createEvent = async (e) => {
-  //   e.preventDefault();
+  const createEvent = async (e) => {
+    e.preventDefault();
 
-  //   try {
-  //     const url = serverBaseUrl + '/nylas/create-events';
+    try {
+      const url = serverBaseUrl + '/nylas/create-events';
 
-  //     const res = await fetch(url, {
-  //       method: 'POST',
-  //       headers: {
-  //         Authorization: userId,
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({
-  //         startTime: applyTimezone(startTime),
-  //         endTime: applyTimezone(endTime),
-  //         title,
-  //         description,
-  //         calendarId,
-  //       }),
-  //     });
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          Authorization: userId,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          startTime: applyTimezone(startTime),
+          endTime: applyTimezone(endTime),
+          title,
+          description,
+          calendarId,
+        }),
+      });
 
-  //     if (!res.ok) {
-  //       throw new Error(res.statusText);
-  //     }
+      if (!res.ok) {
+        setToastNotification('error');
+        throw new Error(res.statusText);
+      }
 
-  //     const data = await res.json();
+      const data = await res.json();
 
-  //     console.log('Event created:', data);
+      console.log('Event created:', data);
 
-  //     // reset form fields
-  //     setStartTime(getLocalDateString(new Date()));
-  //     setEndTime(getLocalDateString(new Date()));
-  //     setTitle('');
-  //     setDescription('');
-  //   } catch (err) {
-  //     console.warn(`Error creating event:`, err);
-  //   }
-  // };
+      // reset form fields
+      setStartTime(getLocalDateString(new Date()));
+      setEndTime(getLocalDateString(new Date()));
+      setTitle('');
+      setDescription('');
+      setShowCreateEventForm(false);
+      setToastNotification('success');
+    } catch (err) {
+      console.warn(`Error creating event:`, err);
+    }
+  };
 
   return (
     <div className="create-event-view">
@@ -66,10 +70,12 @@ function CreateEventForm({ setShowCreateEventForm }) {
           >
             Cancel
           </button>
-          <button className="blue">Create</button>
+          <button className="blue" type="submit" form="event-form">
+            Create
+          </button>
         </div>
       </div>
-      <form className="scrollbar">
+      <form id="event-form" className="scrollbar" onSubmit={createEvent}>
         <div className="row">
           <div className="field-container">
             <label htmlFor="event-title">Event title</label>
@@ -112,7 +118,8 @@ function CreateEventForm({ setShowCreateEventForm }) {
             />
           </div>
         </div>
-        {/* <div className="row">
+        {/* //TODO: Add participants field to API request
+        <div className="row">
           <div className="field-container">
             <label htmlFor="participants">Participants</label>
             <textarea
@@ -120,9 +127,9 @@ function CreateEventForm({ setShowCreateEventForm }) {
               name="participants"
               placeholder="Enter email addresses"
               onChange={(event) => {
-                setTitle(event.target.value);
+                setParticipants(event.target.value);
               }}
-              value={title}
+              value={participants}
               rows={1}
             />
             <p className="note">Separate by comma for multiple participants</p>
@@ -147,78 +154,15 @@ function CreateEventForm({ setShowCreateEventForm }) {
       </form>
     </div>
   );
-
-  // return (
-  //   <div style={styles.CreateEventForm.container}>
-  //     <h2 style={styles.CreateEventForm.header}>Create event</h2>
-
-  //     <form style={styles.CreateEventForm.form} onSubmit={createEvent}>
-  //       <label style={styles.CreateEventForm.label} htmlFor="event-start-time">
-  //         Choose a start time:
-  //       </label>
-  //       <input
-  //         style={styles.CreateEventForm.input}
-  //         type="datetime-local"
-  //         name="event-start-time"
-  //         onChange={(event) => {
-  //           setStartTime(event.target.value);
-  //         }}
-  //         value={startTime}
-  //         min={getLocalDateString(now)}
-  //       />
-
-  //       <label style={styles.CreateEventForm.label} htmlFor="event-end-time">
-  //         Choose an end time:
-  //       </label>
-  //       <input
-  //         style={styles.CreateEventForm.input}
-  //         type="datetime-local"
-  //         name="event-end-time"
-  //         onChange={(event) => {
-  //           setEndTime(event.target.value);
-  //         }}
-  //         value={endTime}
-  //         min={getLocalDateString(now)}
-  //       />
-
-  //       <label style={styles.CreateEventForm.label} htmlFor="title">
-  //         Title:
-  //       </label>
-  //       <input
-  //         style={styles.CreateEventForm.input}
-  //         type="text"
-  //         name="title"
-  //         onChange={(event) => {
-  //           setTitle(event.target.value);
-  //         }}
-  //         value={title}
-  //       />
-
-  //       <label style={styles.CreateEventForm.label} htmlFor="description">
-  //         Description:
-  //       </label>
-  //       <textarea
-  //         style={styles.CreateEventForm.input}
-  //         type="text"
-  //         name="description"
-  //         onChange={(event) => {
-  //           setDescription(event.target.value);
-  //         }}
-  //         value={description}
-  //         rows={10}
-  //         width="100%"
-  //       />
-
-  //       <button style={styles.CreateEventForm.button} type="submit">
-  //         Create Event
-  //       </button>
-  //     </form>
-  //   </div>
-  // );
 }
 
 CreateEventForm.propTypes = {
+  userId: PropTypes.string.isRequired,
+  calendarId: PropTypes.string,
+  serverBaseUrl: PropTypes.string.isRequired,
   setShowCreateEventForm: PropTypes.func,
+  toastNotification: PropTypes.string,
+  setToastNotification: PropTypes.func,
 };
 
 export default CreateEventForm;
