@@ -6,6 +6,12 @@ import {
   getTodaysDateTimestamp,
 } from './utils/date';
 import EventPreview from './EventPreview';
+import {
+  showTopScrollShadow,
+  showBottomScrollShadow,
+  initializeScrollShadow,
+  handleScrollShadows,
+} from './utils/calendar';
 
 function EventList({
   serverBaseUrl,
@@ -16,8 +22,8 @@ function EventList({
 }) {
   const [calendarEvents, setCalendarEvents] = useState([]);
   // const [selectedEvent, setSelectedEvent] = useState({});
-  const [showTopScrollShadow, setShowTopScrollShadow] = useState(false);
-  const [showBottomScrollShadow, setShowBottomScrollShadow] = useState(false);
+  // const [showTopScrollShadow, setShowTopScrollShadow] = useState(false);
+  // const [showBottomScrollShadow, setShowBottomScrollShadow] = useState(false);
 
   let loading = true;
 
@@ -68,35 +74,18 @@ function EventList({
     getCalendarEvents();
   }, [serverBaseUrl, userId, calendarId]);
 
-  const initializeScrollShadow = () => {
-    const scrollElement = document.querySelector('.event-list-container');
-    const isScrollable =
-      scrollElement.scrollHeight !== scrollElement.clientHeight;
-
-    setShowBottomScrollShadow(isScrollable);
-  };
-
   useEffect(() => {
-    initializeScrollShadow();
+    initializeScrollShadow('.event-list-container');
   }, [calendarEvents]);
 
   useEffect(() => {
-    window.addEventListener('resize', initializeScrollShadow);
+    window.addEventListener('resize', () =>
+      initializeScrollShadow('.event-list-container')
+    );
   }, []);
 
   const handleEventSelect = (calendarEvent) => {
     setSelectedEvent(calendarEvent);
-  };
-
-  const handleScrollShadows = (event) => {
-    const element = event.target;
-
-    const atTop = element.scrollTop < 12;
-    const atBottom =
-      element.clientHeight + element.scrollTop + 12 > element.scrollHeight;
-
-    setShowTopScrollShadow(!atTop);
-    setShowBottomScrollShadow(!atBottom);
   };
 
   return (
@@ -133,7 +122,6 @@ function EventList({
             showBottomScrollShadow ? '' : ' hidden'
           }`}
         ></div>
-        {/* {showBottomScrollShadow && <div className="scroll-shadow"></div>} */}
       </section>
     </div>
   );
