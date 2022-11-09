@@ -111,11 +111,6 @@ function EventDetail({ selectedEvent }) {
               }`}
             ></div>
           </div>
-          <div
-            className={`scroll-shadow bottom${
-              showBottomScrollShadow ? '' : ' hidden'
-            }`}
-          ></div>
         </div>
       ) : (
         <div className="empty-event">
