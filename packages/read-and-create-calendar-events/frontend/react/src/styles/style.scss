@@ -126,8 +126,35 @@ button {
         font-size: $fs-14;
         line-height: 1.5;
 
+        .menu-icon {
+          display: flex;
+          svg {
+            fill: $color-white;
+          }
+        }
+
         &:hover {
-          background-color: $color-blue-700;
+          color: $color-blue-300;
+          svg {
+            fill: $color-blue-300;
+          }
+        }
+
+        &[disabled] {
+          cursor: default;
+        }
+
+        .menu-icon.syncing svg {
+          animation: syncing-rotate 1.2s linear infinite;
+        }
+
+        @keyframes syncing-rotate {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
         }
       }
     }

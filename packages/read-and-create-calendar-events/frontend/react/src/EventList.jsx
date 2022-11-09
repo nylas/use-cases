@@ -14,17 +14,21 @@ function EventList({
   calendarId,
   setSelectedEvent,
   selectedEvent,
+  isLoading,
+  setIsLoading,
 }) {
   const [calendarEvents, setCalendarEvents] = useState([]);
   const [showTopScrollShadow, setShowTopScrollShadow] = useState(false);
   const [showBottomScrollShadow, setShowBottomScrollShadow] = useState(false);
 
-  let loading = true;
+  // let loading = true;
+  console.log(isLoading);
 
   useEffect(() => {
+    setIsLoading(true);
     const getCalendarEvents = async () => {
       if (calendarId) {
-        loading = true;
+        // loading = true;
 
         try {
           const startsAfter = getTodaysDateTimestamp(); // today
@@ -58,7 +62,8 @@ function EventList({
 
           setCalendarEvents(data);
 
-          loading = false;
+          // loading = false;
+          setIsLoading(false);
         } catch (err) {
           console.warn(`Error reading calendar events:`, err);
         }
@@ -128,6 +133,8 @@ EventList.propTypes = {
   calendarId: PropTypes.string,
   setSelectedEvent: PropTypes.func,
   selectedEvent: PropTypes.object,
+  isLoading: PropTypes.bool.isRequired,
+  setIsLoading: PropTypes.func.isRequired,
 };
 
 export default EventList;

@@ -6,11 +6,12 @@ import Toast from './components/Toast';
 import CreateEventForm from './CreateEventForm';
 import './styles/calendar.scss';
 
-function CalendarClient({ userId }) {
+function CalendarClient({ userId, isLoading, setIsLoading }) {
   const [primaryCalendar, setPrimaryCalendar] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showCreateEventForm, setShowCreateEventForm] = useState(false);
-  const [toastNotification, setToastNotification] = useState('');
+  const [toastNotification, setToastNotification] = useState(false);
+
   const serverBaseUrl =
     import.meta.env.VITE_SERVER_URI || 'http://localhost:9000';
 
@@ -78,6 +79,8 @@ function CalendarClient({ userId }) {
               calendarId={primaryCalendar?.id}
               setSelectedEvent={setSelectedEvent}
               selectedEvent={selectedEvent}
+              setIsLoading={setIsLoading}
+              isLoading={isLoading}
             />
           </div>
           {showCreateEventForm ? (
@@ -108,6 +111,8 @@ function CalendarClient({ userId }) {
 
 CalendarClient.propTypes = {
   userId: PropTypes.string.isRequired,
+  isLoading: PropTypes.bool.isRequired,
+  setIsLoading: PropTypes.func.isRequired,
 };
 
 export default CalendarClient;

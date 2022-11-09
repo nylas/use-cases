@@ -7,6 +7,14 @@ import Layout from './components/Layout';
 function App() {
   const nylas = useNylas();
   const [userId, setUserId] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const userIdString = sessionStorage.getItem('userId');
+    if (userIdString) {
+      setUserId(userIdString);
+    }
+  }, []);
 
   useEffect(() => {
     if (!nylas) {
@@ -32,7 +40,7 @@ function App() {
   }, [nylas]);
 
   useEffect(() => {
-    if (userId.length) {
+    if (userId?.length) {
       window.history.replaceState({}, '', `/?userId=${userId}`);
     } else {
       window.history.replaceState({}, '', '/');
@@ -45,12 +53,20 @@ function App() {
   };
 
   return (
-    <Layout showMenu={!!userId} disconnectUser={disconnectUser}>
+    <Layout
+      showMenu={!!userId}
+      disconnectUser={disconnectUser}
+      isLoading={isLoading}
+    >
       {!userId ? (
         <NylasLogin />
       ) : (
         <div className="app-card">
-          <CalendarClient userId={userId} />
+          <CalendarClient
+            userId={userId}
+            isLoading={isLoading}
+            setIsLoading={setIsLoading}
+          />
         </div>
       )}
     </Layout>

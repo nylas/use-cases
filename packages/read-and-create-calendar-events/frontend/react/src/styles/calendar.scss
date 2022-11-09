@@ -519,6 +519,16 @@ a {
   }
 }
 
+.loading-text {
+  width: 100%;
+  align-self: center;
+  text-align: center;
+  color: $color-grey-900;
+  font-weight: 600;
+  font-size: $fs-22;
+  line-height: 1.25;
+}
+
 .mobile-warning {
   height: 100%;
   display: flex;
