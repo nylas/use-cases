@@ -10,7 +10,7 @@ function EventList({ setSelectedEvent, selectedEvent, isLoading, events }) {
 
   useEffect(() => {
     initializeScrollShadow('.event-list-container', setShowBottomScrollShadow);
-  }, [events]);
+  }, [events, isLoading]);
 
   useEffect(() => {
     window.addEventListener('resize', () =>

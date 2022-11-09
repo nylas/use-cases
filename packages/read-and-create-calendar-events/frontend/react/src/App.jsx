@@ -137,7 +137,7 @@ function App() {
   const getPrimaryCalendarEvents = async () => {
     setIsLoading(true);
     const primaryCalendar = await getPrimaryCalendar();
-    getCalendarEvents(primaryCalendar?.id);
+    await getCalendarEvents(primaryCalendar?.id);
     setIsLoading(false);
   };
 
