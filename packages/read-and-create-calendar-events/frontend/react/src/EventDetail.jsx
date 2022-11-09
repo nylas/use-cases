@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import CalendarIllustration from './components/icons/illustration-calendar.svg';
 import {
@@ -111,6 +111,11 @@ function EventDetail({ selectedEvent }) {
               }`}
             ></div>
           </div>
+          <div
+            className={`scroll-shadow bottom${
+              showBottomScrollShadow ? '' : ' hidden'
+            }`}
+          ></div>
         </div>
       ) : (
         <div className="empty-event">
