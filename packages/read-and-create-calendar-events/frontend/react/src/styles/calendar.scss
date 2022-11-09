@@ -244,9 +244,12 @@ a {
     }
 
     .description-container {
-      padding-top: $spacing-24;
       overflow-y: scroll;
       width: calc(100% + #{$spacing-16});
+
+      .title {
+        padding-top: $spacing-24;
+      }
 
       &::-webkit-scrollbar-track {
         margin-top: $spacing-32;
