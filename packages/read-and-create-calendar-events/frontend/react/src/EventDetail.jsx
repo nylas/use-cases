@@ -61,48 +61,52 @@ function EventDetail({ selectedEvent }) {
     <div className="event-detail-view">
       {selectedEvent ? (
         <div className="selected">
-          <div className="event-detail">
-            <span className="title truncate">{selectedEvent.title}</span>
-          </div>
-          <div className="event-detail">
-            <span>{getFormattedDate(selectedEvent)}</span>
-            {dividerBullet}
-            <span>
-              {selectedEvent.when.object === 'date'
-                ? 'all day'
-                : displayMeetingTime(selectedEvent.when)}
-              {` (${getTimezoneCode()})`}
-            </span>
-            {dividerBullet}
-            <span className="location truncate">
-              {isValidUrl(selectedEvent.location) ? (
-                <a
-                  href={selectedEvent.location}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  {selectedEvent.location}
-                </a>
-              ) : (
-                selectedEvent.location
-              )}
-            </span>
-          </div>
+          <div className="details">
+            <div className="event-detail">
+              <span className="title truncate">{selectedEvent.title}</span>
+            </div>
+            <div className="event-detail">
+              <span>{getFormattedDate(selectedEvent)}</span>
+              {dividerBullet}
+              <span>
+                {selectedEvent.when.object === 'date'
+                  ? 'all day'
+                  : displayMeetingTime(selectedEvent.when)}
+                {` (${getTimezoneCode()})`}
+              </span>
+              {dividerBullet}
+              <span className="location truncate">
+                {isValidUrl(selectedEvent.location) ? (
+                  <a
+                    href={selectedEvent.location}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    {selectedEvent.location}
+                  </a>
+                ) : (
+                  selectedEvent.location
+                )}
+              </span>
+            </div>
 
-          <div className="event-detail">
-            <p className="truncate">
-              Organized by {getOrganizerString(selectedEvent)}
-            </p>
+            <div className="event-detail">
+              <p className="truncate">
+                Organized by {getOrganizerString(selectedEvent)}
+              </p>
+            </div>
+            <div className="event-detail">
+              {getParticipantsString(selectedEvent)}
+            </div>
           </div>
-          <div className="event-detail">
-            {getParticipantsString(selectedEvent)}
+          <div className="description-container scrollbar">
+            <p className="title">Description</p>
+            <p
+              dangerouslySetInnerHTML={{
+                __html: cleanDescription(selectedEvent.description),
+              }}
+            ></p>
           </div>
-          <p className="description-header">Description</p>
-          <p
-            dangerouslySetInnerHTML={{
-              __html: cleanDescription(selectedEvent.description),
-            }}
-          ></p>
         </div>
       ) : (
         // <div className="day">{eventDate.getDate()}</div>

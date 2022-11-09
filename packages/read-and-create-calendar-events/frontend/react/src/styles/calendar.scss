@@ -9,6 +9,29 @@
   color: $color-grey-900;
 }
 
+.scrollbar {
+  scrollbar-face-color: #d9d9d9; /* Firefox 63 compatibility */
+  scrollbar-track-color: transparent; /* Firefox 63 compatibility */
+  scrollbar-color: #d9d9d9 transparent;
+
+  &::-webkit-scrollbar {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-track {
+    margin: -1px 0px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #d9d9d9;
+    border: 3px solid transparent;
+    border-radius: $spacing-8;
+    background-clip: content-box;
+  }
+  .title {
+    @include font-style('Strong L');
+    padding-bottom: $spacing-16;
+  }
+}
+
 .truncate {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -50,22 +73,22 @@ a {
     width: 100%;
     margin-top: $spacing-12;
 
-    scrollbar-face-color: #d9d9d9; /* Firefox 63 compatibility */
-    scrollbar-track-color: transparent; /* Firefox 63 compatibility */
-    scrollbar-color: #d9d9d9 transparent;
+    // scrollbar-face-color: #d9d9d9; /* Firefox 63 compatibility */
+    // scrollbar-track-color: transparent; /* Firefox 63 compatibility */
+    // scrollbar-color: #d9d9d9 transparent;
 
-    &::-webkit-scrollbar {
-      background: transparent;
-    }
-    &::-webkit-scrollbar-track {
-      margin: -1px 0px;
-    }
-    &::-webkit-scrollbar-thumb {
-      background-color: #d9d9d9;
-      border: 3px solid transparent;
-      border-radius: 8px;
-      background-clip: content-box;
-    }
+    // &::-webkit-scrollbar {
+    //   background: transparent;
+    // }
+    // &::-webkit-scrollbar-track {
+    //   margin: -1px 0px;
+    // }
+    // &::-webkit-scrollbar-thumb {
+    //   background-color: #d9d9d9;
+    //   border: 3px solid transparent;
+    //   border-radius: $spacing-8;
+    //   background-clip: content-box;
+    // }
 
     .scroll-shadow {
       position: sticky;
@@ -205,8 +228,8 @@ a {
     flex-flow: column;
     justify-content: flex-start;
     align-items: flex-start;
-    gap: $spacing-8;
-    width: 100%;
+    // gap: $spacing-8;
+    // width: 100%;
     height: 100%;
     // min-height: 0;
 
@@ -237,38 +260,66 @@ a {
     //   // }
     // }
 
-    .event-detail {
-      // background-color: pink;
-      width: 100%;
+    .details {
       display: flex;
+      flex-flow: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      gap: $spacing-8;
+      width: 100%;
+      padding-bottom: $spacing-24;
+      border-bottom: 1px solid $color-grey-400;
+      // height: 100%;
+      .event-detail {
+        // background-color: pink;
+        width: 100%;
+        display: flex;
 
-      p,
-      span {
-        @include font-style('Body L');
+        p,
+        span {
+          @include font-style('Body L');
 
-        &.location {
-          flex: 1;
+          &.location {
+            flex: 1;
 
-          // white-space: nowrap;
-          // overflow: hidden;
+            // white-space: nowrap;
+            // overflow: hidden;
+          }
+
+          &.title {
+            // span.title {
+            @include font-style('Heading L');
+            flex: 1;
+            // }
+          }
         }
-
-        &.title {
-          // span.title {
-          @include font-style('Heading L');
-          flex: 1;
-          // }
-        }
-      }
-
-      &:last-of-type {
-        border-bottom: 1px solid $color-grey-400;
-        padding-bottom: $spacing-24;
       }
     }
 
-    .description-header {
-      @include font-style('Strong L');
+    // .event-detail:last-of-type {
+    //   // width: 100%;
+    //   border-bottom: 10px solid green;
+    //   padding-bottom: $spacing-24;
+    // }
+
+    // .description-container::before {
+    //   content: '';
+    //   width: 100%;
+    //   border-bottom: solid 10px green;
+    //   // position: absolute;
+    //   left: 0;
+    //   top: 0;
+    //   z-index: 1;
+    // }
+
+    .description-container {
+      padding-top: $spacing-24;
+      overflow-y: scroll;
+      // width: 100%;
+      width: calc(100% + #{$spacing-16});
+      &::-webkit-scrollbar-track {
+        margin-top: $spacing-32;
+      }
     }
   }
 

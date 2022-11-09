@@ -104,7 +104,10 @@ function EventList({
       <section className="event-header">
         <p className="title">Upcoming events</p>
       </section>
-      <section className="event-list-container" onScroll={handleScrollShadows}>
+      <section
+        className="event-list-container scrollbar"
+        onScroll={handleScrollShadows}
+      >
         <div
           className={`scroll-shadow top${showTopScrollShadow ? '' : ' hidden'}`}
         ></div>
