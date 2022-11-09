@@ -69,13 +69,13 @@ function CreateEventForm({ setShowCreateEventForm }) {
           <button className="blue">Create</button>
         </div>
       </div>
-      <form>
+      <form className="scrollbar">
         <div className="row">
           <div className="field-container">
             <label htmlFor="event-title">Event title</label>
             <input
               type="text"
-              name="event title"
+              name="event-title"
               placeholder="Discuss calendar APIs"
               onChange={(event) => {
                 setTitle(event.target.value);
@@ -112,31 +112,35 @@ function CreateEventForm({ setShowCreateEventForm }) {
             />
           </div>
         </div>
-        <div className="row">
+        {/* <div className="row">
           <div className="field-container">
-            <label htmlFor="event-start-time">Start time</label>
-            <input
-              type="datetime-local"
-              name="event-start-time"
-              onChange={(event) => {
-                setStartTime(event.target.value);
-              }}
-              value={startTime}
-              min={getLocalDateString(now)}
-            />
-          </div>
-        </div>
-        <div className="row">
-          <div className="field-container">
-            <label htmlFor="event-title">Event title</label>
-            <input
+            <label htmlFor="participants">Participants</label>
+            <textarea
               type="text"
-              name="event title"
-              placeholder="Discuss calendar APIs"
+              name="participants"
+              placeholder="Enter email addresses"
               onChange={(event) => {
                 setTitle(event.target.value);
               }}
               value={title}
+              rows={1}
+            />
+            <p className="note">Separate by comma for multiple participants</p>
+          </div>
+        </div> */}
+        <div className="row">
+          <div className="field-container">
+            <label htmlFor="description">Description</label>
+            <textarea
+              type="text"
+              name="description"
+              onChange={(event) => {
+                setDescription(event.target.value);
+              }}
+              placeholder="Enter event description"
+              value={description}
+              rows={3}
+              width="100%"
             />
           </div>
         </div>

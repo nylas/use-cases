@@ -392,6 +392,8 @@ a {
 .create-event-view {
   flex: 1 0;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
 
   .header {
     display: flex;
@@ -441,18 +443,24 @@ a {
   }
 
   form {
+    flex: 1;
     padding-top: $spacing-24;
-    // height: 100%;
+    width: calc(100% + #{$spacing-16});
     display: flex;
     flex-flow: column;
-    // justify-content: center;
-    // align-items: center;
     gap: $spacing-24;
+    overflow-y: scroll;
+    overflow-x: hidden;
+
+    &::-webkit-scrollbar-track {
+      margin-top: $spacing-32;
+    }
 
     .row {
       display: flex;
       justify-content: space-between;
       gap: calc(#{$spacing-48} + #{$spacing-8});
+
       .field-container {
         flex: 1;
         label {
@@ -478,78 +486,37 @@ a {
           }
         }
 
+        textarea {
+          width: 100%;
+          outline: none;
+          border: 1px solid $color-grey-400;
+          color: $color-grey-900;
+          border-radius: 16px;
+          padding: $spacing-8 $spacing-16;
+          font-size: $fs-16;
+          font-weight: 400;
+          line-height: 1.5;
+          resize: vertical;
+
+          &::placeholder {
+            color: $color-grey-700;
+          }
+        }
+
         input[type='datetime-local']::-webkit-calendar-picker-indicator {
           color: rgba(0, 0, 0, 0);
           opacity: 1;
           display: block;
           background: url('../components/icons/date-input-icon.svg') no-repeat;
         }
+
+        .note {
+          @include font-style('Body S');
+          color: $color-grey-700;
+        }
       }
     }
   }
-
-  // .selected {
-  //   display: flex;
-  //   flex-flow: column;
-  //   justify-content: flex-start;
-  //   align-items: flex-start;
-  //   height: 100%;
-
-  //   .details {
-  //     display: flex;
-  //     flex-flow: column;
-  //     justify-content: flex-start;
-  //     align-items: flex-start;
-  //     gap: $spacing-8;
-  //     width: 100%;
-  //     padding-bottom: $spacing-24;
-  //     border-bottom: 1px solid $color-grey-400;
-
-  //     .event-detail {
-  //       width: 100%;
-  //       display: flex;
-
-  //       p,
-  //       span {
-  //         @include font-style('Body L');
-
-  //         &.location {
-  //           flex: 1;
-  //         }
-
-  //         &.title {
-  //           @include font-style('Heading L');
-  //           flex: 1;
-  //         }
-  //       }
-  //     }
-  // }
-
-  // .description-container {
-  //   overflow-y: scroll;
-  //   width: calc(100% + #{$spacing-16});
-
-  //   .title {
-  //     padding-top: $spacing-24;
-  //   }
-
-  //   &::-webkit-scrollbar-track {
-  //     margin-top: $spacing-32;
-  //   }
-  // }
-  // }
-
-  // .empty-event {
-  //   height: 100%;
-  //   display: flex;
-  //   flex-flow: column;
-  //   justify-content: center;
-  //   align-items: center;
-  //   gap: $spacing-8;
-  //   font-weight: 400;
-  //   font-size: $fs-14;
-  //   line-height: 1.5;
-  // }
 }
 
 .mobile-warning {
