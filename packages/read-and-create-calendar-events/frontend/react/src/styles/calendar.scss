@@ -5,7 +5,7 @@
   width: 100%;
   height: 100%;
   display: none;
-  gap: $spacing-48;
+  gap: calc(#{$spacing-32} + #{$spacing-8});
   color: $color-grey-900;
 }
 
@@ -205,6 +205,8 @@ a {
 .event-detail-view {
   flex: 1 0;
   min-width: 0;
+  // margin-left: $spacing-24;
+  // // margin-left: $spacing-24;
 
   .selected {
     display: flex;
