@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import CalendarIllustration from './components/icons/illustration-calendar.svg';
 import {
@@ -12,25 +12,32 @@ import {
   getParticipantsString,
   cleanDescription,
   dividerBullet,
-  showTopScrollShadow,
-  showBottomScrollShadow,
   initializeScrollShadow,
   handleScrollShadows,
 } from './utils/calendar';
 
 function EventDetail({ selectedEvent }) {
+  const [showTopScrollShadow, setShowTopScrollShadow] = useState(false);
+  const [showBottomScrollShadow, setShowBottomScrollShadow] = useState(false);
+
   useEffect(() => {
-    initializeScrollShadow('.description-container');
+    initializeScrollShadow('.description-container', setShowBottomScrollShadow);
   }, []);
 
   useEffect(() => {
     window.addEventListener('resize', () =>
-      initializeScrollShadow('.description-container')
+      initializeScrollShadow(
+        '.description-container',
+        setShowBottomScrollShadow
+      )
     );
 
     return () => {
       window.removeEventListener('resize', () =>
-        initializeScrollShadow('.description-container')
+        initializeScrollShadow(
+          '.description-container',
+          setShowBottomScrollShadow
+        )
       );
     };
   }, []);
@@ -79,7 +86,13 @@ function EventDetail({ selectedEvent }) {
           </div>
           <div
             className="description-container scrollbar"
-            onScroll={handleScrollShadows}
+            onScroll={(event) =>
+              handleScrollShadows(
+                event,
+                setShowTopScrollShadow,
+                setShowBottomScrollShadow
+              )
+            }
           >
             <div
               className={`scroll-shadow top${

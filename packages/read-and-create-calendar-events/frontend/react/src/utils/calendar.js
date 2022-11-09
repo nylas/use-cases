@@ -1,28 +1,21 @@
 import DOMPurify from 'dompurify';
-import { useState } from 'react';
 
-const [showTopScrollShadow, setShowTopScrollShadow] = useState(false);
-const [showBottomScrollShadow, setShowBottomScrollShadow] = useState(false);
-
-export { showTopScrollShadow, setShowTopScrollShadow };
-export { showBottomScrollShadow, setShowBottomScrollShadow };
-
-export const initializeScrollShadow = (cssSelector) => {
+export const initializeScrollShadow = (cssSelector, setBottomShadow) => {
   const scrollElement = document.querySelector(cssSelector);
   const isScrollable =
     scrollElement?.scrollHeight !== scrollElement?.clientHeight;
 
-  setShowBottomScrollShadow(isScrollable);
+  setBottomShadow(isScrollable);
 };
 
-export const handleScrollShadows = (event) => {
+export const handleScrollShadows = (event, setTopShadow, setBottomShadow) => {
   const element = event.target;
-  const atTop = element.scrollTop < 12;
+  const atTop = element?.scrollTop < 12;
   const atBottom =
-    element.clientHeight + element.scrollTop + 12 > element.scrollHeight;
+    element?.clientHeight + element?.scrollTop + 12 > element?.scrollHeight;
 
-  setShowTopScrollShadow(!atTop);
-  setShowBottomScrollShadow(!atBottom);
+  setTopShadow(!atTop);
+  setBottomShadow(!atBottom);
 };
 
 export const getOrganizerString = (event) => {

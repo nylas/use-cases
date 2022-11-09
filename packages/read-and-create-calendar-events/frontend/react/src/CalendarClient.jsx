@@ -49,12 +49,6 @@ function CalendarClient({ userId }) {
   return (
     <>
       <div className="calendar-app">
-        {/* <EventList
-          primaryCalendar={primaryCalendar}
-          serverBaseUrl={serverBaseUrl}
-          userId={userId}
-          calendarId={primaryCalendar?.id}
-        /> */}
         <>
           <EventList
             primaryCalendar={primaryCalendar}
@@ -64,13 +58,8 @@ function CalendarClient({ userId }) {
             setSelectedEvent={setSelectedEvent}
             selectedEvent={selectedEvent}
           />
-          {/* <EventDetail selectedEmail={selectedEmail} userEmail={userEmail} /> */}
           <EventDetail selectedEvent={selectedEvent} />
         </>
-        {/* <div className="event-detail-view">
-          <h3>Event Details</h3>
-          <span>Placeholder</span>
-        </div> */}
       </div>
       <div className="mobile-warning hidden-desktop">
         <h2>

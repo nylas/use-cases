@@ -6,12 +6,7 @@ import {
   getTodaysDateTimestamp,
 } from './utils/date';
 import EventPreview from './EventPreview';
-import {
-  showTopScrollShadow,
-  showBottomScrollShadow,
-  initializeScrollShadow,
-  handleScrollShadows,
-} from './utils/calendar';
+import { initializeScrollShadow, handleScrollShadows } from './utils/calendar';
 
 function EventList({
   serverBaseUrl,
@@ -21,9 +16,8 @@ function EventList({
   selectedEvent,
 }) {
   const [calendarEvents, setCalendarEvents] = useState([]);
-  // const [selectedEvent, setSelectedEvent] = useState({});
-  // const [showTopScrollShadow, setShowTopScrollShadow] = useState(false);
-  // const [showBottomScrollShadow, setShowBottomScrollShadow] = useState(false);
+  const [showTopScrollShadow, setShowTopScrollShadow] = useState(false);
+  const [showBottomScrollShadow, setShowBottomScrollShadow] = useState(false);
 
   let loading = true;
 
@@ -75,12 +69,12 @@ function EventList({
   }, [serverBaseUrl, userId, calendarId]);
 
   useEffect(() => {
-    initializeScrollShadow('.event-list-container');
+    initializeScrollShadow('.event-list-container', setShowBottomScrollShadow);
   }, [calendarEvents]);
 
   useEffect(() => {
     window.addEventListener('resize', () =>
-      initializeScrollShadow('.event-list-container')
+      initializeScrollShadow('.event-list-container', setShowBottomScrollShadow)
     );
   }, []);
 
@@ -95,7 +89,13 @@ function EventList({
       </section>
       <section
         className="event-list-container scrollbar"
-        onScroll={handleScrollShadows}
+        onScroll={(event) =>
+          handleScrollShadows(
+            event,
+            setShowTopScrollShadow,
+            setShowBottomScrollShadow
+          )
+        }
       >
         <div
           className={`scroll-shadow top${showTopScrollShadow ? '' : ' hidden'}`}
