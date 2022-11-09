@@ -6,7 +6,7 @@ import Toast from './components/Toast';
 import CreateEventForm from './CreateEventForm';
 import './styles/calendar.scss';
 
-function CalendarClient({
+function CalendarApp({
   userId,
   calendarId,
   serverBaseUrl,
@@ -74,7 +74,7 @@ function CalendarClient({
   );
 }
 
-CalendarClient.propTypes = {
+CalendarApp.propTypes = {
   userId: PropTypes.string.isRequired,
   calendarId: PropTypes.string.isRequired,
   serverBaseUrl: PropTypes.string.isRequired,
@@ -83,4 +83,4 @@ CalendarClient.propTypes = {
   events: PropTypes.array.isRequired,
 };
 
-export default CalendarClient;
+export default CalendarApp;

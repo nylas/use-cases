@@ -1,5 +1,5 @@
 export const styles = {
-  CalendarClient: {
+  CalendarApp: {
     statusBar: {
       alignContent: 'center',
       alignItems: 'center',

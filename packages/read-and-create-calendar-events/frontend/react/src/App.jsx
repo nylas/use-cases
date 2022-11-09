@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNylas } from '@nylas/nylas-react';
-import CalendarClient from './CalendarClient';
+import CalendarApp from './CalendarApp';
 import NylasLogin from './NylasLogin';
 import Layout from './components/Layout';
 
@@ -161,7 +161,7 @@ function App() {
         <NylasLogin />
       ) : (
         <div className="app-card">
-          <CalendarClient
+          <CalendarApp
             userId={userId}
             calendarId={primaryCalendar}
             serverBaseUrl={serverBaseUrl}
