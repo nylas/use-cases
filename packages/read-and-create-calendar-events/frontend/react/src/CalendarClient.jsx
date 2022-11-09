@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import EventList from './EventList';
 import EventDetail from './EventDetail';
@@ -6,51 +6,17 @@ import Toast from './components/Toast';
 import CreateEventForm from './CreateEventForm';
 import './styles/calendar.scss';
 
-function CalendarClient({ userId, isLoading, setIsLoading, events }) {
-  // const [primaryCalendar, setPrimaryCalendar] = useState(null);
+function CalendarClient({
+  userId,
+  calendarId,
+  serverBaseUrl,
+  isLoading,
+  setIsLoading,
+  events,
+}) {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showCreateEventForm, setShowCreateEventForm] = useState(false);
   const [toastNotification, setToastNotification] = useState(false);
-
-  // console.log({ events });
-  // const serverBaseUrl =
-  //   import.meta.env.VITE_SERVER_URI || 'http://localhost:9000';
-
-  // useEffect(() => {
-  //   const getCalendars = async () => {
-  //     try {
-  //       const url = serverBaseUrl + '/nylas/read-calendars';
-
-  //       const res = await fetch(url, {
-  //         method: 'GET',
-  //         headers: {
-  //           Authorization: userId,
-  //           'Content-Type': 'application/json',
-  //         },
-  //       });
-
-  //       if (!res.ok) {
-  //         throw new Error(res.statusText);
-  //       }
-
-  //       const data = await res.json();
-
-  //       let [calendar] = data.filter((calendar) => calendar.is_primary);
-  //       // if no primary calendar, use the first one
-  //       if (!calendar && data.length) {
-  //         calendar = data[0];
-  //       }
-
-  //       setPrimaryCalendar(calendar);
-  //     } catch (err) {
-  //       console.warn(`Error reading calendars:`, err);
-  //     }
-  //   };
-
-  //   if (userId) {
-  //     getCalendars();
-  //   }
-  // }, [userId, serverBaseUrl]);
 
   return (
     <>
@@ -75,26 +41,24 @@ function CalendarClient({ userId, isLoading, setIsLoading, events }) {
             </section>
             <EventList
               events={events}
-              // primaryCalendar={primaryCalendar}
-              // serverBaseUrl={serverBaseUrl}
               userId={userId}
-              // calendarId={primaryCalendar?.id}
               setSelectedEvent={setSelectedEvent}
               selectedEvent={selectedEvent}
               setIsLoading={setIsLoading}
               isLoading={isLoading}
             />
           </div>
-          {/* {showCreateEventForm ? (
+          {showCreateEventForm ? (
             <CreateEventForm
-              serverBaseUrl={serverBaseUrl}
               userId={userId}
-              calendarId={primaryCalendar?.id}
+              calendarId={calendarId}
+              serverBaseUrl={serverBaseUrl}
               setShowCreateEventForm={setShowCreateEventForm}
               toastNotification={toastNotification}
               setToastNotification={setToastNotification}
-            /> */}
-          ) : ({/* <EventDetail selectedEvent={selectedEvent} /> */}
+            />
+          ) : (
+            <EventDetail selectedEvent={selectedEvent} />
           )}
         </>
       </div>
@@ -112,6 +76,8 @@ function CalendarClient({ userId, isLoading, setIsLoading, events }) {
 
 CalendarClient.propTypes = {
   userId: PropTypes.string.isRequired,
+  calendarId: PropTypes.string.isRequired,
+  serverBaseUrl: PropTypes.string.isRequired,
   isLoading: PropTypes.bool.isRequired,
   setIsLoading: PropTypes.func.isRequired,
   events: PropTypes.array.isRequired,

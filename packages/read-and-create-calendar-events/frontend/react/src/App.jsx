@@ -11,7 +11,7 @@ import {
 
 function App() {
   const nylas = useNylas();
-  // const [primaryCalendar, setPrimaryCalendar] = useState(null);
+  const [primaryCalendar, setPrimaryCalendar] = useState(null);
   const [userId, setUserId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [events, setEvents] = useState([]);
@@ -90,8 +90,8 @@ function App() {
         calendar = data[0];
       }
 
-      // setPrimaryCalendar(calendar);
-      return await calendar;
+      setPrimaryCalendar(calendar);
+      return calendar;
     } catch (err) {
       console.warn(`Error reading calendars:`, err);
     }
@@ -177,6 +177,8 @@ function App() {
         <div className="app-card">
           <CalendarClient
             userId={userId}
+            calendarId={primaryCalendar}
+            serverBaseUrl={serverBaseUrl}
             isLoading={isLoading}
             setIsLoading={setIsLoading}
             events={events}
