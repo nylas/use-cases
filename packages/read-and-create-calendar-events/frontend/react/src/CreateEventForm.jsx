@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { styles } from './styles';
+import React, { useState } from 'react';
+// import { styles } from './styles';
 import {
   applyTimezone,
   currentTime,
@@ -54,73 +54,75 @@ function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
     }
   };
 
-  return (
-    <div style={styles.CreateEventForm.container}>
-      <h2 style={styles.CreateEventForm.header}>Create event</h2>
+  return <h1>Create event</h1>;
 
-      <form style={styles.CreateEventForm.form} onSubmit={createEvent}>
-        <label style={styles.CreateEventForm.label} htmlFor="event-start-time">
-          Choose a start time:
-        </label>
-        <input
-          style={styles.CreateEventForm.input}
-          type="datetime-local"
-          name="event-start-time"
-          onChange={(event) => {
-            setStartTime(event.target.value);
-          }}
-          value={startTime}
-          min={getLocalDateString(now)}
-        />
+  // return (
+  //   <div style={styles.CreateEventForm.container}>
+  //     <h2 style={styles.CreateEventForm.header}>Create event</h2>
 
-        <label style={styles.CreateEventForm.label} htmlFor="event-end-time">
-          Choose an end time:
-        </label>
-        <input
-          style={styles.CreateEventForm.input}
-          type="datetime-local"
-          name="event-end-time"
-          onChange={(event) => {
-            setEndTime(event.target.value);
-          }}
-          value={endTime}
-          min={getLocalDateString(now)}
-        />
+  //     <form style={styles.CreateEventForm.form} onSubmit={createEvent}>
+  //       <label style={styles.CreateEventForm.label} htmlFor="event-start-time">
+  //         Choose a start time:
+  //       </label>
+  //       <input
+  //         style={styles.CreateEventForm.input}
+  //         type="datetime-local"
+  //         name="event-start-time"
+  //         onChange={(event) => {
+  //           setStartTime(event.target.value);
+  //         }}
+  //         value={startTime}
+  //         min={getLocalDateString(now)}
+  //       />
 
-        <label style={styles.CreateEventForm.label} htmlFor="title">
-          Title:
-        </label>
-        <input
-          style={styles.CreateEventForm.input}
-          type="text"
-          name="title"
-          onChange={(event) => {
-            setTitle(event.target.value);
-          }}
-          value={title}
-        />
+  //       <label style={styles.CreateEventForm.label} htmlFor="event-end-time">
+  //         Choose an end time:
+  //       </label>
+  //       <input
+  //         style={styles.CreateEventForm.input}
+  //         type="datetime-local"
+  //         name="event-end-time"
+  //         onChange={(event) => {
+  //           setEndTime(event.target.value);
+  //         }}
+  //         value={endTime}
+  //         min={getLocalDateString(now)}
+  //       />
 
-        <label style={styles.CreateEventForm.label} htmlFor="description">
-          Description:
-        </label>
-        <textarea
-          style={styles.CreateEventForm.input}
-          type="text"
-          name="description"
-          onChange={(event) => {
-            setDescription(event.target.value);
-          }}
-          value={description}
-          rows={10}
-          width="100%"
-        />
+  //       <label style={styles.CreateEventForm.label} htmlFor="title">
+  //         Title:
+  //       </label>
+  //       <input
+  //         style={styles.CreateEventForm.input}
+  //         type="text"
+  //         name="title"
+  //         onChange={(event) => {
+  //           setTitle(event.target.value);
+  //         }}
+  //         value={title}
+  //       />
 
-        <button style={styles.CreateEventForm.button} type="submit">
-          Create Event
-        </button>
-      </form>
-    </div>
-  );
+  //       <label style={styles.CreateEventForm.label} htmlFor="description">
+  //         Description:
+  //       </label>
+  //       <textarea
+  //         style={styles.CreateEventForm.input}
+  //         type="text"
+  //         name="description"
+  //         onChange={(event) => {
+  //           setDescription(event.target.value);
+  //         }}
+  //         value={description}
+  //         rows={10}
+  //         width="100%"
+  //       />
+
+  //       <button style={styles.CreateEventForm.button} type="submit">
+  //         Create Event
+  //       </button>
+  //     </form>
+  //   </div>
+  // );
 }
 
 export default CreateEventForm;

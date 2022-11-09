@@ -83,50 +83,42 @@ function EventList({
   };
 
   return (
-    <div className="event-list-view">
-      <section className="event-header">
-        <p className="title">Upcoming events</p>
-        <p className="create-event" onClick={() => alert('hello!')}>
-          Create event
-        </p>
-      </section>
-      <section
-        className="event-list-container scrollbar"
-        onScroll={(event) =>
-          handleScrollShadows(
-            event,
-            setShowTopScrollShadow,
-            setShowBottomScrollShadow
-          )
-        }
-      >
-        <div
-          className={`scroll-shadow top${showTopScrollShadow ? '' : ' hidden'}`}
-        ></div>
-        {calendarEvents.length === 0 ? (
-          <p>{loading ? 'Loading events.' : 'No events scheduled.'}</p>
-        ) : (
-          <ul className="event-list">
-            {calendarEvents.map((calendarEvent) => (
-              <div
-                key={calendarEvent.id}
-                onClick={() => handleEventSelect(calendarEvent)}
-              >
-                <EventPreview
-                  calendarEvent={calendarEvent}
-                  selectedEvent={selectedEvent}
-                />
-              </div>
-            ))}
-          </ul>
-        )}
-        <div
-          className={`scroll-shadow bottom${
-            showBottomScrollShadow ? '' : ' hidden'
-          }`}
-        ></div>
-      </section>
-    </div>
+    <section
+      className="event-list-container scrollbar"
+      onScroll={(event) =>
+        handleScrollShadows(
+          event,
+          setShowTopScrollShadow,
+          setShowBottomScrollShadow
+        )
+      }
+    >
+      <div
+        className={`scroll-shadow top${showTopScrollShadow ? '' : ' hidden'}`}
+      ></div>
+      {calendarEvents.length === 0 ? (
+        <p>{loading ? 'Loading events.' : 'No events scheduled.'}</p>
+      ) : (
+        <ul className="event-list">
+          {calendarEvents.map((calendarEvent) => (
+            <div
+              key={calendarEvent.id}
+              onClick={() => handleEventSelect(calendarEvent)}
+            >
+              <EventPreview
+                calendarEvent={calendarEvent}
+                selectedEvent={selectedEvent}
+              />
+            </div>
+          ))}
+        </ul>
+      )}
+      <div
+        className={`scroll-shadow bottom${
+          showBottomScrollShadow ? '' : ' hidden'
+        }`}
+      ></div>
+    </section>
   );
 }
 
