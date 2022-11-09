@@ -121,8 +121,6 @@ function App() {
         const data = await res.json();
 
         setEvents(data);
-
-        // loading = false;
         setIsLoading(false);
       } catch (err) {
         console.warn(`Error reading calendar events:`, err);
