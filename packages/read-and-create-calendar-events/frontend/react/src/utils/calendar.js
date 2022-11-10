@@ -18,24 +18,6 @@ export const handleScrollShadows = (event, setTopShadow, setBottomShadow) => {
   setBottomShadow(!atBottom);
 };
 
-export const initializeScrollShadow = (cssSelector, setBottomShadow) => {
-  const scrollElement = document.querySelector(cssSelector);
-  const isScrollable =
-    scrollElement?.scrollHeight !== scrollElement?.clientHeight;
-
-  setBottomShadow(isScrollable);
-};
-
-export const handleScrollShadows = (event, setTopShadow, setBottomShadow) => {
-  const element = event.target;
-  const atTop = element?.scrollTop < 12;
-  const atBottom =
-    element?.clientHeight + element?.scrollTop + 12 > element?.scrollHeight;
-
-  setTopShadow(!atTop);
-  setBottomShadow(!atBottom);
-};
-
 export const getOrganizerString = (event) => {
   const name = event.organizer_name;
   const email = event.organizer_email;
