@@ -62,9 +62,11 @@ const mockServer = {
       // Add to enable cors on subsequent calls
       res.setHeader('Access-Control-Allow-Origin', '*');
 
-      if (routes[req.url] && routes[req.url][req.method]) {
-        routes[req.url][req.method](req, res);
-      } else if (routes[req.url]) {
+      const path = req.url.split('?')[0];
+
+      if (routes[path] && routes[path][req.method]) {
+        routes[path][req.method](req, res);
+      } else if (routes[path]) {
         res.writeHead(405, 'Method not supported.');
         res.end();
       } else {

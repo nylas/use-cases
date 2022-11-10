@@ -87,6 +87,9 @@
       }
 
       .email-info {
+        display: flex;
+        align-items: center;
+        gap: $spacing-4;
         flex-shrink: 0;
         .time {
           font-weight: 400;
@@ -225,12 +228,53 @@
     min-height: 0;
     overflow-y: auto;
     margin-top: $spacing-16;
+    display: flex;
+    flex-flow: column;
+    gap: $spacing-16;
 
-    .email-body-text {
+    .email-body-html {
       word-break: break-word;
       font-weight: 400;
       font-size: $fs-16;
       line-height: 1.5;
+    }
+
+    .attachment-container {
+      .attachment-title {
+        display: flex;
+        align-items: center;
+        gap: $spacing-8;
+        padding-right: $spacing-12;
+        font-weight: 400;
+        font-size: $fs-12;
+        line-height: 1.5;
+
+        hr {
+          border-top: 1px solid $color-blue-100;
+          width: 100%;
+        }
+      }
+      .attachment-files {
+        margin-top: $spacing-8;
+        display: flex;
+        align-items: center;
+        gap: $spacing-16;
+
+        .attachment {
+          color: $color-blue-500;
+          font-weight: 400;
+          font-size: $fs-14;
+          line-height: 1.5;
+          display: flex;
+          align-items: center;
+          gap: $spacing-2;
+          cursor: pointer;
+          transition: all 200ms ease-out;
+          &:hover {
+            color: $color-blue-900;
+          }
+        }
+      }
     }
   }
 

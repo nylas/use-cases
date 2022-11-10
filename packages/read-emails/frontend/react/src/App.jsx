@@ -65,7 +65,11 @@ function App() {
         },
       });
       const data = await res.json();
-      setEmails(data);
+      if (Array.isArray(data)) {
+        setEmails(data);
+      } else {
+        setEmails([]);
+      }
     } catch (e) {
       console.warn(`Error retrieving emails:`, e);
       return false;
@@ -99,6 +103,8 @@ function App() {
             userEmail={userEmail}
             emails={emails}
             isLoading={isLoading}
+            serverBaseUrl={SERVER_URI}
+            userId={userId}
           />
         </div>
       )}

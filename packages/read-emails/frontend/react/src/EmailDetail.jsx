@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import EmailIllustration from './components/icons/illustration-email.svg';
 import ChevronDown from './components/icons/icon-chevron-down.svg';
+import AttachmentIcon from './components/icons/icon-attachment.svg';
 import { formatPreviewDate } from './utils/date.js';
 import { cleanEmailBody } from './utils/email.js';
 
-function EmailDetail({ selectedEmail, userEmail }) {
+function EmailDetail({ selectedEmail, userEmail, serverBaseUrl, userId }) {
   const [emailSender, setEmailSender] = useState('');
   const [emailReceivers, setEmailReceivers] = useState('');
   const [showParticipants, setShowParticipants] = useState(false);
+  const [attachments, setAttachments] = useState([]);
 
   useEffect(() => {
     if (selectedEmail?.from?.length) {
@@ -17,6 +19,18 @@ function EmailDetail({ selectedEmail, userEmail }) {
       setEmailSender('');
     }
     getReceivers();
+
+    if (selectedEmail?.files.length) {
+      setAttachments(
+        selectedEmail.files.filter(
+          (file) =>
+            file.content_disposition === 'attachment' &&
+            !file.content_type.includes('calendar')
+        )
+      );
+    } else {
+      setAttachments([]);
+    }
   }, [selectedEmail]);
 
   const getReceivers = () => {
@@ -37,6 +51,38 @@ function EmailDetail({ selectedEmail, userEmail }) {
     receiversStr = receiverList.join(', ');
     setEmailReceivers(receiversStr);
   };
+
+  const downloadAttachment = async (file) => {
+    try {
+      const queryParams = new URLSearchParams({ id: file.id });
+      const url = `${serverBaseUrl}/nylas/file?${queryParams.toString()}`;
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Authorization: userId,
+          'Content-Type': 'application/json',
+        },
+      });
+      const fileBuffer = await res.json();
+      if (fileBuffer) downloadAttachedFile(fileBuffer, file);
+    } catch (e) {
+      console.warn(`Error retrieving emails:`, e);
+      return false;
+    }
+  };
+
+  function downloadAttachedFile(fileBuffer, file) {
+    const buffer = Uint8Array.from(fileBuffer.data);
+    const blob = new Blob([buffer], { type: file.content_type });
+    const blobFile = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = blobFile;
+    a.download = file.filename ?? file.id;
+    a.target = '_blank';
+    a.click();
+    a.remove();
+  }
 
   return (
     <div className="email-detail-view">
@@ -120,11 +166,36 @@ function EmailDetail({ selectedEmail, userEmail }) {
           </div>
           <div className="email-body">
             <div
-              className="email-body-text"
+              className="email-body-html"
               dangerouslySetInnerHTML={{
                 __html: cleanEmailBody(selectedEmail.body),
               }}
             />
+            {!!attachments.length && (
+              <div className="attachment-container">
+                <div className="attachment-title">
+                  <span>Attachments</span>
+                  <hr />
+                </div>
+
+                <div className="attachment-files">
+                  {attachments.map((f) => (
+                    <div
+                      className="attachment"
+                      key={f.id}
+                      onClick={() => downloadAttachment(f)}
+                    >
+                      <img
+                        src={AttachmentIcon}
+                        alt="attachment icon"
+                        width="20"
+                      />
+                      <span>{f.filename}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       ) : (
@@ -140,6 +211,8 @@ function EmailDetail({ selectedEmail, userEmail }) {
 EmailDetail.propTypes = {
   selectedEmail: PropTypes.object,
   userEmail: PropTypes.string.isRequired,
+  serverBaseUrl: PropTypes.string.isRequired,
+  userId: PropTypes.string.isRequired,
 };
 
 export default EmailDetail;
