@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 export const get12HourTime = (timestamp) => {
   return new Date(timestamp * 1000).toLocaleTimeString('en-US', {
     hour: 'numeric',
@@ -64,4 +66,15 @@ export const getEventDate = (calendarEvent) => {
       ? calendarEvent.when.date
       : calendarEvent.when.start_time * 1000
   );
+};
+
+export const getFormattedDate = (event) => {
+  const date = getEventDate(event);
+  const month = date.toLocaleString('en-US', { month: 'long' });
+  const day = date.getDate();
+  return `${month} ${day}`;
+};
+
+export const getTimezoneCode = () => {
+  return DateTime.local().toFormat('ZZZZ');
 };

@@ -16,7 +16,7 @@ function EventPreview({ calendarEvent, selectedEvent }) {
           </div>
         </div>
         <div className="summary">
-          <div className="title">{calendarEvent.title}</div>
+          <div className="title truncate">{calendarEvent.title}</div>
           <div className="time">
             {calendarEvent.when.object === 'date'
               ? 'all day'
@@ -30,7 +30,7 @@ function EventPreview({ calendarEvent, selectedEvent }) {
 
 EventPreview.propTypes = {
   calendarEvent: PropTypes.object.isRequired,
-  selectedEvent: PropTypes.object.isRequired,
+  selectedEvent: PropTypes.object,
 };
 
 export default EventPreview;

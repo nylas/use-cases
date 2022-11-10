@@ -6,10 +6,16 @@ import {
   getTodaysDateTimestamp,
 } from './utils/date';
 import EventPreview from './EventPreview';
+import { initializeScrollShadow, handleScrollShadows } from './utils/calendar';
 
-function EventList({ serverBaseUrl, userId, calendarId }) {
+function EventList({
+  serverBaseUrl,
+  userId,
+  calendarId,
+  setSelectedEvent,
+  selectedEvent,
+}) {
   const [calendarEvents, setCalendarEvents] = useState([]);
-  const [selectedEvent, setSelectedEvent] = useState({});
   const [showTopScrollShadow, setShowTopScrollShadow] = useState(false);
   const [showBottomScrollShadow, setShowBottomScrollShadow] = useState(false);
 
@@ -62,35 +68,18 @@ function EventList({ serverBaseUrl, userId, calendarId }) {
     getCalendarEvents();
   }, [serverBaseUrl, userId, calendarId]);
 
-  const initializeScrollShadow = () => {
-    const scrollElement = document.querySelector('.event-list-container');
-    const isScrollable =
-      scrollElement.scrollHeight !== scrollElement.clientHeight;
-
-    setShowBottomScrollShadow(isScrollable);
-  };
-
   useEffect(() => {
-    initializeScrollShadow();
+    initializeScrollShadow('.event-list-container', setShowBottomScrollShadow);
   }, [calendarEvents]);
 
   useEffect(() => {
-    window.addEventListener('resize', initializeScrollShadow);
+    window.addEventListener('resize', () =>
+      initializeScrollShadow('.event-list-container', setShowBottomScrollShadow)
+    );
   }, []);
 
   const handleEventSelect = (calendarEvent) => {
     setSelectedEvent(calendarEvent);
-  };
-
-  const handleScrollShadows = (event) => {
-    const element = event.target;
-
-    const atTop = element.scrollTop < 12;
-    const atBottom =
-      element.clientHeight + element.scrollTop + 12 > element.scrollHeight;
-
-    setShowTopScrollShadow(!atTop);
-    setShowBottomScrollShadow(!atBottom);
   };
 
   return (
@@ -98,7 +87,16 @@ function EventList({ serverBaseUrl, userId, calendarId }) {
       <section className="event-header">
         <p className="title">Upcoming events</p>
       </section>
-      <section className="event-list-container" onScroll={handleScrollShadows}>
+      <section
+        className="event-list-container scrollbar"
+        onScroll={(event) =>
+          handleScrollShadows(
+            event,
+            setShowTopScrollShadow,
+            setShowBottomScrollShadow
+          )
+        }
+      >
         <div
           className={`scroll-shadow top${showTopScrollShadow ? '' : ' hidden'}`}
         ></div>
@@ -124,7 +122,6 @@ function EventList({ serverBaseUrl, userId, calendarId }) {
             showBottomScrollShadow ? '' : ' hidden'
           }`}
         ></div>
-        {/* {showBottomScrollShadow && <div className="scroll-shadow"></div>} */}
       </section>
     </div>
   );
@@ -133,7 +130,9 @@ function EventList({ serverBaseUrl, userId, calendarId }) {
 EventList.propTypes = {
   serverBaseUrl: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired,
-  calendarId: PropTypes.string.isRequired,
+  calendarId: PropTypes.string,
+  setSelectedEvent: PropTypes.func,
+  selectedEvent: PropTypes.object,
 };
 
 export default EventList;

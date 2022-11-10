@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import EventList from './EventList';
+import EventDetail from './EventDetail';
 import './styles/calendar.scss';
 
 function CalendarClient({ userId }) {
   const [primaryCalendar, setPrimaryCalendar] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const serverBaseUrl =
     import.meta.env.VITE_SERVER_URI || 'http://localhost:9000';
 
@@ -47,16 +49,17 @@ function CalendarClient({ userId }) {
   return (
     <>
       <div className="calendar-app">
-        <EventList
-          primaryCalendar={primaryCalendar}
-          serverBaseUrl={serverBaseUrl}
-          userId={userId}
-          calendarId={primaryCalendar?.id}
-        />
-        <div className="event-detail-view">
-          <h3>Event Details</h3>
-          <span>Placeholder</span>
-        </div>
+        <>
+          <EventList
+            primaryCalendar={primaryCalendar}
+            serverBaseUrl={serverBaseUrl}
+            userId={userId}
+            calendarId={primaryCalendar?.id}
+            setSelectedEvent={setSelectedEvent}
+            selectedEvent={selectedEvent}
+          />
+          <EventDetail selectedEvent={selectedEvent} />
+        </>
       </div>
       <div className="mobile-warning hidden-desktop">
         <h2>

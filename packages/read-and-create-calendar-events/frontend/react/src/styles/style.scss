@@ -129,13 +129,16 @@ section.login {
     }
   }
 }
+
 .app-card {
   width: 100%;
   height: 100%;
   color: $color-grey-800;
-  background-color: $color-white;
-  padding: $spacing-32 $spacing-48;
+  padding: $spacing-24 $spacing-32;
   border-radius: $spacing-32;
+  background: linear-gradient($color-grey-400, $color-grey-400) no-repeat
+    calc(50% - #{$spacing-12}) / 1px 100%;
+  background-color: $color-white;
 }
 
 @media #{$desktop} {
