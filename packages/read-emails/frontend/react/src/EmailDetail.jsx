@@ -25,8 +25,7 @@ function EmailDetail({ selectedEmail, userEmail, serverBaseUrl, userId }) {
         selectedEmail.files.filter(
           (file) =>
             file.content_disposition === 'attachment' &&
-            !file.content_type.includes('calendar') &&
-            !file.content_type.includes('ics')
+            !file.content_type.includes('calendar')
         )
       );
     } else {
