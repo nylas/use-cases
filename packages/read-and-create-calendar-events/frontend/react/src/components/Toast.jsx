@@ -37,7 +37,7 @@ function Toast({ toastNotification, setToastNotification }) {
 }
 
 Toast.propTypes = {
-  toastNotification: PropTypes.string.required,
+  toastNotification: PropTypes.bool,
   setToastNotification: PropTypes.func,
 };
 

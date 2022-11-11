@@ -76,7 +76,7 @@ function CalendarApp({
 
 CalendarApp.propTypes = {
   userId: PropTypes.string.isRequired,
-  calendarId: PropTypes.string.isRequried,
+  calendarId: PropTypes.string,
   serverBaseUrl: PropTypes.string.isRequired,
   isLoading: PropTypes.bool.isRequired,
   setIsLoading: PropTypes.func.isRequired,
