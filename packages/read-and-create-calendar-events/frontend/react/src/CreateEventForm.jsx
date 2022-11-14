@@ -13,15 +13,20 @@ function CreateEventForm({
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [title, setTitle] = useState('');
+  const [participants, setParticipants] = useState(
+    sessionStorage.getItem('userEmail')
+  );
   const [description, setDescription] = useState('');
 
   const now = new Date();
 
   const createEvent = async (e) => {
-    e.preventDefault();
+    e.preventDefault(sessionStorage.getItem('userEmail'));
 
     try {
       const url = serverBaseUrl + '/nylas/create-events';
+
+      console.log(participants.split(/\s*,\s*/).map((email) => ({ email })));
 
       const res = await fetch(url, {
         method: 'POST',
@@ -35,11 +40,15 @@ function CreateEventForm({
           title,
           description,
           calendarId,
+          participants: participants
+            .split(/\s*,\s*/)
+            .map((email) => ({ email })),
         }),
       });
 
       if (!res.ok) {
         setToastNotification('error');
+        console.log(res);
         throw new Error(res.statusText);
       }
 
@@ -120,7 +129,7 @@ function CreateEventForm({
             />
           </div>
         </div>
-        {/* //TODO: Add participants field to API request
+
         <div className="row">
           <div className="field-container">
             <label htmlFor="participants">Participants</label>
@@ -131,12 +140,13 @@ function CreateEventForm({
               onChange={(event) => {
                 setParticipants(event.target.value);
               }}
+              spellCheck={false}
               value={participants}
               rows={1}
             />
             <p className="note">Separate by comma for multiple participants</p>
           </div>
-        </div> */}
+        </div>
         <div className="row">
           <div className="field-container">
             <label htmlFor="description">Description</label>

@@ -13,6 +13,7 @@ function App() {
   const nylas = useNylas();
   const [primaryCalendar, setPrimaryCalendar] = useState(null);
   const [userId, setUserId] = useState('');
+  const [userEmail, setUserEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [events, setEvents] = useState([]);
   const serverBaseUrl =
@@ -20,8 +21,12 @@ function App() {
 
   useEffect(() => {
     const userIdString = sessionStorage.getItem('userId');
+    const userEmail = sessionStorage.getItem('userEmail');
     if (userIdString) {
       setUserId(userIdString);
+    }
+    if (userEmail) {
+      setUserEmail(userEmail);
     }
   }, []);
 
@@ -137,7 +142,9 @@ function App() {
 
   const disconnectUser = () => {
     sessionStorage.removeItem('userId');
+    sessionStorage.removeItem('userEmail');
     setUserId('');
+    setUserEmail('');
   };
 
   const refresh = () => {
@@ -152,7 +159,7 @@ function App() {
       refresh={refresh}
     >
       {!userId ? (
-        <NylasLogin />
+        <NylasLogin email={userEmail} setEmail={setUserEmail} />
       ) : (
         <div className="app-card">
           <CalendarApp
