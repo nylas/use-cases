@@ -17,7 +17,7 @@ function CalendarApp({
 }) {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showCreateEventForm, setShowCreateEventForm] = useState(false);
-  const [toastNotification, setToastNotification] = useState(false);
+  const [toastNotification, setToastNotification] = useState('');
 
   return (
     <>
