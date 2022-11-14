@@ -21,12 +21,10 @@ function CreateEventForm({
   const now = new Date();
 
   const createEvent = async (e) => {
-    e.preventDefault(sessionStorage.getItem('userEmail'));
+    e.preventDefault();
 
     try {
       const url = serverBaseUrl + '/nylas/create-events';
-
-      console.log(participants.split(/\s*,\s*/).map((email) => ({ email })));
 
       const res = await fetch(url, {
         method: 'POST',
@@ -48,7 +46,6 @@ function CreateEventForm({
 
       if (!res.ok) {
         setToastNotification('error');
-        console.log(res);
         throw new Error(res.statusText);
       }
 
@@ -129,7 +126,6 @@ function CreateEventForm({
             />
           </div>
         </div>
-
         <div className="row">
           <div className="field-container">
             <label htmlFor="participants">Participants</label>
