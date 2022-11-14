@@ -163,7 +163,7 @@ CreateEventForm.propTypes = {
   calendarId: PropTypes.string,
   serverBaseUrl: PropTypes.string.isRequired,
   setShowCreateEventForm: PropTypes.func,
-  toastNotification: PropTypes.string,
+  toastNotification: PropTypes.bool,
   setToastNotification: PropTypes.func,
   refresh: PropTypes.func,
 };
