@@ -9,11 +9,15 @@
   color: $color-grey-900;
 }
 
+.hide {
+  display: none;
+}
+
 .scroll-shadow {
   position: sticky;
   height: 10px;
   width: calc(100% - #{$spacing-12});
-  transition: opacity 500ms ease-out;
+  transition: opacity 200ms ease-out;
   opacity: 1;
 
   &.top {
@@ -82,15 +86,22 @@ a {
   padding-top: $spacing-4;
 
   .event-header {
+    display: flex;
     margin-right: $spacing-28;
     padding-bottom: $spacing-28;
     border-bottom: 1px solid $color-grey-400;
+    justify-content: space-between;
+    align-items: center;
 
     .title {
       color: $color-grey-900;
       font-weight: 600;
       font-size: $fs-22;
       line-height: 1.25;
+    }
+
+    .create-event {
+      @include font-style('Link M');
     }
   }
 
@@ -255,6 +266,114 @@ a {
         margin-top: $spacing-32;
       }
     }
+
+    .description-container {
+      overflow-y: scroll;
+      width: calc(100% + #{$spacing-16});
+
+      .title {
+        padding-top: $spacing-24;
+      }
+
+      &::-webkit-scrollbar-track {
+        margin-top: $spacing-32;
+      }
+    }
+  }
+
+  .email-info {
+    width: 100%;
+    margin-top: $spacing-24;
+    display: flex;
+    flex-flow: column;
+    font-weight: 400;
+    font-size: $fs-14;
+    line-height: 1.5;
+
+    .sender-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+
+      .sender {
+        display: flex;
+        align-items: center;
+        gap: $spacing-8;
+
+        .sender-name {
+          color: $color-grey-900;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .receiver-container {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+
+      button.collapse-button {
+        margin-left: $spacing-4;
+        border-radius: $spacing-4;
+        padding: $spacing-8 $spacing-4;
+        border: none;
+        background-color: transparent;
+
+        .collapse-icon {
+          transition: all 100ms ease-out;
+          &.open {
+            transform: rotate(180deg);
+          }
+        }
+      }
+
+      &:hover button.collapse-button {
+        background-color: $color-blue-100;
+      }
+    }
+
+    .participants-container {
+      width: 100%;
+      padding: $spacing-16 $spacing-32;
+      border: 1px solid $color-blue-100;
+      border-radius: $spacing-16;
+      margin-top: $spacing-16;
+
+      gap: $spacing-8;
+      display: grid;
+      grid-template: 1fr auto / auto 1fr;
+
+      .participants-title {
+        display: flex;
+        align-items: flex-start;
+        color: $color-grey-900;
+        font-weight: 600;
+        font-size: $fs-14;
+        line-height: 1.5;
+      }
+
+      .participants-list {
+        display: flex;
+        flex-flow: column;
+        align-items: flex-start;
+        gap: $spacing-4;
+      }
+    }
+  }
+
+  .email-body {
+    width: 100%;
+    min-height: 0;
+    overflow-y: auto;
+    margin-top: $spacing-16;
+
+    .email-body-text {
+      word-break: break-word;
+      font-weight: 400;
+      font-size: $fs-16;
+      line-height: 1.5;
+    }
   }
 
   .empty-event {
@@ -268,6 +387,146 @@ a {
     font-size: $fs-14;
     line-height: 1.5;
   }
+}
+
+.create-event-view {
+  flex: 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+
+  .header {
+    display: flex;
+    padding: calc(#{$spacing-4} / 2) 0 $spacing-12;
+    justify-content: space-between;
+    border-bottom: 1px solid $color-grey-400;
+
+    .title {
+      @include font-style('Heading L');
+    }
+    .button-container {
+      display: flex;
+      gap: $spacing-12;
+
+      button {
+        @include font-style('Link M');
+        &.blue {
+          background-color: $color-blue-500;
+          color: $color-white;
+
+          &:hover,
+          &:focus {
+            background-color: $color-blue-700;
+          }
+
+          &:active {
+            background-color: $color-blue-900;
+          }
+        }
+
+        &.outline {
+          background-color: transparent;
+          color: $color-grey-800;
+          outline: 1px solid $color-grey-400;
+
+          &:hover,
+          &:focus {
+            outline: 1px solid $color-blue-900;
+          }
+
+          &:active {
+            outline: 2px solid $color-blue-900;
+          }
+        }
+      }
+    }
+  }
+
+  form {
+    flex: 1;
+    padding-top: $spacing-24;
+    width: calc(100% + #{$spacing-16});
+    display: flex;
+    flex-flow: column;
+    gap: $spacing-24;
+    overflow-y: scroll;
+    overflow-x: hidden;
+
+    &::-webkit-scrollbar-track {
+      margin-top: $spacing-32;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: calc(#{$spacing-48} + #{$spacing-8});
+
+      .field-container {
+        flex: 1;
+        label {
+          @include font-style('Body S');
+        }
+        input {
+          width: 100%;
+          outline: none;
+          border: 1px solid $color-grey-400;
+          color: $color-grey-900;
+          border-radius: 16px;
+          padding: $spacing-8 $spacing-16;
+          font-size: $fs-16;
+          font-weight: 400;
+          line-height: 1.5;
+
+          &::placeholder {
+            color: $color-grey-700;
+          }
+
+          &.placeholder {
+            color: $color-grey-700;
+          }
+        }
+
+        textarea {
+          width: 100%;
+          outline: none;
+          border: 1px solid $color-grey-400;
+          color: $color-grey-900;
+          border-radius: 16px;
+          padding: $spacing-8 $spacing-16;
+          font-size: $fs-16;
+          font-weight: 400;
+          line-height: 1.5;
+          resize: vertical;
+
+          &::placeholder {
+            color: $color-grey-700;
+          }
+        }
+
+        input[type='datetime-local']::-webkit-calendar-picker-indicator {
+          color: rgba(0, 0, 0, 0);
+          opacity: 1;
+          display: block;
+          background: url('../components/icons/date-input-icon.svg') no-repeat;
+        }
+
+        .note {
+          @include font-style('Body S');
+          color: $color-grey-700;
+        }
+      }
+    }
+  }
+}
+
+.loading-text {
+  width: 100%;
+  align-self: center;
+  text-align: center;
+  color: $color-grey-900;
+  font-weight: 600;
+  font-size: $fs-22;
+  line-height: 1.25;
 }
 
 .mobile-warning {

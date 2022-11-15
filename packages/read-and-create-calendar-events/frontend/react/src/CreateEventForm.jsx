@@ -1,15 +1,17 @@
-import { useState } from 'react';
-import { styles } from './styles';
-import {
-  applyTimezone,
-  currentTime,
-  currentTimePlusHalfHour,
-  getLocalDateString,
-} from './utils/date';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { applyTimezone, getLocalDateString } from './utils/date';
 
-function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
-  const [startTime, setStartTime] = useState(currentTime());
-  const [endTime, setEndTime] = useState(currentTimePlusHalfHour());
+function CreateEventForm({
+  userId,
+  calendarId,
+  serverBaseUrl,
+  setShowCreateEventForm,
+  setToastNotification,
+  refresh,
+}) {
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
@@ -37,6 +39,7 @@ function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
       });
 
       if (!res.ok) {
+        setToastNotification('error');
         throw new Error(res.statusText);
       }
 
@@ -49,78 +52,120 @@ function CreateEventForm({ userId, serverBaseUrl, calendarId }) {
       setEndTime(getLocalDateString(new Date()));
       setTitle('');
       setDescription('');
+      setShowCreateEventForm(false);
+      setToastNotification('success');
+      refresh();
     } catch (err) {
       console.warn(`Error creating event:`, err);
     }
   };
 
   return (
-    <div style={styles.CreateEventForm.container}>
-      <h2 style={styles.CreateEventForm.header}>Create event</h2>
-
-      <form style={styles.CreateEventForm.form} onSubmit={createEvent}>
-        <label style={styles.CreateEventForm.label} htmlFor="event-start-time">
-          Choose a start time:
-        </label>
-        <input
-          style={styles.CreateEventForm.input}
-          type="datetime-local"
-          name="event-start-time"
-          onChange={(event) => {
-            setStartTime(event.target.value);
-          }}
-          value={startTime}
-          min={getLocalDateString(now)}
-        />
-
-        <label style={styles.CreateEventForm.label} htmlFor="event-end-time">
-          Choose an end time:
-        </label>
-        <input
-          style={styles.CreateEventForm.input}
-          type="datetime-local"
-          name="event-end-time"
-          onChange={(event) => {
-            setEndTime(event.target.value);
-          }}
-          value={endTime}
-          min={getLocalDateString(now)}
-        />
-
-        <label style={styles.CreateEventForm.label} htmlFor="title">
-          Title:
-        </label>
-        <input
-          style={styles.CreateEventForm.input}
-          type="text"
-          name="title"
-          onChange={(event) => {
-            setTitle(event.target.value);
-          }}
-          value={title}
-        />
-
-        <label style={styles.CreateEventForm.label} htmlFor="description">
-          Description:
-        </label>
-        <textarea
-          style={styles.CreateEventForm.input}
-          type="text"
-          name="description"
-          onChange={(event) => {
-            setDescription(event.target.value);
-          }}
-          value={description}
-          rows={10}
-          width="100%"
-        />
-
-        <button style={styles.CreateEventForm.button} type="submit">
-          Create Event
-        </button>
+    <div className="create-event-view">
+      <div className="header">
+        <div className="title">Create event</div>
+        <div className="button-container">
+          <button
+            type="button"
+            className="outline"
+            onClick={() => setShowCreateEventForm(false)}
+          >
+            Cancel
+          </button>
+          <button className="blue" type="submit" form="event-form">
+            Create
+          </button>
+        </div>
+      </div>
+      <form id="event-form" className="scrollbar" onSubmit={createEvent}>
+        <div className="row">
+          <div className="field-container">
+            <label htmlFor="event-title">Event title</label>
+            <input
+              type="text"
+              name="event-title"
+              placeholder="Discuss calendar APIs"
+              onChange={(event) => {
+                setTitle(event.target.value);
+              }}
+              value={title}
+            />
+          </div>
+        </div>
+        <div className="row">
+          <div className="field-container">
+            <label htmlFor="event-start-time">Start time</label>
+            <input
+              type="datetime-local"
+              name="event-start-time"
+              className={startTime === '' ? 'placeholder' : ''}
+              onChange={(event) => {
+                setStartTime(event.target.value);
+              }}
+              value={startTime}
+              min={getLocalDateString(now)}
+            />
+          </div>
+          <div className="field-container">
+            <label htmlFor="event-end-time">End time</label>
+            <input
+              type="datetime-local"
+              name="event-end-time"
+              className={endTime === '' ? 'placeholder' : ''}
+              onChange={(event) => {
+                setEndTime(event.target.value);
+              }}
+              value={endTime}
+              min={getLocalDateString(now)}
+            />
+          </div>
+        </div>
+        {/* //TODO: Add participants field to API request
+        <div className="row">
+          <div className="field-container">
+            <label htmlFor="participants">Participants</label>
+            <textarea
+              type="text"
+              name="participants"
+              placeholder="Enter email addresses"
+              onChange={(event) => {
+                setParticipants(event.target.value);
+              }}
+              value={participants}
+              rows={1}
+            />
+            <p className="note">Separate by comma for multiple participants</p>
+          </div>
+        </div> */}
+        <div className="row">
+          <div className="field-container">
+            <label htmlFor="description">Description</label>
+            <textarea
+              type="text"
+              name="description"
+              onChange={(event) => {
+                setDescription(event.target.value);
+              }}
+              placeholder="Enter event description"
+              value={description}
+              rows={3}
+              width="100%"
+            />
+          </div>
+        </div>
       </form>
     </div>
   );
 }
+
+CreateEventForm.propTypes = {
+  userId: PropTypes.string.isRequired,
+  calendarId: PropTypes.string,
+  serverBaseUrl: PropTypes.string.isRequired,
+  setShowCreateEventForm: PropTypes.func,
+  toastNotification: PropTypes.string,
+  setToastNotification: PropTypes.func,
+  refresh: PropTypes.func,
+};
 
 export default CreateEventForm;
