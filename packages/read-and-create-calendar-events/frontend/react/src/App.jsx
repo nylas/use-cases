@@ -28,6 +28,9 @@ function App() {
     if (userEmail) {
       setUserEmail(userEmail);
     }
+    if (userIdString) {
+      setUserId(userIdString);
+    }
   }, []);
 
   useEffect(() => {
@@ -145,6 +148,10 @@ function App() {
     sessionStorage.removeItem('userEmail');
     setUserId('');
     setUserEmail('');
+  };
+
+  const refresh = () => {
+    getPrimaryCalendarEvents();
   };
 
   const refresh = () => {

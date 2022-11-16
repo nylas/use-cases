@@ -23,8 +23,8 @@ export const displayMeetingTime = (timeframe) => {
 };
 
 export const getLocalDateString = (date) => {
-  const localDate = date.toLocaleDateString('en-CA', { hour12: false });
-  const localTime = date.toLocaleTimeString('en-CA', { hour12: false });
+  const localDate = date.toLocaleDateString('en-CA', { hourCycle: 'h23' });
+  const localTime = date.toLocaleTimeString('en-CA', { hourCycle: 'h23' });
   return localDate + 'T' + localTime.split(':').slice(0, 2).join(':');
 };
 
