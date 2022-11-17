@@ -154,10 +154,6 @@ function App() {
     getPrimaryCalendarEvents();
   };
 
-  const refresh = () => {
-    getPrimaryCalendarEvents();
-  };
-
   return (
     <Layout
       showMenu={!!userId}
