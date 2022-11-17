@@ -26,8 +26,6 @@ function CreateEventForm({
 
   const now = new Date();
 
-  console.log(endTime);
-
   const createEvent = async (e) => {
     e.preventDefault();
 
