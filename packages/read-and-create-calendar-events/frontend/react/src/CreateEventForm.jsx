@@ -5,6 +5,7 @@ import {
   getLocalDateString,
   getDefaultEventStartTime,
   getDefaultEventEndTime,
+  currentTimeAddMinutes,
 } from './utils/date';
 
 function CreateEventForm({
@@ -43,9 +44,7 @@ function CreateEventForm({
           title,
           description,
           calendarId,
-          participants: participants
-            .split(/\s*,\s*/)
-            .map((email) => ({ email })),
+          participants,
         }),
       });
 
@@ -124,41 +123,10 @@ function CreateEventForm({
               name="event-end-time"
               className={endTime === '' ? 'placeholder' : ''}
               onChange={(event) => {
-                console.log(event.target.value);
                 setEndTime(event.target.value);
               }}
-              // readOnly={true}
-              // step={60 * 60}
-              // defaultValue={new Date().setTime(
-              //   now.getTime() + 3 * 60 * 60 * 1000
-              // )}
-              // on
-              // onKeyUp={(e) => console.log(e)}
-              // onClick={(e) => {
-              //   console.log(e);
-              //   // if (e.value)
-              //   // if (endTime === '') {
-              //   //   // console.log(endTime);
-              //   //   let newDate = new Date().setTime(
-              //   //     now.getTime() + 3 * 60 * 60 * 1000
-              //   //   );
-              //   //   // console.log(getLocalDateString(newDate));
-              //   //   endTime = getLocalDateString(newDate);
-              //   // setEndTime('');
-              //   // setEndTime(
-              //   //   new Date().setTime(now.getTime() + 3 * 60 * 60 * 1000)
-              //   // );
-              //   // console.log(endTime);
-              //   // setImmediate(() => setEndTime(''));
-              //   // setTimeout(() => {
-              //   //   setEndTime('');
-              //   // }, 0);
-              //   // }
-              // }}
-              // data-date={now}
-              // onClick={(e) => console.log(e)}
               value={endTime}
-              min={getLocalDateString(now)}
+              min={getLocalDateString(currentTimeAddMinutes(1))}
             />
           </div>
         </div>

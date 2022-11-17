@@ -46,13 +46,11 @@ function App() {
         .then((user) => {
           const { id } = JSON.parse(user);
           setUserId(id);
+          sessionStorage.setItem('userId', id);
         })
-        .catch((err) => {
-          console.error('An error occurred parsing the response:', err);
+        .catch((error) => {
+          console.error('An error occurred parsing the response:', error);
         });
-    }
-    if (params.has('userId')) {
-      setUserId(params.get('userId'));
     }
   }, [nylas]);
 

@@ -54,10 +54,10 @@ export const currentTime = () => {
   return getLocalDateString(date);
 };
 
-export const currentTimePlusHalfHour = () => {
+export const currentTimeAddMinutes = (minutes) => {
   const date = new Date();
-  date.setMinutes(date.getMinutes() + 30);
-  return getLocalDateString(date);
+  date.setMinutes(date.getMinutes() + minutes);
+  return date;
 };
 
 export const getEventDate = (calendarEvent) => {
@@ -95,9 +95,10 @@ const getNextHalfHour = () => {
   const currentMinutes = date.getMinutes();
   const minutesToAdd = 30 - (currentMinutes % 30 || 0);
 
-  date.setMinutes(currentMinutes + minutesToAdd);
+  return currentTimeAddMinutes(minutesToAdd);
+  // date.setMinutes(currentMinutes + minutesToAdd);
 
-  return date;
+  // return date;
 };
 
 export const getOneHourFromPassedTimestamp = (timestamp) => {

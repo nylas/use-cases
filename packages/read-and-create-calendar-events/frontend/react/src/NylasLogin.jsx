@@ -10,8 +10,9 @@ const NylasLogin = ({ email, setEmail }) => {
   const loginUser = (e) => {
     e.preventDefault();
     setIsLoading(true);
+    console.log('setting email');
     sessionStorage.setItem('userEmail', email);
-
+    console.log('email should be set');
     nylas.authWithRedirect({
       emailAddress: email,
       successRedirectUrl: '',
