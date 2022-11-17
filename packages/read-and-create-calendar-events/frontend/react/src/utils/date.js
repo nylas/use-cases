@@ -78,3 +78,31 @@ export const getFormattedDate = (event) => {
 export const getTimezoneCode = () => {
   return DateTime.local().toFormat('ZZZZ');
 };
+
+export const getDefaultEventStartTime = () => {
+  const startDate = getNextHalfHour();
+  return getLocalDateString(startDate);
+};
+
+export const getDefaultEventEndTime = () => {
+  const startDate = getNextHalfHour();
+  const endDate = getOneHourFromPassedTimestamp(startDate);
+  return getLocalDateString(endDate);
+};
+
+const getNextHalfHour = () => {
+  const date = new Date();
+  const currentMinutes = date.getMinutes();
+  const minutesToAdd = 30 - (currentMinutes % 30 || 0);
+
+  date.setMinutes(currentMinutes + minutesToAdd);
+
+  return date;
+};
+
+export const getOneHourFromPassedTimestamp = (timestamp) => {
+  const date = new Date(timestamp);
+  date.setHours(timestamp.getHours() + 1);
+
+  return date;
+};

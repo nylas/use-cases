@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { applyTimezone, getLocalDateString } from './utils/date';
+import {
+  applyTimezone,
+  getLocalDateString,
+  getDefaultEventStartTime,
+  getDefaultEventEndTime,
+} from './utils/date';
 
 function CreateEventForm({
   userId,
@@ -10,11 +15,11 @@ function CreateEventForm({
   setToastNotification,
   refresh,
 }) {
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
+  const [startTime, setStartTime] = useState(getDefaultEventStartTime());
+  const [endTime, setEndTime] = useState(getDefaultEventEndTime());
   const [title, setTitle] = useState('');
   const [participants, setParticipants] = useState(
-    sessionStorage.getItem('userEmail')
+    sessionStorage.getItem('userEmail') || ''
   );
   const [description, setDescription] = useState('');
 
@@ -119,8 +124,39 @@ function CreateEventForm({
               name="event-end-time"
               className={endTime === '' ? 'placeholder' : ''}
               onChange={(event) => {
+                console.log(event.target.value);
                 setEndTime(event.target.value);
               }}
+              // readOnly={true}
+              // step={60 * 60}
+              // defaultValue={new Date().setTime(
+              //   now.getTime() + 3 * 60 * 60 * 1000
+              // )}
+              // on
+              // onKeyUp={(e) => console.log(e)}
+              // onClick={(e) => {
+              //   console.log(e);
+              //   // if (e.value)
+              //   // if (endTime === '') {
+              //   //   // console.log(endTime);
+              //   //   let newDate = new Date().setTime(
+              //   //     now.getTime() + 3 * 60 * 60 * 1000
+              //   //   );
+              //   //   // console.log(getLocalDateString(newDate));
+              //   //   endTime = getLocalDateString(newDate);
+              //   // setEndTime('');
+              //   // setEndTime(
+              //   //   new Date().setTime(now.getTime() + 3 * 60 * 60 * 1000)
+              //   // );
+              //   // console.log(endTime);
+              //   // setImmediate(() => setEndTime(''));
+              //   // setTimeout(() => {
+              //   //   setEndTime('');
+              //   // }, 0);
+              //   // }
+              // }}
+              // data-date={now}
+              // onClick={(e) => console.log(e)}
               value={endTime}
               min={getLocalDateString(now)}
             />
