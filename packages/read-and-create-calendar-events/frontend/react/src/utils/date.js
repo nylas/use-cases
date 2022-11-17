@@ -54,12 +54,6 @@ export const currentTime = () => {
   return getLocalDateString(date);
 };
 
-export const currentTimeAddMinutes = (minutes) => {
-  const date = new Date();
-  date.setMinutes(date.getMinutes() + minutes);
-  return date;
-};
-
 export const getEventDate = (calendarEvent) => {
   return new Date(
     calendarEvent.when.object === 'date'
@@ -90,20 +84,34 @@ export const getDefaultEventEndTime = () => {
   return getLocalDateString(endDate);
 };
 
-const getNextHalfHour = () => {
-  const date = new Date();
-  const currentMinutes = date.getMinutes();
-  const minutesToAdd = 30 - (currentMinutes % 30 || 0);
-
-  return currentTimeAddMinutes(minutesToAdd);
-  // date.setMinutes(currentMinutes + minutesToAdd);
-
-  // return date;
-};
-
 export const getOneHourFromPassedTimestamp = (timestamp) => {
   const date = new Date(timestamp);
   date.setHours(timestamp.getHours() + 1);
 
   return date;
+};
+
+// export const currentTimeAddMinutes = (minutes) => {
+//   const date = new Date();
+//   date.setMinutes(date.getMinutes() + minutes);
+//   return date;
+// };
+
+export const getMinimumEndTime = (dateString) => {
+  const date = new Date(dateString);
+  date.setMinutes(date.getMinutes() + 1);
+  return date;
+};
+
+const getNextHalfHour = () => {
+  const date = new Date();
+  const currentMinutes = date.getMinutes();
+  const minutesToAdd = 30 - (currentMinutes % 30 || 0);
+
+  date.setMinutes(date.getMinutes() + minutesToAdd);
+  return date;
+  // return currentTimeAddMinutes(minutesToAdd);
+  // date.setMinutes(currentMinutes + minutesToAdd);
+
+  // return date;
 };

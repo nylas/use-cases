@@ -5,7 +5,7 @@ import {
   getLocalDateString,
   getDefaultEventStartTime,
   getDefaultEventEndTime,
-  currentTimeAddMinutes,
+  getMinimumEndTime,
 } from './utils/date';
 
 function CreateEventForm({
@@ -126,7 +126,7 @@ function CreateEventForm({
                 setEndTime(event.target.value);
               }}
               value={endTime}
-              min={getLocalDateString(currentTimeAddMinutes(1))}
+              min={getLocalDateString(getMinimumEndTime(startTime))}
             />
           </div>
         </div>
