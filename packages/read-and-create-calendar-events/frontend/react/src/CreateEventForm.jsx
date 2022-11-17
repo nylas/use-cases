@@ -26,6 +26,8 @@ function CreateEventForm({
 
   const now = new Date();
 
+  console.log(endTime);
+
   const createEvent = async (e) => {
     e.preventDefault();
 
@@ -108,7 +110,6 @@ function CreateEventForm({
             <input
               type="datetime-local"
               name="event-start-time"
-              className={startTime === '' ? 'placeholder' : ''}
               onChange={(event) => {
                 setStartTime(event.target.value);
               }}
@@ -121,7 +122,6 @@ function CreateEventForm({
             <input
               type="datetime-local"
               name="event-end-time"
-              className={endTime === '' ? 'placeholder' : ''}
               onChange={(event) => {
                 setEndTime(event.target.value);
               }}

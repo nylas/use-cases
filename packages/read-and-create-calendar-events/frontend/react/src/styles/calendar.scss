@@ -476,14 +476,6 @@ a {
           font-size: $fs-16;
           font-weight: 400;
           line-height: 1.5;
-
-          &::placeholder {
-            color: $color-grey-700;
-          }
-
-          &.placeholder {
-            color: $color-grey-700;
-          }
         }
 
         textarea {
