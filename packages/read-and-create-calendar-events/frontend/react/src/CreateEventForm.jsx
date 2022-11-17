@@ -13,6 +13,9 @@ function CreateEventForm({
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [title, setTitle] = useState('');
+  const [participants, setParticipants] = useState(
+    sessionStorage.getItem('userEmail')
+  );
   const [description, setDescription] = useState('');
 
   const now = new Date();
@@ -35,6 +38,9 @@ function CreateEventForm({
           title,
           description,
           calendarId,
+          participants: participants
+            .split(/\s*,\s*/)
+            .map((email) => ({ email })),
         }),
       });
 
@@ -120,7 +126,6 @@ function CreateEventForm({
             />
           </div>
         </div>
-        {/* //TODO: Add participants field to API request
         <div className="row">
           <div className="field-container">
             <label htmlFor="participants">Participants</label>
@@ -131,12 +136,13 @@ function CreateEventForm({
               onChange={(event) => {
                 setParticipants(event.target.value);
               }}
+              spellCheck={false}
               value={participants}
               rows={1}
             />
             <p className="note">Separate by comma for multiple participants</p>
           </div>
-        </div> */}
+        </div>
         <div className="row">
           <div className="field-container">
             <label htmlFor="description">Description</label>

@@ -57,7 +57,8 @@ exports.createEvents = async (req, res, nylasClient) => {
     return res.json({ message: 'Unauthorized' });
   }
 
-  const { calendarId, title, description, startTime, endTime } = req.body;
+  const { calendarId, title, description, startTime, endTime, participants } =
+    req.body;
 
   if (!calendarId || !title || !startTime || !endTime) {
     return res.status(400).json({
@@ -75,6 +76,7 @@ exports.createEvents = async (req, res, nylasClient) => {
   event.description = description;
   event.when.startTime = startTime;
   event.when.endTime = endTime;
+  event.participants = participants;
 
   event.save();
 
