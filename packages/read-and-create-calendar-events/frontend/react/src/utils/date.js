@@ -1,11 +1,31 @@
 import { DateTime } from 'luxon';
 
-export const get12HourTime = (timestamp) => {
+const get12HourTime = (timestamp) => {
   return new Date(timestamp * 1000).toLocaleTimeString('en-US', {
     hour: 'numeric',
     minute: 'numeric',
     hour12: true,
   });
+};
+
+const getNextHalfHour = () => {
+  const date = new Date();
+  const currentMinutes = date.getMinutes();
+  const minutesToAdd = 30 - (currentMinutes % 30 || 0);
+
+  date.setMinutes(date.getMinutes() + minutesToAdd);
+  return date;
+};
+
+const getOneHourFromPassedTimestamp = (timestamp) => {
+  const date = new Date(timestamp);
+  date.setHours(timestamp.getHours() + 1);
+
+  return date;
+};
+
+const getUnixTimestamp = (date) => {
+  return Math.floor(date.getTime() / 1000);
 };
 
 export const displayMeetingTime = (timeframe) => {
@@ -34,10 +54,6 @@ export const applyTimezone = (date) => {
   return getUnixTimestamp(localizedDate);
 };
 
-export const getUnixTimestamp = (date) => {
-  return Math.floor(date.getTime() / 1000);
-};
-
 export const getTodaysDateTimestamp = () => {
   const date = new Date();
   return applyTimezone(getLocalDateString(date));
@@ -47,11 +63,6 @@ export const getSevenDaysFromTodayDateTimestamp = () => {
   const date = new Date();
   date.setDate(date.getDate() + 7);
   return applyTimezone(getLocalDateString(new Date(date)));
-};
-
-export const currentTime = () => {
-  const date = new Date();
-  return getLocalDateString(date);
 };
 
 export const getEventDate = (calendarEvent) => {
@@ -84,34 +95,8 @@ export const getDefaultEventEndTime = () => {
   return getLocalDateString(endDate);
 };
 
-export const getOneHourFromPassedTimestamp = (timestamp) => {
-  const date = new Date(timestamp);
-  date.setHours(timestamp.getHours() + 1);
-
-  return date;
-};
-
-// export const currentTimeAddMinutes = (minutes) => {
-//   const date = new Date();
-//   date.setMinutes(date.getMinutes() + minutes);
-//   return date;
-// };
-
 export const getMinimumEndTime = (dateString) => {
   const date = new Date(dateString);
   date.setMinutes(date.getMinutes() + 1);
   return date;
-};
-
-const getNextHalfHour = () => {
-  const date = new Date();
-  const currentMinutes = date.getMinutes();
-  const minutesToAdd = 30 - (currentMinutes % 30 || 0);
-
-  date.setMinutes(date.getMinutes() + minutesToAdd);
-  return date;
-  // return currentTimeAddMinutes(minutesToAdd);
-  // date.setMinutes(currentMinutes + minutesToAdd);
-
-  // return date;
 };
