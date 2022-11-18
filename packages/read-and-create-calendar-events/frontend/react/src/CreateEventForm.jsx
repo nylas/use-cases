@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { applyTimezone, getLocalDateString } from './utils/date';
+import {
+  applyTimezone,
+  getLocalDateString,
+  getDefaultEventStartTime,
+  getDefaultEventEndTime,
+  getMinimumEventEndTime,
+} from './utils/date';
 
 function CreateEventForm({
   userId,
@@ -10,11 +16,11 @@ function CreateEventForm({
   setToastNotification,
   refresh,
 }) {
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
+  const [startTime, setStartTime] = useState(getDefaultEventStartTime());
+  const [endTime, setEndTime] = useState(getDefaultEventEndTime());
   const [title, setTitle] = useState('');
   const [participants, setParticipants] = useState(
-    sessionStorage.getItem('userEmail')
+    sessionStorage.getItem('userEmail') || ''
   );
   const [description, setDescription] = useState('');
 
@@ -38,9 +44,7 @@ function CreateEventForm({
           title,
           description,
           calendarId,
-          participants: participants
-            .split(/\s*,\s*/)
-            .map((email) => ({ email })),
+          participants,
         }),
       });
 
@@ -104,7 +108,6 @@ function CreateEventForm({
             <input
               type="datetime-local"
               name="event-start-time"
-              className={startTime === '' ? 'placeholder' : ''}
               onChange={(event) => {
                 setStartTime(event.target.value);
               }}
@@ -117,12 +120,11 @@ function CreateEventForm({
             <input
               type="datetime-local"
               name="event-end-time"
-              className={endTime === '' ? 'placeholder' : ''}
               onChange={(event) => {
                 setEndTime(event.target.value);
               }}
               value={endTime}
-              min={getLocalDateString(now)}
+              min={getLocalDateString(getMinimumEventEndTime(startTime))}
             />
           </div>
         </div>

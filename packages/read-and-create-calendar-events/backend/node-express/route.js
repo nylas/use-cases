@@ -76,7 +76,12 @@ exports.createEvents = async (req, res, nylasClient) => {
   event.description = description;
   event.when.startTime = startTime;
   event.when.endTime = endTime;
-  event.participants = participants;
+
+  if (participants) {
+    event.participants = participants
+      .split(/\s*,\s*/)
+      .map((email) => ({ email }));
+  }
 
   event.save();
 
