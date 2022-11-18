@@ -66,7 +66,6 @@ function App() {
       });
       const data = await res.json();
       if (Array.isArray(data)) {
-        console.log('DATA', data);
         setEmails(data);
       } else {
         setEmails([]);
