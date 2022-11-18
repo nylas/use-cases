@@ -84,11 +84,28 @@ app.get('/nylas/read-emails', async (req, res) => {
     return res.json('Unauthorized');
   }
 
-  const messages = await nylasClient
+  const threads = await nylasClient
     .with(user.accessToken)
-    .messages.list({ limit: 5 });
+    .threads.list({ limit: 5, expanded: true });
 
-  return res.json(messages);
+  return res.json(threads);
+});
+
+app.get('/nylas/message', async (req, res) => {
+  if (!req.headers.authorization) {
+    return res.json('Unauthorized');
+  }
+
+  const user = await mockDb.findUser(req.headers.authorization);
+
+  if (!user) {
+    return res.json('Unauthorized');
+  }
+
+  const { id } = req.query;
+  const message = await nylasClient.with(user.accessToken).messages.find(id);
+
+  return res.json(message);
 });
 
 // Add route for download file

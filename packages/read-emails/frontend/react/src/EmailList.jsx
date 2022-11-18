@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import EmailPreview from './EmailPreview';
 
-function EmailList({ emails, setSelectedEmail }) {
+function EmailList({ emails, selectedEmail, setSelectedEmail }) {
   const handleEmailSelect = (thread) => {
     setSelectedEmail(thread);
   };
@@ -19,7 +19,10 @@ function EmailList({ emails, setSelectedEmail }) {
           <ul className="email-list">
             {emails.map((thread) => (
               <div key={thread.id} onClick={() => handleEmailSelect(thread)}>
-                <EmailPreview thread={thread} />
+                <EmailPreview
+                  thread={thread}
+                  selected={selectedEmail?.id === thread.id}
+                />
               </div>
             ))}
           </ul>
@@ -31,6 +34,7 @@ function EmailList({ emails, setSelectedEmail }) {
 
 EmailList.propTypes = {
   emails: PropTypes.array.isRequired,
+  selectedEmail: PropTypes.object,
   setSelectedEmail: PropTypes.func,
 };
 
