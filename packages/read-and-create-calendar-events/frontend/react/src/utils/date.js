@@ -95,7 +95,7 @@ export const getDefaultEventEndTime = () => {
   return getLocalDateString(endDate);
 };
 
-export const getMinimumEndTime = (dateString) => {
+export const getMinimumEventEndTime = (dateString) => {
   const date = new Date(dateString);
   date.setMinutes(date.getMinutes() + 1);
   return date;
