@@ -18,6 +18,10 @@
   gap: $spacing-8;
   background-color: $color-white;
 
+  p {
+    margin: 0;
+  }
+
   .title {
     color: $color-grey-900;
     font-weight: 600;
@@ -65,6 +69,14 @@
           font-weight: 600;
           font-size: $fs-14;
           line-height: 1.5;
+
+          .message-count {
+            color: $color-grey-800;
+            font-weight: 400;
+            font-size: $fs-14;
+            line-height: 1.5;
+            margin-left: $spacing-8;
+          }
         }
         .subject {
           color: $color-grey-900;
@@ -142,9 +154,57 @@
     }
   }
 
+  .message-list {
+    overflow-y: auto;
+    width: 100%;
+    padding-right: $spacing-8;
+
+    .message-container {
+      width: 100%;
+      padding-top: $spacing-24;
+      cursor: pointer;
+
+      p.snippet {
+        font-weight: 400;
+        font-size: $fs-14;
+        line-height: 1.5;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .message-border {
+        padding-top: 6px;
+        width: 100%;
+        height: 20px;
+        border-bottom: 1px solid $color-blue-100;
+        text-align: center;
+
+        span {
+          color: $color-blue-500;
+          font-weight: 400;
+          font-size: $fs-12;
+          line-height: 1.5;
+          background-color: $color-white;
+          padding: 0 $spacing-8;
+
+          transition: all 100ms ease-out;
+        }
+
+        &:hover span {
+          color: $color-blue-900;
+        }
+      }
+    }
+
+    .message-container:last-child {
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+  }
+
   .email-info {
     width: 100%;
-    margin-top: $spacing-24;
     display: flex;
     flex-flow: column;
     font-weight: 400;
@@ -173,6 +233,7 @@
       display: flex;
       align-items: center;
       cursor: pointer;
+      align-self: flex-start;
 
       button.collapse-button {
         margin-left: $spacing-4;
@@ -226,11 +287,11 @@
   .email-body {
     width: 100%;
     min-height: 0;
-    overflow-y: auto;
     margin-top: $spacing-16;
     display: flex;
     flex-flow: column;
     gap: $spacing-16;
+    cursor: default;
 
     .email-body-html {
       word-break: break-word;
