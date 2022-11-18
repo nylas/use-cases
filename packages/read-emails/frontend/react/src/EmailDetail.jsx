@@ -3,12 +3,14 @@ import PropTypes from 'prop-types';
 import EmailIllustration from './components/icons/illustration-email.svg';
 import ChevronDown from './components/icons/icon-chevron-down.svg';
 import AttachmentIcon from './components/icons/icon-attachment.svg';
+import IconSync from './components/icons/IconSync.jsx';
 import { formatPreviewDate } from './utils/date.js';
 import { cleanEmailBody } from './utils/email.js';
 
 function EmailDetail({ selectedEmail, userEmail, serverBaseUrl, userId }) {
   const [messages, setMessages] = useState([]);
   const [collapsedCount, setCollapsedCount] = useState(0);
+  const [loadingMessage, setLoadingMessage] = useState('');
 
   useEffect(() => {
     const setupMessages = async () => {
@@ -40,6 +42,7 @@ function EmailDetail({ selectedEmail, userEmail, serverBaseUrl, userId }) {
   const getMessage = async (message) => {
     if (message.body) return message;
 
+    setLoadingMessage(message.id);
     try {
       const queryParams = new URLSearchParams({ id: message.id });
       const url = `${serverBaseUrl}/nylas/message?${queryParams.toString()}`;
@@ -51,9 +54,11 @@ function EmailDetail({ selectedEmail, userEmail, serverBaseUrl, userId }) {
         },
       });
       const messageData = await res.json();
+      setLoadingMessage('');
       return messageData;
     } catch (e) {
       console.warn(`Error retrieving message:`, e);
+      setLoadingMessage('');
       return false;
     }
   };
@@ -171,150 +176,160 @@ function EmailDetail({ selectedEmail, userEmail, serverBaseUrl, userId }) {
 
           {/* Each email message can be expanded and collapsed */}
           <div className="message-list">
-            {messages?.map((message, index) => (
-              <div
-                key={message.id}
-                className="message-container"
-                onClick={() => handleToggleMessage(message)}
-              >
-                <div className="email-info">
-                  <div className="sender-container">
-                    {!!message.from?.length && (
-                      <div className="sender">
-                        <span className="sender-name">
-                          {message.from[0].name}
-                        </span>
-                        {message.expanded && (
-                          <span className="sender-email">
-                            {message.from[0].email}
+            {messages?.map((message, index) => {
+              const isLoading = loadingMessage === message.id;
+              return (
+                <div
+                  key={message.id}
+                  className={`message-container`}
+                  onClick={() => handleToggleMessage(message)}
+                >
+                  <div className="email-info">
+                    <div className="sender-container">
+                      {!!message.from?.length && (
+                        <div className="sender">
+                          <span className="sender-name">
+                            {message.from[0].name}
                           </span>
+                          {message.expanded && (
+                            <span className="sender-email">
+                              {message.from[0].email}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      <span>
+                        {formatPreviewDate(
+                          new Date(Math.floor(message.date * 1000)),
+                          true
+                        )}
+                      </span>
+                    </div>
+                    {message.expanded && (
+                      <div
+                        className={`receiver-container`}
+                        onClick={(event) =>
+                          handleToggleParticipants(event, message.id)
+                        }
+                      >
+                        <span>to {getMessageReceivers(message)}</span>
+                        <button className="collapse-button">
+                          <img
+                            className={`collapse-icon ${
+                              message.showParticipants ? 'open' : ''
+                            }`}
+                            src={ChevronDown}
+                            alt="chevron down"
+                            width="10"
+                          />
+                        </button>
+                      </div>
+                    )}
+
+                    {message.showParticipants && (
+                      <div className="participants-container">
+                        <div className="participants-title">From</div>
+                        <div className="participants-list">
+                          {message.from?.map((p) => (
+                            <span key={p.email}>
+                              {p.name ? `${p.name} - ` : ''}
+                              {p.email}
+                            </span>
+                          ))}
+                        </div>
+
+                        <div className="participants-title">To</div>
+                        <div className="participants-list">
+                          {message.to?.map((p) => (
+                            <span key={p.email}>
+                              {p.name ? `${p.name} - ` : ''}
+                              {p.email}
+                            </span>
+                          ))}
+                        </div>
+
+                        {!!message.cc?.length && (
+                          <>
+                            <div className="participants-title">CC</div>
+                            <div className="participants-list">
+                              {message.cc?.map((p) => (
+                                <span key={p.email}>
+                                  {p.name ? `${p.name} - ` : ''}
+                                  {p.email}
+                                </span>
+                              ))}
+                            </div>
+                          </>
                         )}
                       </div>
                     )}
-                    <span>
-                      {formatPreviewDate(
-                        new Date(Math.floor(message.date * 1000)),
-                        true
-                      )}
-                    </span>
                   </div>
-                  {message.expanded && (
-                    <div
-                      className={`receiver-container`}
-                      onClick={(event) =>
-                        handleToggleParticipants(event, message.id)
-                      }
-                    >
-                      <span>to {getMessageReceivers(message)}</span>
-                      <button className="collapse-button">
-                        <img
-                          className={`collapse-icon ${
-                            message.showParticipants ? 'open' : ''
-                          }`}
-                          src={ChevronDown}
-                          alt="chevron down"
-                          width="10"
-                        />
-                      </button>
+                  {message.expanded ? (
+                    <div className="email-body">
+                      <div
+                        className="email-body-html"
+                        dangerouslySetInnerHTML={{
+                          __html: cleanEmailBody(message.body),
+                        }}
+                      />
+
+                      {!!message.files?.length && (
+                        <div className="attachment-container">
+                          <div className="attachment-title">
+                            <span>Attachments</span>
+                            <hr />
+                          </div>
+
+                          <div className="attachment-files">
+                            {message.files
+                              .filter(
+                                (file) =>
+                                  file.content_disposition === 'attachment' &&
+                                  !file.content_type.includes('calendar')
+                              )
+                              .map((f) => (
+                                <div
+                                  className="attachment"
+                                  key={f.id}
+                                  onClick={(event) =>
+                                    downloadAttachment(event, f)
+                                  }
+                                >
+                                  <img
+                                    src={AttachmentIcon}
+                                    alt="attachment icon"
+                                    width="20"
+                                  />
+                                  <span>{f.filename}</span>
+                                </div>
+                              ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="snippet">{message.snippet}</p>
+                  )}
+
+                  {isLoading && (
+                    <div className="loading-icon">
+                      <IconSync /> Loading...
                     </div>
                   )}
 
-                  {message.showParticipants && (
-                    <div className="participants-container">
-                      <div className="participants-title">From</div>
-                      <div className="participants-list">
-                        {message.from?.map((p) => (
-                          <span key={p.email}>
-                            {p.name ? `${p.name} - ` : ''}
-                            {p.email}
-                          </span>
-                        ))}
-                      </div>
-
-                      <div className="participants-title">To</div>
-                      <div className="participants-list">
-                        {message.to?.map((p) => (
-                          <span key={p.email}>
-                            {p.name ? `${p.name} - ` : ''}
-                            {p.email}
-                          </span>
-                        ))}
-                      </div>
-
-                      {!!message.cc?.length && (
-                        <>
-                          <div className="participants-title">CC</div>
-                          <div className="participants-list">
-                            {message.cc?.map((p) => (
-                              <span key={p.email}>
-                                {p.name ? `${p.name} - ` : ''}
-                                {p.email}
-                              </span>
-                            ))}
-                          </div>
-                        </>
+                  {index !== messages.length - 1 && (
+                    <div
+                      className="message-border"
+                      onClick={handleShowCollapsedMessages}
+                    >
+                      {index === 0 && collapsedCount > 0 && (
+                        <span>Show {collapsedCount} messages</span>
                       )}
                     </div>
                   )}
                 </div>
-                {message.expanded ? (
-                  <div className="email-body">
-                    <div
-                      className="email-body-html"
-                      dangerouslySetInnerHTML={{
-                        __html: cleanEmailBody(message.body),
-                      }}
-                    />
-
-                    {!!message.files?.length && (
-                      <div className="attachment-container">
-                        <div className="attachment-title">
-                          <span>Attachments</span>
-                          <hr />
-                        </div>
-
-                        <div className="attachment-files">
-                          {message.files
-                            .filter(
-                              (file) =>
-                                file.content_disposition === 'attachment' &&
-                                !file.content_type.includes('calendar')
-                            )
-                            .map((f) => (
-                              <div
-                                className="attachment"
-                                key={f.id}
-                                onClick={(event) =>
-                                  downloadAttachment(event, f)
-                                }
-                              >
-                                <img
-                                  src={AttachmentIcon}
-                                  alt="attachment icon"
-                                  width="20"
-                                />
-                                <span>{f.filename}</span>
-                              </div>
-                            ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <p className="snippet">{message.snippet}</p>
-                )}
-                {index !== messages.length - 1 && (
-                  <div
-                    className="message-border"
-                    onClick={handleShowCollapsedMessages}
-                  >
-                    {index === 0 && collapsedCount > 0 && (
-                      <span>Show {collapsedCount} messages</span>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       ) : (

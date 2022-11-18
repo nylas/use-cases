@@ -18,7 +18,11 @@ function EmailApp({ userEmail, emails, isLoading, serverBaseUrl, userId }) {
           <p className="loading-text">Loading emails...</p>
         ) : emails.length ? (
           <>
-            <EmailList emails={emails} setSelectedEmail={setSelectedEmail} />
+            <EmailList
+              emails={emails}
+              selectedEmail={selectedEmail}
+              setSelectedEmail={setSelectedEmail}
+            />
             <EmailDetail
               selectedEmail={selectedEmail}
               userEmail={userEmail}

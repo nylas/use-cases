@@ -4,7 +4,7 @@ import { formatPreviewDate } from './utils/date.js';
 import AttachmentIcon from './components/icons/icon-attachment.svg';
 import CalendarIcon from './components/icons/icon-calendar.svg';
 
-function EmailPreview({ thread }) {
+function EmailPreview({ thread, selected }) {
   const [emailFrom, setEmailFrom] = useState('Unknown');
   const [hasAttachment, setHasAttachment] = useState(false);
   const [hasCalendar, setHasCalendar] = useState(false);
@@ -33,7 +33,7 @@ function EmailPreview({ thread }) {
   }, [thread]);
 
   return (
-    <li className="email-preview-container">
+    <li className={`email-preview-container ${selected ? 'selected' : ''}`}>
       <div className="email-content">
         <p className="sender">
           {emailFrom}
@@ -65,6 +65,7 @@ function EmailPreview({ thread }) {
 
 EmailPreview.propTypes = {
   thread: PropTypes.object.isRequired,
+  selected: PropTypes.bool.isRequired,
 };
 
 export default EmailPreview;

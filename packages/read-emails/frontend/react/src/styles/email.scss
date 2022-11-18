@@ -57,7 +57,8 @@
       gap: $spacing-16;
       transition: all 200ms ease-out;
 
-      &:hover {
+      &:hover,
+      &.selected {
         background-color: $color-blue-100;
         border: 1.5px solid $color-blue-700;
       }
@@ -160,9 +161,30 @@
     padding-right: $spacing-8;
 
     .message-container {
+      position: relative;
       width: 100%;
       padding-top: $spacing-24;
       cursor: pointer;
+
+      .loading-icon {
+        margin-top: $spacing-16;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        svg {
+          margin-right: $spacing-8;
+          animation: syncing-rotate 1.2s linear infinite;
+        }
+      }
+
+      @keyframes syncing-rotate {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
 
       p.snippet {
         font-weight: 400;
