@@ -4,19 +4,8 @@ import IconLogout from './icons/IconLogout.jsx';
 import NylasLogo from './icons/nylas-logo-horizontal.svg';
 import PropTypes from 'prop-types';
 
-const Layout = ({
-  children,
-  showMenu = false,
-  disconnectUser,
-  refresh,
-  isLoading,
-}) => {
+const Layout = ({ children, showMenu = false, disconnectUser }) => {
   const [isDisconnecting, setIsDisconnecting] = useState(false);
-
-  const handleRefresh = (e) => {
-    e.preventDefault();
-    refresh();
-  };
 
   const handleDisconnect = (e) => {
     e.preventDefault();
@@ -33,22 +22,7 @@ const Layout = ({
         <h1>Scheduling sample app</h1>
         {showMenu && (
           <div className="menu">
-            <button
-              onClick={handleRefresh}
-              disabled={isLoading || isDisconnecting}
-            >
-              <div className={`menu-icon ${isLoading ? 'syncing' : ''}`}>
-                <IconSync />
-              </div>
-              <span className="hidden-mobile">
-                {isLoading ? 'Refreshing' : 'Refresh'}
-              </span>
-            </button>
-            <div className="hidden-mobile">·</div>
-            <button
-              onClick={handleDisconnect}
-              disabled={isLoading || isDisconnecting}
-            >
+            <button onClick={handleDisconnect} disabled={isDisconnecting}>
               <div className="menu-icon">
                 <IconLogout />
               </div>
@@ -74,8 +48,6 @@ Layout.propTypes = {
   children: PropTypes.element.isRequired,
   showMenu: PropTypes.bool.isRequired,
   disconnectUser: PropTypes.func,
-  refresh: PropTypes.func,
-  isLoading: PropTypes.bool.isRequired,
 };
 
 export default Layout;
