@@ -31,9 +31,10 @@ function App() {
       nylas
         .exchangeCodeFromUrlForToken()
         .then((user) => {
-          const { id } = JSON.parse(user);
+          const { id, accessToken } = JSON.parse(user);
           setUserId(id);
           sessionStorage.setItem('userId', id);
+          sessionStorage.setItem('accessToken', accessToken);
         })
         .catch((error) => {
           console.error('An error occurred parsing the response:', error);

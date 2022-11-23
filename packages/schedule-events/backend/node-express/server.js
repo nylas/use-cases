@@ -50,6 +50,7 @@ const expressBinding = new ServerBindings.express(nylasClient, {
     res.json({
       id: user.id,
       emailAddress: user.emailAddress,
+      accessToken: user.accessToken,
     });
   },
   clientUri: CLIENT_URI,

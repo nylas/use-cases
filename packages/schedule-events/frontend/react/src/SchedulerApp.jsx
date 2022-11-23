@@ -3,7 +3,7 @@ import './styles/schedule-editor.scss';
 
 function SchedulerApp() {
   useEffect(() => {
-    // TODO: placeholder
+    console.log(sessionStorage.getItem('accessToken'));
   }, []);
 
   return (
