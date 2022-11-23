@@ -1,11 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { useNylas } from '@nylas/nylas-react';
-import EmailClient from './EmailClient';
+import NylasLogin from './NylasLogin';
+import Layout from './components/Layout';
+import EmailApp from './EmailApp';
 
 function App() {
   const nylas = useNylas();
-
   const [userId, setUserId] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [emails, setEmails] = useState([]);
+  const SERVER_URI = import.meta.env.VITE_SERVER_URI || 'http://localhost:9000';
+
+  useEffect(() => {
+    const userIdString = sessionStorage.getItem('userId');
+    const userEmail = sessionStorage.getItem('userEmail');
+    if (userIdString) {
+      setUserId(userIdString);
+    }
+    if (userEmail) {
+      setUserEmail(userEmail);
+    }
+  }, []);
 
   useEffect(() => {
     if (!nylas) {
@@ -20,57 +36,80 @@ function App() {
         .then((user) => {
           const { id } = JSON.parse(user);
           setUserId(id);
+          sessionStorage.setItem('userId', id);
         })
-        .catch((err) => {
-          console.error('An error occurred parsing the response:', err);
+        .catch((error) => {
+          console.error('An error occurred parsing the response:', error);
         });
-    }
-    if (params.has('userId')) {
-      setUserId(params.get('userId'));
     }
   }, [nylas]);
 
   useEffect(() => {
-    if (userId.length) {
+    if (userId?.length) {
       window.history.replaceState({}, '', `/?userId=${userId}`);
+      getEmails();
     } else {
       window.history.replaceState({}, '', '/');
     }
   }, [userId]);
 
-  return userId ? <EmailClient userId={userId} /> : <NylasLogin />;
-}
+  const getEmails = async () => {
+    setIsLoading(true);
+    try {
+      const url = SERVER_URI + '/nylas/read-emails';
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Authorization: userId,
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        setEmails(data);
+      } else {
+        setEmails([]);
+      }
+    } catch (e) {
+      console.warn(`Error retrieving emails:`, e);
+      return false;
+    }
+    setIsLoading(false);
+  };
 
-function NylasLogin() {
-  const nylas = useNylas();
+  const disconnectUser = () => {
+    sessionStorage.removeItem('userId');
+    sessionStorage.removeItem('userEmail');
+    setUserId('');
+    setUserEmail('');
+  };
 
-  const [email, setEmail] = useState('');
+  const refresh = () => {
+    getEmails();
+  };
 
   return (
-    <section style={{ width: '80vw', margin: '0 auto' }}>
-      <h1>Send and read emails sample app</h1>
-      <p>Authenticate your email to send and read</p>
-      <div style={{ marginTop: '30px' }}>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            nylas.authWithRedirect({
-              emailAddress: email,
-              successRedirectUrl: '',
-            });
-          }}
-        >
-          <input
-            required
-            type="email"
-            placeholder="Email Address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+    <Layout
+      showMenu={!!userId}
+      disconnectUser={disconnectUser}
+      refresh={refresh}
+      isLoading={isLoading}
+      title="Email sample app"
+    >
+      {!userId ? (
+        <NylasLogin email={userEmail} setEmail={setUserEmail} />
+      ) : (
+        <div className="app-card">
+          <EmailApp
+            userEmail={userEmail}
+            emails={emails}
+            isLoading={isLoading}
+            serverBaseUrl={SERVER_URI}
+            userId={userId}
           />
-          <button type="submit">Connect</button>
-        </form>
-      </div>
-    </section>
+        </div>
+      )}
+    </Layout>
   );
 }
 

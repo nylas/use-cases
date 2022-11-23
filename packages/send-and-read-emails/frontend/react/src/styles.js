@@ -1,11 +1,5 @@
 export const styles = {
-  EmailClient: {
-    contentContainer: {
-      display: 'flex',
-      width: '80vw',
-      maxHeight: '50vh',
-      margin: '10vh auto',
-    },
+  EmailList: {
     statusBar: {
       width: '80vw',
       margin: '6em auto 0',
@@ -23,61 +17,28 @@ export const styles = {
       fontWeight: 'bold',
       color: 'white',
     },
+    container: { width: '80vw', margin: '10vh auto' },
+    list: { padding: '0px', margin: 0 },
   },
-  ReadEmails: {
+  Email: {
     container: {
-      flex: 2,
-      maxWidth: '60%',
-      background: 'rgba(0, 42, 245, 0.2)',
-      padding: '1.2em 0.2em 1.2em 1.2em',
-      borderRadius: '8px',
-      minHeight: '100%',
+      position: 'relative',
+      padding: '20px',
+      backgroundColor: 'white',
+      border: '1px solid black',
+      borderWidth: '1px 2px 1px 2px',
+      cursor: 'pointer',
+      listStyle: 'none',
     },
-    list: {
-      overflowY: 'scroll',
-      paddingRight: '1em',
-      maxHeight: '90%',
-    },
-    button: {
-      background: '#4169e1',
-      color: '#fff',
-      padding: '0.5em 1.4em',
-      marginBottom: '0.6em',
-    },
-  },
-  SendEmails: {
-    container: {
-      display: 'flex',
-      flexDirection: 'column',
-      flex: 2,
-      marginLeft: '2em',
-    },
-    header: {
-      width: '100%',
-      padding: '0.5em',
-      background: '#4169e1',
+    date: { fontSize: 'smaller', color: 'gray' },
+    snippet: { color: 'gray' },
+    thread: {
+      padding: '40px',
+      backgroundColor: 'darkslategray',
       color: 'white',
-    },
-    to: {
-      border: '1px solid #8d94a5',
-      color: '#000',
-      padding: '0.5em 1.4em',
-    },
-    body: {
-      border: '1px solid #8d94a5',
-      color: '#000',
-      padding: '0.5em 1.4em',
-    },
-    cta: {
-      marginTop: '1em',
-      alignSelf: 'end',
-      justifySelf: 'end',
-    },
-    button: {
-      background: '#4169e1',
-      color: '#fff',
-      padding: '0.5em 1.4em',
-      marginBottom: '0.6em',
+      maxHeight: '140px',
+      overflowY: 'scroll',
+      margin: '10px 0px 0px',
     },
   },
 };
