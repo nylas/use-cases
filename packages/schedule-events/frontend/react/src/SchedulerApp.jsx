@@ -1,9 +1,26 @@
 import React, { useEffect } from 'react';
 import './styles/schedule-editor.scss';
+import nylas from './utils/schedule-editor.js';
 
 function SchedulerApp() {
   useEffect(() => {
-    console.log(sessionStorage.getItem('accessToken'));
+    if (!document.querySelector('iframe')) {
+      nylas.scheduler.show({
+        auth: {
+          accessToken: sessionStorage.getItem('accessToken'),
+        },
+        style: {
+          tintColor: '#32325d',
+          backgroundColor: 'white',
+        },
+        defaults: {
+          event: {
+            title: '30-min Coffee Meeting',
+            duration: 30,
+          },
+        },
+      });
+    }
   }, []);
 
   return (

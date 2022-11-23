@@ -53,6 +53,7 @@ function App() {
   const disconnectUser = () => {
     sessionStorage.removeItem('userId');
     sessionStorage.removeItem('userEmail');
+    sessionStorage.removeItem('accessToken');
     setUserId('');
     setUserEmail('');
   };
@@ -62,8 +63,10 @@ function App() {
       {!userId ? (
         <NylasLogin email={userEmail} setEmail={setUserEmail} />
       ) : (
-        <div className="app-card">
-          <SchedulerApp />
+        <div className="app-card-container">
+          <div className="app-card">
+            <SchedulerApp />
+          </div>
         </div>
       )}
     </Layout>

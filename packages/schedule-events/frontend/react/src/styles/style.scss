@@ -156,13 +156,24 @@ section.login {
     }
   }
 }
-.app-card {
+
+.app-card-container {
   width: 100%;
   height: 100%;
-  color: $color-grey-800;
-  background-color: $color-white;
-  padding: $spacing-32 $spacing-48;
-  border-radius: $spacing-32;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .app-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 760px;
+    max-height: 613px;
+    color: $color-grey-800;
+    background-color: $color-white;
+    border-radius: $spacing-32;
+  }
 }
 
 @media #{$desktop} {
