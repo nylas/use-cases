@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import './styles/schedule-editor.scss';
 
-function SchedulerApp({ userEmail, emails, isLoading, serverBaseUrl, userId }) {
-  const [selectedEmail, setSelectedEmail] = useState(null);
-
+function SchedulerApp() {
   useEffect(() => {
-    setSelectedEmail(null);
-  }, [emails]);
+    // TODO: placeholder
+  }, []);
 
   return (
     <>
