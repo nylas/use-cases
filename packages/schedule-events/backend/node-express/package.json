@@ -1,5 +1,5 @@
 {
-  "name": "nylas-read-emails-node-express",
+  "name": "nylas-scheduler-node-express",
   "version": "0.1.0",
   "description": "Demo using the Nylas Node SDK and ExpressJS.",
   "main": "server.js",

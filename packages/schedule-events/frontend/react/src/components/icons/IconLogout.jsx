@@ -1,6 +1,6 @@
 import React from 'react';
 
-const IconSync = () => {
+const IconLogout = () => {
   return (
     <svg
       height="16"
@@ -16,4 +16,4 @@ const IconSync = () => {
   );
 };
 
-export default IconSync;
+export default IconLogout;

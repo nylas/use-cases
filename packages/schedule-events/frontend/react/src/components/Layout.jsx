@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import IconSync from './icons/IconSync.jsx';
 import IconLogout from './icons/IconLogout.jsx';
 import NylasLogo from './icons/nylas-logo-horizontal.svg';
 import PropTypes from 'prop-types';

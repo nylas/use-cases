@@ -31,7 +31,7 @@ const CLIENT_URI =
 // Use the express bindings provided by the SDK and pass in
 // additional configuration such as auth scopes
 const expressBinding = new ServerBindings.express(nylasClient, {
-  defaultScopes: [Scope.EmailReadOnly],
+  defaultScopes: [Scope.Calendar],
   exchangeMailboxTokenCallback: async function exchangeTokenCallback(
     accessTokenObj,
     res
@@ -70,61 +70,6 @@ expressBinding.on(WebhookTriggers.AccountConnected, (payload) => {
 // Start the Nylas webhook
 expressBinding.startDevelopmentWebsocket().then((webhookDetails) => {
   console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id);
-});
-
-// Add route for getting 5 latest emails
-app.get('/nylas/read-emails', async (req, res) => {
-  if (!req.headers.authorization) {
-    return res.json('Unauthorized');
-  }
-
-  const user = await mockDb.findUser(req.headers.authorization);
-
-  if (!user) {
-    return res.json('Unauthorized');
-  }
-
-  const threads = await nylasClient
-    .with(user.accessToken)
-    .threads.list({ limit: 5, expanded: true });
-
-  return res.json(threads);
-});
-
-app.get('/nylas/message', async (req, res) => {
-  if (!req.headers.authorization) {
-    return res.json('Unauthorized');
-  }
-
-  const user = await mockDb.findUser(req.headers.authorization);
-
-  if (!user) {
-    return res.json('Unauthorized');
-  }
-
-  const { id } = req.query;
-  const message = await nylasClient.with(user.accessToken).messages.find(id);
-
-  return res.json(message);
-});
-
-// Add route for download file
-app.get('/nylas/file', async (req, res) => {
-  if (!req.headers.authorization) {
-    return res.json('Unauthorized');
-  }
-
-  const user = await mockDb.findUser(req.headers.authorization);
-  if (!user) {
-    return res.json('Unauthorized');
-  }
-
-  const { id } = req.query;
-  const file = await nylasClient.with(user.accessToken).files.find(id);
-
-  // Files will be returned as a binary object
-  const fileData = await file.download();
-  return res.json(fileData?.body);
 });
 
 // Before we start our backend, we should whitelist our frontend
