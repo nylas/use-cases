@@ -12,6 +12,7 @@ function EmailApp({
   serverBaseUrl,
   userId,
   reloadEmail,
+  setToastNotification,
 }) {
   const [selectedEmail, setSelectedEmail] = useState(null);
   const [draftEmail, setDraftEmail] = useState(null);
@@ -45,6 +46,7 @@ function EmailApp({
   const onEmailSent = () => {
     setDraftEmail(null);
     reloadEmail();
+    setToastNotification('success');
   };
 
   return (
@@ -68,6 +70,7 @@ function EmailApp({
                 draftEmail={draftEmail}
                 setDraftEmail={setDraftEmail}
                 onEmailSent={onEmailSent}
+                setToastNotification={setToastNotification}
               />
             ) : (
               <EmailDetail
@@ -101,6 +104,7 @@ EmailApp.propTypes = {
   serverBaseUrl: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired,
   reloadEmail: PropTypes.func.isRequired,
+  setToastNotification: PropTypes.func.isRequired,
 };
 
 export default EmailApp;
