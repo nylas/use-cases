@@ -2,7 +2,13 @@ import { useNylas } from '@nylas/nylas-react';
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-function SendEmails({ userId, draftEmail, setDraftEmail, onEmailSent }) {
+function SendEmails({
+  userId,
+  draftEmail,
+  setDraftEmail,
+  onEmailSent,
+  setToastNotification,
+}) {
   const nylas = useNylas();
 
   const [to, setTo] = useState('');
@@ -47,11 +53,17 @@ function SendEmails({ userId, draftEmail, setDraftEmail, onEmailSent }) {
         body: JSON.stringify({ to, subject, body }),
       });
 
+      if (!res.ok) {
+        setToastNotification('error');
+        throw new Error(res.statusText);
+      }
+
       const data = await res.json();
 
       return data;
     } catch (error) {
       console.warn(`Error sending emails:`, error);
+      setToastNotification('error');
 
       return false;
     }
@@ -120,6 +132,7 @@ SendEmails.propTypes = {
   draftEmail: PropTypes.object.isRequired,
   setDraftEmail: PropTypes.func.isRequired,
   onEmailSent: PropTypes.func.isRequired,
+  setToastNotification: PropTypes.func.isRequired,
 };
 
 export default SendEmails;
