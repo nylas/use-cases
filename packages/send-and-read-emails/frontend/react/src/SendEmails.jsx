@@ -79,7 +79,6 @@ function SendEmails({ userId, draftEmail, setDraftEmail, onEmailSent }) {
         </label>
         <input
           aria-label="To"
-          placeholder="To"
           value={to}
           onChange={(e) => setTo(e.target.value)}
         />
@@ -90,7 +89,6 @@ function SendEmails({ userId, draftEmail, setDraftEmail, onEmailSent }) {
         </label>
         <input
           aria-label="Subject"
-          placeholder="Subject"
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
         />
