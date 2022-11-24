@@ -1,0 +1,71 @@
+@import './base.scss';
+
+.hide {
+  display: none;
+}
+
+.scheduler-app {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: none;
+  gap: calc(#{$spacing-32} + #{$spacing-8});
+  color: $color-grey-900;
+}
+
+.scheduler-app iframe {
+  width: 100%;
+  flex: 1;
+  opacity: 0;
+  border-radius: $spacing-32;
+  border: 0;
+  transition: opacity 175ms linear;
+  box-sizing: border-box;
+}
+
+.scheduler-app.nylas-ready iframe {
+  opacity: 1;
+}
+
+.scheduler-app .nylas-spinner {
+  opacity: 1;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity 175ms linear;
+  filter: invert(1) saturate(0);
+  -webkit-filter: invert(1) saturate(0);
+}
+
+.scheduler-app.nylas-ready .nylas-spinner {
+  opacity: 0;
+}
+
+.mobile-warning {
+  height: 100%;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  gap: $spacing-32;
+
+  h2 {
+    color: $color-grey-900;
+    font-weight: 600;
+    font-size: $fs-22;
+    line-height: 1.25;
+  }
+
+  p {
+    font-weight: 600;
+    font-size: $fs-16;
+    line-height: 1.5;
+  }
+}
+
+@media #{$desktop} {
+  .scheduler-app {
+    display: flex;
+  }
+}

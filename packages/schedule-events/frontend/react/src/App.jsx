@@ -31,9 +31,10 @@ function App() {
       nylas
         .exchangeCodeFromUrlForToken()
         .then((user) => {
-          const { id } = JSON.parse(user);
+          const { id, accessToken } = JSON.parse(user);
           setUserId(id);
           sessionStorage.setItem('userId', id);
+          sessionStorage.setItem('accessToken', accessToken);
         })
         .catch((error) => {
           console.error('An error occurred parsing the response:', error);
@@ -52,6 +53,7 @@ function App() {
   const disconnectUser = () => {
     sessionStorage.removeItem('userId');
     sessionStorage.removeItem('userEmail');
+    sessionStorage.removeItem('accessToken');
     setUserId('');
     setUserEmail('');
   };
@@ -61,8 +63,10 @@ function App() {
       {!userId ? (
         <NylasLogin email={userEmail} setEmail={setUserEmail} />
       ) : (
-        <div className="app-card">
-          <SchedulerApp />
+        <div className="app-card-container">
+          <div className="app-card">
+            <SchedulerApp />
+          </div>
         </div>
       )}
     </Layout>
