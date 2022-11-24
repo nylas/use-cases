@@ -90,6 +90,7 @@ function SendEmails({
         </label>
         <input
           aria-label="To"
+          type="email"
           value={to}
           onChange={(e) => setTo(e.target.value)}
         />
