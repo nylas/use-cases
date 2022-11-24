@@ -1,14 +1,102 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import PropTypes from 'prop-types';
 import EmailIllustration from './components/icons/illustration-email.svg';
 import ChevronDown from './components/icons/icon-chevron-down.svg';
 import AttachmentIcon from './components/icons/icon-attachment.svg';
 import IconSync from './components/icons/IconSync.jsx';
+import IconReply from './components/icons/IconReply.jsx';
+import IconForward from './components/icons/IconForward.jsx';
 import { formatPreviewDate } from './utils/date.js';
 import { cleanEmailBody } from './utils/email.js';
+import SendEmails from './SendEmails';
 
-function EmailDetail({ selectedEmail, userEmail, serverBaseUrl, userId }) {
-  const [messages, setMessages] = useState([]);
+const ACTIONS = {
+  SET: 'set',
+  TOGGLE: 'toggle',
+  SHOW_PARTICIPANTS: 'show_participants',
+  REPLY: 'reply',
+  FORWARD: 'forward',
+  UPDATE_DRAFT: 'update_draft',
+  DISCARD_DRAFT: 'discard_draft',
+};
+
+const messageReducer = (messages, { type, payload }) => {
+  switch (type) {
+    case ACTIONS.SET:
+      return [...payload.messages];
+    case ACTIONS.TOGGLE:
+      return messages.map((msg) => {
+        if (msg.id === payload.message.id) {
+          msg = {
+            ...payload.message,
+            showParticipants: false,
+            expanded: !msg.expanded,
+          };
+        }
+        return msg;
+      });
+    case ACTIONS.SHOW_PARTICIPANTS:
+      return messages.map((msg) => {
+        if (msg.id === payload.message.id) {
+          msg = {
+            ...payload.message,
+            showParticipants: !msg.showParticipants,
+          };
+        }
+        return msg;
+      });
+    case ACTIONS.REPLY:
+    case ACTIONS.FORWARD:
+      return messages.map((msg) => {
+        if (msg.id === payload.message.id) {
+          msg = {
+            ...payload.message,
+            draft: {
+              replyToMessageId: payload.message.id,
+              subject: payload.message.subject,
+              to:
+                type === ACTIONS.REPLY && payload.message?.from?.length
+                  ? payload.message.from[0].email || ''
+                  : '',
+              body: null,
+            },
+          };
+        }
+        return msg;
+      });
+    case ACTIONS.UPDATE_DRAFT:
+      return messages.map((msg) => {
+        if (msg.id === payload.message.id) {
+          msg = {
+            ...payload.message,
+            draft: { ...payload.message.draft, ...payload.draft },
+          };
+        }
+        return msg;
+      });
+    case ACTIONS.DISCARD_DRAFT:
+      return messages.map((msg) => {
+        if (msg.id === payload.message.id) {
+          msg = {
+            ...payload.message,
+            draft: null,
+          };
+        }
+        return msg;
+      });
+  }
+};
+
+function EmailDetail({
+  selectedEmail,
+  userEmail,
+  serverBaseUrl,
+  userId,
+  onEmailSent,
+  setToastNotification,
+}) {
+  // const [messages, setMessages] = useState([]);
+  const [messages, dispatch] = useReducer(messageReducer, []);
   const [collapsedCount, setCollapsedCount] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState('');
 
@@ -20,18 +108,15 @@ function EmailDetail({ selectedEmail, userEmail, serverBaseUrl, userId }) {
         setCollapsedCount(selectedEmail.messages.length - 3);
       }
 
+      dispatch({
+        type: ACTIONS.SET,
+        payload: { messages: showingMessages },
+      });
+
       const latestMessage = await getMessage(
         showingMessages[showingMessages.length - 1]
       );
-
-      setMessages(
-        showingMessages.map((msg) => {
-          if (msg.id === latestMessage.id) {
-            msg = { ...latestMessage, expanded: true };
-          }
-          return msg;
-        })
-      );
+      dispatch({ type: ACTIONS.TOGGLE, payload: { message: latestMessage } });
     };
 
     if (selectedEmail?.messages?.length) {
@@ -66,11 +151,16 @@ function EmailDetail({ selectedEmail, userEmail, serverBaseUrl, userId }) {
   const handleShowCollapsedMessages = (event) => {
     event.stopPropagation();
     if (messages.length === 3) {
-      setMessages([
-        messages[0],
-        ...selectedEmail.messages.slice(1, -2),
-        ...messages.slice(-2),
-      ]);
+      dispatch({
+        type: ACTIONS.SET,
+        payload: {
+          messages: [
+            messages[0],
+            ...selectedEmail.messages.slice(1, -2),
+            ...messages.slice(-2),
+          ],
+        },
+      });
       setCollapsedCount(0);
     }
   };
@@ -94,38 +184,22 @@ function EmailDetail({ selectedEmail, userEmail, serverBaseUrl, userId }) {
 
   const handleToggleMessage = async (message) => {
     if (messages.length > 1) {
-      if (message.expanded) {
-        setMessages(
-          messages.map((msg) => {
-            if (msg.id === message.id) {
-              msg.expanded = false;
-              msg.showParticipants = false;
-            }
-            return msg;
-          })
-        );
-      } else {
-        const newMsg = await getMessage(message);
-        setMessages(
-          messages.map((msg) => {
-            if (msg.id === newMsg.id) msg = { ...newMsg, expanded: true };
-            return msg;
-          })
-        );
+      let newMsg = message;
+      if (!newMsg.expanded) {
+        newMsg = await getMessage(message);
+      }
+      if (newMsg) {
+        dispatch({ type: ACTIONS.TOGGLE, payload: { message: newMsg } });
       }
     }
   };
 
   const handleToggleParticipants = (event, messageId) => {
     event.stopPropagation();
-    setMessages(
-      messages.map((msg) => {
-        if (msg.id === messageId) {
-          msg.showParticipants = !msg.showParticipants;
-        }
-        return msg;
-      })
-    );
+    dispatch({
+      type: ACTIONS.SHOW_PARTICIPANTS,
+      payload: { message: { id: messageId } },
+    });
   };
 
   const downloadAttachment = async (event, file) => {
@@ -160,6 +234,18 @@ function EmailDetail({ selectedEmail, userEmail, serverBaseUrl, userId }) {
     a.click();
     a.remove();
   }
+
+  const handleMessageCompose = (event, message, action) => {
+    event.stopPropagation();
+    dispatch({
+      type: action,
+      payload: { message },
+    });
+  };
+
+  const handleFocusComposer = (event) => {
+    event.stopPropagation();
+  };
 
   return (
     <div className="email-detail-view">
@@ -277,7 +363,7 @@ function EmailDetail({ selectedEmail, userEmail, serverBaseUrl, userId }) {
                         <div className="attachment-container">
                           <div className="attachment-title">
                             <span>Attachments</span>
-                            <hr />
+                            <div className="line" />
                           </div>
 
                           <div className="attachment-files">
@@ -304,6 +390,59 @@ function EmailDetail({ selectedEmail, userEmail, serverBaseUrl, userId }) {
                                 </div>
                               ))}
                           </div>
+                        </div>
+                      )}
+
+                      {message.draft ? (
+                        <div onClick={handleFocusComposer}>
+                          <SendEmails
+                            userId={userId}
+                            draftEmail={message.draft}
+                            setDraftEmail={(draft) =>
+                              dispatch({
+                                type: ACTIONS.UPDATE_DRAFT,
+                                payload: { message, draft },
+                              })
+                            }
+                            onEmailSent={onEmailSent}
+                            setToastNotification={setToastNotification}
+                            discardComposer={() =>
+                              dispatch({
+                                type: ACTIONS.DISCARD_DRAFT,
+                                payload: { message },
+                              })
+                            }
+                            variable="small"
+                          />
+                        </div>
+                      ) : (
+                        <div className="actions-container">
+                          <button
+                            className="outline small"
+                            onClick={(event) =>
+                              handleMessageCompose(
+                                event,
+                                message,
+                                ACTIONS.REPLY
+                              )
+                            }
+                          >
+                            <IconReply />
+                            Reply
+                          </button>
+                          <button
+                            className="outline small"
+                            onClick={(event) =>
+                              handleMessageCompose(
+                                event,
+                                message,
+                                ACTIONS.FORWARD
+                              )
+                            }
+                          >
+                            <IconForward />
+                            Forward
+                          </button>
                         </div>
                       )}
                     </div>
@@ -347,6 +486,8 @@ EmailDetail.propTypes = {
   userEmail: PropTypes.string.isRequired,
   serverBaseUrl: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired,
+  onEmailSent: PropTypes.func.isRequired,
+  setToastNotification: PropTypes.func.isRequired,
 };
 
 export default EmailDetail;

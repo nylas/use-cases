@@ -277,7 +277,7 @@ function EmailDetail({ selectedEmail, userEmail, serverBaseUrl, userId }) {
                         <div className="attachment-container">
                           <div className="attachment-title">
                             <span>Attachments</span>
-                            <hr />
+                            <div className="line" />
                           </div>
 
                           <div className="attachment-files">
