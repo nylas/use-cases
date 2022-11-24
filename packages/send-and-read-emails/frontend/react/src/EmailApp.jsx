@@ -24,11 +24,9 @@ function EmailApp({
   const composeEmail = () => {
     if (draftEmail) {
       // Open the existing draft email
-      console.log('Open the existing draft email');
       setDraftEmail((prev) => ({ ...prev, isOpen: true }));
     } else {
       // Create new draft email
-      console.log('Create new draft email');
       const currentDate = new Date();
       const newDraft = {
         object: 'draft',
