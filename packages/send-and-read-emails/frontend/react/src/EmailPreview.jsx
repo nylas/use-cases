@@ -30,6 +30,10 @@ function EmailPreview({ thread, selected }) {
         }
       }
     }
+
+    if (thread?.object === 'draft') {
+      setEmailFrom('(draft)');
+    }
   }, [thread]);
 
   return (
@@ -42,9 +46,11 @@ function EmailPreview({ thread, selected }) {
           </span>
         </p>
         <div className="subject-container">
-          <p className="subject">{thread.subject}</p>
+          <p className="subject">{thread.subject || '(no subject)'}</p>
         </div>
-        <p className="snippet">{thread.snippet}</p>
+        <p className="snippet">
+          {thread?.object === 'draft' ? thread.body : thread.snippet}
+        </p>
       </div>
       <div className="email-info">
         {hasCalendar && (

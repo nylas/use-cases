@@ -10,6 +10,7 @@ function App() {
   const [userEmail, setUserEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [emails, setEmails] = useState([]);
+  const [toastNotification, setToastNotification] = useState('');
   const SERVER_URI = import.meta.env.VITE_SERVER_URI || 'http://localhost:9000';
 
   useEffect(() => {
@@ -95,6 +96,8 @@ function App() {
       refresh={refresh}
       isLoading={isLoading}
       title="Email sample app"
+      toastNotification={toastNotification}
+      setToastNotification={setToastNotification}
     >
       {!userId ? (
         <NylasLogin email={userEmail} setEmail={setUserEmail} />
@@ -106,6 +109,8 @@ function App() {
             isLoading={isLoading}
             serverBaseUrl={SERVER_URI}
             userId={userId}
+            reloadEmail={refresh}
+            setToastNotification={setToastNotification}
           />
         </div>
       )}

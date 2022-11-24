@@ -42,7 +42,7 @@ function EmailPreview({ thread, selected }) {
           </span>
         </p>
         <div className="subject-container">
-          <p className="subject">{thread.subject}</p>
+          <p className="subject">{thread.subject || '(no subject)'}</p>
         </div>
         <p className="snippet">{thread.snippet}</p>
       </div>

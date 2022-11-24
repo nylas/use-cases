@@ -12,13 +12,83 @@ button {
   align-items: center;
   justify-content: center;
   white-space: nowrap;
-  transition: all 200ms ease-out;
   border: none;
   outline: none;
   cursor: pointer;
   padding: $spacing-12 $spacing-16;
   border-radius: 1rem;
   gap: $spacing-8;
+  font-weight: 500;
+  font-size: $fs-14;
+  line-height: 1.5;
+  transition: all 200ms ease-out;
+
+  &[disabled] {
+    cursor: default;
+  }
+
+  &.primary {
+    color: $color-white;
+    background-color: $color-blue-500;
+
+    svg {
+      fill: $color-white;
+    }
+
+    &[disabled] {
+      background-color: $color-blue-300;
+    }
+  }
+
+  &.small {
+    padding: $spacing-8 $spacing-16;
+  }
+}
+
+.toast {
+  position: absolute;
+  right: 0;
+  font-weight: 600;
+  font-size: $fs-16;
+  line-height: 1.25;
+  color: $color-grey-900;
+  padding: $spacing-16;
+  border-radius: $spacing-16;
+  display: flex;
+  align-items: center;
+  gap: $spacing-16;
+  animation: fadeIn 0.5s, fadeOut 5s 2.5s;
+
+  &.success {
+    background-color: $color-green-50;
+  }
+
+  &.error {
+    background-color: $color-red-50;
+  }
+
+  img.close {
+    margin-left: $spacing-48;
+    cursor: pointer;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 .layout {
@@ -35,6 +105,7 @@ button {
   gap: 2rem;
 
   .title-menu {
+    position: relative;
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -73,10 +144,6 @@ button {
           svg {
             fill: $color-blue-300;
           }
-        }
-
-        &[disabled] {
-          cursor: default;
         }
 
         .menu-icon.syncing svg {

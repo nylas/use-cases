@@ -3,6 +3,7 @@ import IconSync from './icons/IconSync.jsx';
 import IconLogout from './icons/IconLogout.jsx';
 import NylasLogo from './icons/nylas-logo-horizontal.svg';
 import PropTypes from 'prop-types';
+import Toast from './Toast';
 
 const Layout = ({
   children,
@@ -11,6 +12,8 @@ const Layout = ({
   refresh,
   isLoading,
   title,
+  toastNotification,
+  setToastNotification,
 }) => {
   const [isDisconnecting, setIsDisconnecting] = useState(false);
 
@@ -32,7 +35,12 @@ const Layout = ({
     <div className="layout">
       <div className="title-menu">
         <h1>{title || 'Sample app'}</h1>
-        {showMenu && (
+
+        <Toast
+          toastNotification={toastNotification}
+          setToastNotification={setToastNotification}
+        />
+        {showMenu && !toastNotification && (
           <div className="menu">
             <button
               onClick={handleRefresh}
@@ -78,6 +86,8 @@ Layout.propTypes = {
   refresh: PropTypes.func,
   isLoading: PropTypes.bool.isRequired,
   title: PropTypes.string,
+  toastNotification: PropTypes.string,
+  setToastNotification: PropTypes.func.isRequired,
 };
 
 export default Layout;
