@@ -4,8 +4,11 @@ const ENV_SCHEDULING_WEB_BASE_URL = 'https://schedule.nylas.com';
 export default (function () {
   const spinnerEl = document.createElement('div');
   spinnerEl.setAttribute('class', 'nylas-spinner');
-  spinnerEl.innerHTML =
-    '<svg width="38" height="38" viewBox="0 0 40 40" stroke="currentColor"><g transform="translate(1 1)" stroke-width={2} fill="none" fill-rule="evenodd"><circle stroke-opacity=".4" cx="18" cy="18" r="18" /><path d="M36 18c0-9.94-8.06-18-18-18"><animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="1s" repeatCount="indefinite" /></path></g></svg>';
+  spinnerEl.innerHTML = `<svg width="38" height="38" viewBox="0 0 40 40" stroke="currentColor">
+    <g transform="translate(1 1)" stroke-width={2} fill="none" fill-rule="evenodd">
+    <circle stroke-opacity=".4" cx="18" cy="18" r="18" /><path d="M36 18c0-9.94-8.06-18-18-18">
+    <animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="1s" repeatCount="indefinite" />
+    </path></g></svg>`;
   const iframeEl = document.createElement('iframe');
 
   function subscribeToPostMessage(handler) {
@@ -57,7 +60,7 @@ export default (function () {
           }
         }
         if (config.behavior && config.behavior.disableEditing) {
-          if (!config.behavior.disableEditing instanceof Array) {
+          if (!(config.behavior.disableEditing instanceof Array)) {
             throw new Error(
               'behavior.disableEditing should be an array of feature strings'
             );
@@ -65,14 +68,13 @@ export default (function () {
         }
 
         const theme = config.style || {};
-        if (
-          Object.keys(theme).find(
-            (k) => !['tintColor', 'backgroundColor', 'modalTitle'].includes(k)
-          )
-        ) {
+        const key = Object.keys(theme).find(
+          (k) => !['tintColor', 'backgroundColor', 'modalTitle'].includes(k)
+        );
+        if (key) {
           throw new Error(
             'Nylas: Unknown style key "' +
-              k +
+              key +
               '" found in the styling configuration.'
           );
         }
