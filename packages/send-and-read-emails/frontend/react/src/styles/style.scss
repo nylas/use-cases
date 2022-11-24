@@ -12,13 +12,37 @@ button {
   align-items: center;
   justify-content: center;
   white-space: nowrap;
-  transition: all 200ms ease-out;
   border: none;
   outline: none;
   cursor: pointer;
   padding: $spacing-12 $spacing-16;
   border-radius: 1rem;
   gap: $spacing-8;
+  font-weight: 500;
+  font-size: $fs-14;
+  line-height: 1.5;
+  transition: all 200ms ease-out;
+
+  &[disabled] {
+    cursor: default;
+  }
+
+  &.primary {
+    color: $color-white;
+    background-color: $color-blue-500;
+
+    svg {
+      fill: $color-white;
+    }
+
+    &[disabled] {
+      background-color: $color-blue-300;
+    }
+  }
+
+  &.small {
+    padding: $spacing-8 $spacing-16;
+  }
 }
 
 .layout {
@@ -73,10 +97,6 @@ button {
           svg {
             fill: $color-blue-300;
           }
-        }
-
-        &[disabled] {
-          cursor: default;
         }
 
         .menu-icon.syncing svg {

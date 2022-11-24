@@ -165,7 +165,7 @@ function EmailDetail({ selectedEmail, userEmail, serverBaseUrl, userId }) {
     <div className="email-detail-view">
       {selectedEmail ? (
         <div className="selected">
-          <h3 className="title">{selectedEmail.subject}</h3>
+          <h3 className="title">{selectedEmail.subject || '(no subject)'}</h3>
           <div className="label-container">
             {selectedEmail.labels?.map((label) => (
               <span key={label.id} className={`label ${label.name}`}>

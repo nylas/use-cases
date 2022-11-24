@@ -106,6 +106,7 @@ function App() {
             isLoading={isLoading}
             serverBaseUrl={SERVER_URI}
             userId={userId}
+            reloadEmail={refresh}
           />
         </div>
       )}
