@@ -66,9 +66,17 @@ function EmailApp({
               <SendEmails
                 userId={userId}
                 draftEmail={draftEmail}
-                setDraftEmail={setDraftEmail}
+                setDraftEmail={(draftUpdates) =>
+                  setDraftEmail((prev) => {
+                    return {
+                      ...prev,
+                      ...draftUpdates,
+                    };
+                  })
+                }
                 onEmailSent={onEmailSent}
                 setToastNotification={setToastNotification}
+                discardComposer={() => setDraftEmail(null)}
               />
             ) : (
               <EmailDetail
@@ -76,6 +84,8 @@ function EmailApp({
                 userEmail={userEmail}
                 serverBaseUrl={serverBaseUrl}
                 userId={userId}
+                onEmailSent={onEmailSent}
+                setToastNotification={setToastNotification}
               />
             )}
           </>

@@ -35,8 +35,67 @@ button {
       fill: $color-white;
     }
 
+    &:hover {
+      background-color: $color-blue-700;
+    }
+
     &[disabled] {
       background-color: $color-blue-300;
+    }
+  }
+
+  &.outline {
+    background-color: $color-white;
+    color: $color-blue-500;
+    border: 1px solid $color-blue-500;
+
+    svg {
+      fill: $color-blue-500;
+    }
+
+    &:hover {
+      color: $color-white;
+      background-color: $color-blue-500;
+
+      svg {
+        fill: $color-white;
+      }
+    }
+
+    &[disabled] {
+      color: $color-blue-300;
+      border: 1px solid $color-blue-300;
+
+      svg {
+        fill: $color-blue-300;
+      }
+    }
+  }
+
+  &.icon {
+    padding: $spacing-8;
+    background-color: transparent;
+    color: $color-blue-500;
+
+    svg {
+      fill: $color-blue-500;
+    }
+
+    &:hover {
+      color: $color-blue-700;
+      background-color: $color-blue-100;
+
+      svg {
+        color: $color-blue-700;
+      }
+    }
+
+    &[disabled] {
+      color: $color-blue-100;
+
+      svg {
+        fill: $color-blue-100;
+      }
     }
   }
 

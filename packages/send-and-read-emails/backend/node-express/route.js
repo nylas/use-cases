@@ -12,7 +12,7 @@ exports.sendEmail = async (req, res, nylasClient) => {
     return res.json({ message: 'Unauthorized' });
   }
 
-  const { to, subject, body } = req.body;
+  const { to, subject, body, replyToMessageId } = req.body;
 
   const draft = new Draft(nylasClient.with(user.accessToken));
 
@@ -20,6 +20,7 @@ exports.sendEmail = async (req, res, nylasClient) => {
   draft.to = [{ email: to }];
   draft.subject = subject;
   draft.body = body;
+  draft.replyToMessageId = replyToMessageId;
 
   const message = await draft.send();
 
