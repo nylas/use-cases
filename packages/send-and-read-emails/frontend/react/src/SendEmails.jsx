@@ -1,6 +1,7 @@
 import { useNylas } from '@nylas/nylas-react';
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import IconDelete from './components/icons/IconDelete.jsx';
 
 function SendEmails({
   userId,
@@ -8,6 +9,8 @@ function SendEmails({
   setDraftEmail,
   onEmailSent,
   setToastNotification,
+  discardComposer,
+  style,
 }) {
   const nylas = useNylas();
 
@@ -17,25 +20,21 @@ function SendEmails({
   const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
-    if (draftEmail?.object === 'draft') {
-      setTo(draftEmail.to);
-      setSubject(draftEmail.subject);
-      setBody(draftEmail.body);
-    }
+    setTo(draftEmail.to);
+    setSubject(draftEmail.subject);
+    setBody(draftEmail.body);
   }, []);
 
   useEffect(() => {
     const updateTimer = setTimeout(function () {
       const currentDate = new Date();
-      setDraftEmail((prev) => {
-        return {
-          ...prev,
-          to: to,
-          subject,
-          body,
-          last_message_timestamp: Math.floor(currentDate.getTime() / 1000),
-        };
-      });
+      const draftUpdates = {
+        to: to,
+        subject,
+        body,
+        last_message_timestamp: Math.floor(currentDate.getTime() / 1000),
+      };
+      setDraftEmail(draftUpdates);
     }, 500);
     return () => clearTimeout(updateTimer);
   }, [to, subject, body]);
@@ -50,7 +49,7 @@ function SendEmails({
           Authorization: userId,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ to, subject, body }),
+        body: JSON.stringify({ ...draftEmail, to, subject, body }),
       });
 
       if (!res.ok) {
@@ -83,44 +82,53 @@ function SendEmails({
   };
 
   return (
-    <form onSubmit={send} className="email-compose-view">
-      <h3 className="title">New Message</h3>
+    <form onSubmit={send} className={`email-compose-view ${style}`}>
+      {!style && <h3 className="title">New Message</h3>}
       <div className="input-container">
         <label className="input-label" htmlFor="To">
           To
         </label>
         <input
           aria-label="To"
+          type="email"
           value={to}
           onChange={(e) => setTo(e.target.value)}
         />
-        <div className="line"></div>
+        {!style && (
+          <>
+            <div className="line"></div>
 
-        <label className="input-label" htmlFor="Subject">
-          Subject
-        </label>
-        <input
-          aria-label="Subject"
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
-        />
-        <div className="line"></div>
+            <label className="input-label" htmlFor="Subject">
+              Subject
+            </label>
+            <input
+              aria-label="Subject"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+            />
+            <div className="line"></div>
+          </>
+        )}
       </div>
       <textarea
         className="message-body"
         aria-label="Message body"
         placeholder="Type your message..."
-        rows={20}
+        rows={style === 'small' ? 3 : 20}
         value={body}
         onChange={(e) => setBody(e.target.value)}
       />
-      <div>
+
+      <div className="composer-button-group">
         <button
-          className="primary"
-          disabled={!to || !subject || isSending}
+          className={`primary ${style}`}
+          disabled={!to || !body || isSending}
           type="submit"
         >
           {isSending ? 'Sending...' : 'Send email'}
+        </button>
+        <button className="icon" onClick={discardComposer}>
+          <IconDelete />
         </button>
       </div>
     </form>
@@ -133,6 +141,8 @@ SendEmails.propTypes = {
   setDraftEmail: PropTypes.func.isRequired,
   onEmailSent: PropTypes.func.isRequired,
   setToastNotification: PropTypes.func.isRequired,
+  discardComposer: PropTypes.func.isRequired,
+  style: PropTypes.string,
 };
 
 export default SendEmails;
