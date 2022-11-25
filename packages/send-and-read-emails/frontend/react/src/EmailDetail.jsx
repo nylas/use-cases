@@ -95,7 +95,6 @@ function EmailDetail({
   onEmailSent,
   setToastNotification,
 }) {
-  // const [messages, setMessages] = useState([]);
   const [messages, dispatch] = useReducer(messageReducer, []);
   const [collapsedCount, setCollapsedCount] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState('');
@@ -412,7 +411,7 @@ function EmailDetail({
                                 payload: { message },
                               })
                             }
-                            variable="small"
+                            style="small"
                           />
                         </div>
                       ) : (

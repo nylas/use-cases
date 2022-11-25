@@ -10,7 +10,7 @@ function SendEmails({
   onEmailSent,
   setToastNotification,
   discardComposer,
-  variable,
+  style,
 }) {
   const nylas = useNylas();
 
@@ -82,8 +82,8 @@ function SendEmails({
   };
 
   return (
-    <form onSubmit={send} className={`email-compose-view ${variable}`}>
-      {!variable && <h3 className="title">New Message</h3>}
+    <form onSubmit={send} className={`email-compose-view ${style}`}>
+      {!style && <h3 className="title">New Message</h3>}
       <div className="input-container">
         <label className="input-label" htmlFor="To">
           To
@@ -94,7 +94,7 @@ function SendEmails({
           value={to}
           onChange={(e) => setTo(e.target.value)}
         />
-        {!variable && (
+        {!style && (
           <>
             <div className="line"></div>
 
@@ -114,14 +114,14 @@ function SendEmails({
         className="message-body"
         aria-label="Message body"
         placeholder="Type your message..."
-        rows={variable === 'small' ? 3 : 20}
+        rows={style === 'small' ? 3 : 20}
         value={body}
         onChange={(e) => setBody(e.target.value)}
       />
 
       <div className="composer-button-group">
         <button
-          className={`primary ${variable}`}
+          className={`primary ${style}`}
           disabled={!to || !body || isSending}
           type="submit"
         >
@@ -142,7 +142,7 @@ SendEmails.propTypes = {
   onEmailSent: PropTypes.func.isRequired,
   setToastNotification: PropTypes.func.isRequired,
   discardComposer: PropTypes.func.isRequired,
-  variable: PropTypes.string,
+  style: PropTypes.string,
 };
 
 export default SendEmails;
