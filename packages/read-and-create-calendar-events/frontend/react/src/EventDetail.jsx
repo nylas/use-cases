@@ -20,8 +20,19 @@ function EventDetail({ selectedEvent }) {
   const [showTopScrollShadow, setShowTopScrollShadow] = useState(false);
   const [showBottomScrollShadow, setShowBottomScrollShadow] = useState(false);
 
+  // console.log({ selectedEvent });
+  // let conferencing;
+
   useEffect(() => {
     initializeScrollShadow('.description-container', setShowBottomScrollShadow);
+
+    // console.log(selectedEvent.conferencing);
+    // if (selectedEvent.conferencing) {
+    //   conferencing = { passwordLine: {} };
+    //   // const details = selectedEvent.conferencing.details
+    // }
+
+    // console.log({ conferencing });
   }, [selectedEvent]);
 
   useEffect(() => {
@@ -41,6 +52,35 @@ function EventDetail({ selectedEvent }) {
       );
     };
   }, []);
+
+  const renderConferencingDetails = (details) => {
+    details.pin = '00000';
+    const passwordDetails = [
+      { name: 'Password', value: details.password },
+      { name: 'Pin', value: details.pin },
+    ];
+    return (
+      <>
+        {/* <p>{details}</p> */}
+        <p className="title">Conference Details</p>
+        <p>
+          URL: <a href={details.url}>Link</a>
+        </p>
+        <p>
+          {passwordDetails.map((detail) => (
+            // TODO: need some inline styling here
+            <span key={detail.name}>
+              {detail.name}: {detail.value}
+            </span>
+          ))}
+        </p>
+        {/* //   <p>
+              //     URL: <a href="www.nylas.com">Link</a>
+              //   </p>
+              //   <p>Password: sdafdasfdasf</p> */}
+      </>
+    );
+  };
 
   return (
     <div className="event-detail-view">
@@ -99,6 +139,21 @@ function EventDetail({ selectedEvent }) {
                 showTopScrollShadow ? '' : ' hidden'
               }`}
             ></div>
+
+            {/* TODO: Make Conditional */}
+            {
+              selectedEvent.conferencing &&
+                renderConferencingDetails(selectedEvent.conferencing.details)
+              // <>
+              //   <p className="title">Conference Details</p>
+              //   <p>
+              //     URL: <a href="www.nylas.com">Link</a>
+              //   </p>
+              //   <p>Password: sdafdasfdasf</p>
+              // </>
+            }
+            {/* TODO: Make Conditional */}
+
             <p className="title">Description</p>
             <p
               dangerouslySetInnerHTML={{
