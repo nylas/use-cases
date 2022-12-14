@@ -20,19 +20,10 @@ function EventDetail({ selectedEvent }) {
   const [showTopScrollShadow, setShowTopScrollShadow] = useState(false);
   const [showBottomScrollShadow, setShowBottomScrollShadow] = useState(false);
 
-  // console.log({ selectedEvent });
-  // let conferencing;
+  console.log({ selectedEvent });
 
   useEffect(() => {
     initializeScrollShadow('.description-container', setShowBottomScrollShadow);
-
-    // console.log(selectedEvent.conferencing);
-    // if (selectedEvent.conferencing) {
-    //   conferencing = { passwordLine: {} };
-    //   // const details = selectedEvent.conferencing.details
-    // }
-
-    // console.log({ conferencing });
   }, [selectedEvent]);
 
   useEffect(() => {
@@ -54,31 +45,58 @@ function EventDetail({ selectedEvent }) {
   }, []);
 
   const renderConferencingDetails = (details) => {
-    details.pin = '00000';
     const passwordDetails = [
-      { name: 'Password', value: details.password },
-      { name: 'Pin', value: details.pin },
-    ];
+      ...(details.password
+        ? [{ name: 'Password', value: details.password }]
+        : []),
+      ...(details.pin ? [{ name: 'Pin', value: details.pin }] : []),
+    ]
+      .map((detail) => (
+        <span key={detail.name}>
+          {detail.name}: {detail.value}
+        </span>
+      ))
+      .reduce((acc, cur) => {
+        return acc === null ? [cur] : [...acc, dividerBullet, cur];
+      }, null);
+
+    //         // <>
+    //     {/* <span key={phoneNumber}> */}
+    //     {phoneNumber}
+    //     {details.meeting_code
+    //       ? `, ${details.meeting_code.replace(/\s/g, '')}#\n`
+    //       : ''}
+    //   {/* </span> */}
+    {
+      /* </> */
+    }
+    const getMeetingCode = () => details.meeting_code.replace(/\s/g, '');
+
+    // ", " + details.meeting_code.replace(/\s/g, '')+ "#"
+    const getDialOptionsString = details.phone?.map((phoneNumber) => (
+      <div key={phoneNumber}>
+        {phoneNumber}
+        {details.meeting_code ? `, ${getMeetingCode()}#` : ''}
+      </div>
+    ));
+
     return (
-      <>
-        {/* <p>{details}</p> */}
+      <div className="conferencing-details">
         <p className="title">Conference Details</p>
-        <p>
-          URL: <a href={details.url}>Link</a>
-        </p>
-        <p>
-          {passwordDetails.map((detail) => (
-            // TODO: need some inline styling here
-            <span key={detail.name}>
-              {detail.name}: {detail.value}
-            </span>
-          ))}
-        </p>
-        {/* //   <p>
-              //     URL: <a href="www.nylas.com">Link</a>
-              //   </p>
-              //   <p>Password: sdafdasfdasf</p> */}
-      </>
+        {details.url && (
+          <p>
+            {/* TODO: add external link icon */}
+            URL: <a href={details.url}>Link</a>
+          </p>
+        )}
+        {/* {passwordDetails && <p>{passwordDetails}</p>} */}
+        {details.phone && (
+          <div className="dial-in">
+            <div>Dial-In Options:</div>
+            <div>{getDialOptionsString}</div>
+          </div>
+        )}
+      </div>
     );
   };
 
@@ -99,20 +117,14 @@ function EventDetail({ selectedEvent }) {
                   : displayMeetingTime(selectedEvent.when)}
                 {` (${getTimezoneCode()})`}
               </span>
-              {dividerBullet}
-              <span className="location truncate">
-                {isValidUrl(selectedEvent.location) ? (
-                  <a
-                    href={selectedEvent.location}
-                    rel="noreferrer"
-                    target="_blank"
-                  >
+              {!isValidUrl(selectedEvent.location) && (
+                <>
+                  {dividerBullet}
+                  <span className="location truncate">
                     {selectedEvent.location}
-                  </a>
-                ) : (
-                  selectedEvent.location
-                )}
-              </span>
+                  </span>
+                </>
+              )}
             </div>
 
             <div className="event-detail">

@@ -262,17 +262,25 @@ a {
         padding-top: $spacing-24;
       }
 
-      &::-webkit-scrollbar-track {
-        margin-top: $spacing-32;
-      }
-    }
+      .conferencing-details {
+        p.title {
+          padding-bottom: calc(#{$spacing-8} - (#{$spacing-4} / 2));
+        }
 
-    .description-container {
-      overflow-y: scroll;
-      width: calc(100% + #{$spacing-16});
+        p:not(.title) {
+          padding: $spacing-4 0;
+        }
 
-      .title {
-        padding-top: $spacing-24;
+        .dial-in {
+          display: flex;
+          // flex-direction: column;
+          gap: $spacing-4;
+          padding: $spacing-4 0;
+        }
+
+        // .phone-number {
+        //   flex: 1;
+        // }
       }
 
       &::-webkit-scrollbar-track {
