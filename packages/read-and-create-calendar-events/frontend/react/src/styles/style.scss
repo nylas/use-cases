@@ -229,12 +229,16 @@ section.login {
   color: $color-grey-800;
   padding: $spacing-24 $spacing-32;
   border-radius: $spacing-32;
-  background: linear-gradient($color-grey-400, $color-grey-400) no-repeat
-    calc(50% - #{$spacing-12}) / 1px 100%;
   background-color: $color-white;
 }
 
 @media #{$desktop} {
+  .app-card {
+    background: linear-gradient($color-grey-400, $color-grey-400) no-repeat
+      calc(50% - #{$spacing-12}) / 1px 100%;
+    background-color: $color-white;
+  }
+
   .layout {
     padding: 3rem 8rem;
 
