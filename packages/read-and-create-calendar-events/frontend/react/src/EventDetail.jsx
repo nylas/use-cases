@@ -81,12 +81,12 @@ function EventDetail({ selectedEvent }) {
         {details.url && (
           <p className="meeting-link">
             URL:
-            <div>
+            <span>
               <a href={details.url} className="external-link">
                 <span>Link</span>
                 <IconExternalLink />
               </a>
-            </div>
+            </span>
           </p>
         )}
         {Object.keys(passwordDetails).length && renderPasswordDetails()}
