@@ -47,4 +47,8 @@ export const isValidUrl = (str) => {
   }
   return url;
 };
+
 export const dividerBullet = `\u00a0 · \u00a0`;
+
+export const capitalizeString = (str) =>
+  `${str[0].toUpperCase()}${str.slice(1)}`;

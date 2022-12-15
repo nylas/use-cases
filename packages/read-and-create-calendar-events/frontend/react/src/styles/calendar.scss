@@ -278,6 +278,21 @@ a {
           padding: $spacing-4 0;
         }
 
+        p.meeting-link {
+          // background-color: pink;
+          display: flex;
+          gap: $spacing-4;
+        }
+
+        a.external-link {
+          // background-color: yellow;
+          flex: 1;
+          display: flex;
+          gap: $spacing-8;
+          align-items: center;
+          // width: 100%;
+        }
+
         // .phone-number {
         //   flex: 1;
         // }

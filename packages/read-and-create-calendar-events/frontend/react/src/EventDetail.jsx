@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import CalendarIllustration from './components/icons/illustration-calendar.svg';
+import IconExternalLink from './components/icons/IconExternalLink.jsx';
 import {
   displayMeetingTime,
   getFormattedDate,
@@ -14,13 +15,12 @@ import {
   dividerBullet,
   initializeScrollShadow,
   handleScrollShadows,
+  capitalizeString,
 } from './utils/calendar';
 
 function EventDetail({ selectedEvent }) {
   const [showTopScrollShadow, setShowTopScrollShadow] = useState(false);
   const [showBottomScrollShadow, setShowBottomScrollShadow] = useState(false);
-
-  console.log({ selectedEvent });
 
   useEffect(() => {
     initializeScrollShadow('.description-container', setShowBottomScrollShadow);
@@ -45,34 +45,29 @@ function EventDetail({ selectedEvent }) {
   }, []);
 
   const renderConferencingDetails = (details) => {
-    const passwordDetails = [
-      ...(details.password
-        ? [{ name: 'Password', value: details.password }]
-        : []),
-      ...(details.pin ? [{ name: 'Pin', value: details.pin }] : []),
-    ]
-      .map((detail) => (
-        <span key={detail.name}>
-          {detail.name}: {detail.value}
-        </span>
-      ))
-      .reduce((acc, cur) => {
-        return acc === null ? [cur] : [...acc, dividerBullet, cur];
-      }, null);
+    const passwordDetails = {
+      ...(details.password && { password: details.password }),
+      ...(details.pin && { pin: details.pin }),
+    };
 
-    //         // <>
-    //     {/* <span key={phoneNumber}> */}
-    //     {phoneNumber}
-    //     {details.meeting_code
-    //       ? `, ${details.meeting_code.replace(/\s/g, '')}#\n`
-    //       : ''}
-    //   {/* </span> */}
-    {
-      /* </> */
-    }
+    const renderPasswordDetails = () => {
+      return (
+        <p>
+          {Object.keys(passwordDetails)
+            .map((detailKey) => (
+              <span key={detailKey}>
+                {capitalizeString(detailKey)}: {passwordDetails[detailKey]}
+              </span>
+            ))
+            .reduce((acc, cur) => {
+              return acc === null ? [cur] : [...acc, dividerBullet, cur];
+            }, null)}
+        </p>
+      );
+    };
+
     const getMeetingCode = () => details.meeting_code.replace(/\s/g, '');
 
-    // ", " + details.meeting_code.replace(/\s/g, '')+ "#"
     const getDialOptionsString = details.phone?.map((phoneNumber) => (
       <div key={phoneNumber}>
         {phoneNumber}
@@ -84,12 +79,17 @@ function EventDetail({ selectedEvent }) {
       <div className="conferencing-details">
         <p className="title">Conference Details</p>
         {details.url && (
-          <p>
-            {/* TODO: add external link icon */}
-            URL: <a href={details.url}>Link</a>
+          <p className="meeting-link">
+            URL:
+            <div>
+              <a href={details.url} className="external-link">
+                <span>Link</span>
+                <IconExternalLink />
+              </a>
+            </div>
           </p>
         )}
-        {/* {passwordDetails && <p>{passwordDetails}</p>} */}
+        {Object.keys(passwordDetails).length && renderPasswordDetails()}
         {details.phone && (
           <div className="dial-in">
             <div>Dial-In Options:</div>
@@ -151,21 +151,8 @@ function EventDetail({ selectedEvent }) {
                 showTopScrollShadow ? '' : ' hidden'
               }`}
             ></div>
-
-            {/* TODO: Make Conditional */}
-            {
-              selectedEvent.conferencing &&
-                renderConferencingDetails(selectedEvent.conferencing.details)
-              // <>
-              //   <p className="title">Conference Details</p>
-              //   <p>
-              //     URL: <a href="www.nylas.com">Link</a>
-              //   </p>
-              //   <p>Password: sdafdasfdasf</p>
-              // </>
-            }
-            {/* TODO: Make Conditional */}
-
+            {selectedEvent.conferencing &&
+              renderConferencingDetails(selectedEvent.conferencing.details)}
             <p className="title">Description</p>
             <p
               dangerouslySetInnerHTML={{
