@@ -126,8 +126,6 @@ function App() {
 
         const data = await res.json();
 
-        console.log({ data });
-
         setEvents(data);
         setIsLoading(false);
       } catch (err) {
