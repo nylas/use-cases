@@ -262,17 +262,32 @@ a {
         padding-top: $spacing-24;
       }
 
-      &::-webkit-scrollbar-track {
-        margin-top: $spacing-32;
-      }
-    }
+      .conferencing-details {
+        p.title {
+          padding-bottom: calc(#{$spacing-8} - (#{$spacing-4} / 2));
+        }
 
-    .description-container {
-      overflow-y: scroll;
-      width: calc(100% + #{$spacing-16});
+        p:not(.title) {
+          padding: $spacing-4 0;
+        }
 
-      .title {
-        padding-top: $spacing-24;
+        .dial-in {
+          display: flex;
+          gap: $spacing-4;
+          padding: $spacing-4 0;
+        }
+
+        p.meeting-link {
+          display: flex;
+          gap: $spacing-4;
+        }
+
+        a.external-link {
+          flex: 1;
+          display: flex;
+          gap: $spacing-8;
+          align-items: center;
+        }
       }
 
       &::-webkit-scrollbar-track {

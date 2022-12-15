@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import CalendarIllustration from './components/icons/illustration-calendar.svg';
+import IconExternalLink from './components/icons/IconExternalLink.jsx';
 import {
   displayMeetingTime,
   getFormattedDate,
@@ -14,6 +15,7 @@ import {
   dividerBullet,
   initializeScrollShadow,
   handleScrollShadows,
+  capitalizeString,
 } from './utils/calendar';
 
 function EventDetail({ selectedEvent }) {
@@ -42,6 +44,62 @@ function EventDetail({ selectedEvent }) {
     };
   }, []);
 
+  const renderConferencingDetails = (details) => {
+    const passwordDetails = {
+      ...(details.password && { password: details.password }),
+      ...(details.pin && { pin: details.pin }),
+    };
+
+    const renderPasswordDetails = () => {
+      return (
+        <p>
+          {Object.keys(passwordDetails)
+            .map((detailKey) => (
+              <span key={detailKey}>
+                {capitalizeString(detailKey)}: {passwordDetails[detailKey]}
+              </span>
+            ))
+            .reduce((acc, cur) => {
+              return acc === null ? [cur] : [...acc, dividerBullet, cur];
+            }, null)}
+        </p>
+      );
+    };
+
+    const getMeetingCode = () => details.meeting_code.replace(/\s/g, '');
+
+    const getDialOptionsString = details.phone?.map((phoneNumber) => (
+      <div key={phoneNumber}>
+        {phoneNumber}
+        {details.meeting_code ? `, ${getMeetingCode()}#` : ''}
+      </div>
+    ));
+
+    return (
+      <div className="conferencing-details">
+        <p className="title">Conference Details</p>
+        {details.url && (
+          <p className="meeting-link">
+            URL:
+            <span>
+              <a href={details.url} className="external-link">
+                <span>Link</span>
+                <IconExternalLink />
+              </a>
+            </span>
+          </p>
+        )}
+        {Object.keys(passwordDetails).length && renderPasswordDetails()}
+        {details.phone && (
+          <div className="dial-in">
+            <div>Dial-In Options:</div>
+            <div>{getDialOptionsString}</div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="event-detail-view">
       {selectedEvent ? (
@@ -59,20 +117,14 @@ function EventDetail({ selectedEvent }) {
                   : displayMeetingTime(selectedEvent.when)}
                 {` (${getTimezoneCode()})`}
               </span>
-              {dividerBullet}
-              <span className="location truncate">
-                {isValidUrl(selectedEvent.location) ? (
-                  <a
-                    href={selectedEvent.location}
-                    rel="noreferrer"
-                    target="_blank"
-                  >
+              {!isValidUrl(selectedEvent.location) && (
+                <>
+                  {dividerBullet}
+                  <span className="location truncate">
                     {selectedEvent.location}
-                  </a>
-                ) : (
-                  selectedEvent.location
-                )}
-              </span>
+                  </span>
+                </>
+              )}
             </div>
 
             <div className="event-detail">
@@ -99,6 +151,8 @@ function EventDetail({ selectedEvent }) {
                 showTopScrollShadow ? '' : ' hidden'
               }`}
             ></div>
+            {selectedEvent.conferencing &&
+              renderConferencingDetails(selectedEvent.conferencing.details)}
             <p className="title">Description</p>
             <p
               dangerouslySetInnerHTML={{
