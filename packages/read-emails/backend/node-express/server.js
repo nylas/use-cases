@@ -91,6 +91,7 @@ app.get('/nylas/read-emails', async (req, res) => {
   return res.json(threads);
 });
 
+// Add route for getting individual message by id
 app.get('/nylas/message', async (req, res) => {
   if (!req.headers.authorization) {
     return res.json('Unauthorized');
@@ -108,7 +109,7 @@ app.get('/nylas/message', async (req, res) => {
   return res.json(message);
 });
 
-// Add route for download file
+// Add route for downloading file
 app.get('/nylas/file', async (req, res) => {
   if (!req.headers.authorization) {
     return res.json('Unauthorized');
