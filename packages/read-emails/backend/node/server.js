@@ -47,7 +47,6 @@ mockServer.post(DefaultPaths.buildAuthUrl, async (req, res) => {
 
 // '/nylas/exchange-mailbox-token': This route exchanges an
 // authorization code for an access token
-
 mockServer.post(DefaultPaths.exchangeCodeForToken, async (req, res) => {
   const body = await getReqBody(req);
 
