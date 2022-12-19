@@ -85,6 +85,7 @@ expressBinding.startDevelopmentWebsocket().then((webhookDetails) => {
 app.post('/nylas/send-email', (req, res) =>
   route.sendEmail(req, res, nylasClient)
 );
+
 app.get('/nylas/read-emails', (req, res) =>
   route.readEmails(req, res, nylasClient)
 );
