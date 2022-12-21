@@ -89,7 +89,7 @@ function EventDetail({ selectedEvent }) {
             </span>
           </p>
         )}
-        {Object.keys(passwordDetails).length && renderPasswordDetails()}
+        {Object.keys(passwordDetails).length ? renderPasswordDetails() : null}
         {details.phone && (
           <div className="dial-in">
             <div>Dial-In Options:</div>

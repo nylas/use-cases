@@ -13,17 +13,6 @@ function App() {
   const SERVER_URI = import.meta.env.VITE_SERVER_URI || 'http://localhost:9000';
 
   useEffect(() => {
-    const userIdString = sessionStorage.getItem('userId');
-    const userEmail = sessionStorage.getItem('userEmail');
-    if (userIdString) {
-      setUserId(userIdString);
-    }
-    if (userEmail) {
-      setUserEmail(userEmail);
-    }
-  }, []);
-
-  useEffect(() => {
     if (!nylas) {
       return;
     }
@@ -43,6 +32,17 @@ function App() {
         });
     }
   }, [nylas]);
+
+  useEffect(() => {
+    const userIdString = sessionStorage.getItem('userId');
+    const userEmail = sessionStorage.getItem('userEmail');
+    if (userIdString) {
+      setUserId(userIdString);
+    }
+    if (userEmail) {
+      setUserEmail(userEmail);
+    }
+  }, []);
 
   useEffect(() => {
     if (userId?.length) {

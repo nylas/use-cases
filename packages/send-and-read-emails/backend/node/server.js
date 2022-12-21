@@ -96,6 +96,7 @@ openWebhookTunnel(nylasClient, {
 mockServer.post('/nylas/send-email', (req, res) =>
   route.sendEmail(req, res, nylasClient)
 );
+
 mockServer.get('/nylas/read-emails', (req, res) =>
   route.readEmails(req, res, nylasClient)
 );
