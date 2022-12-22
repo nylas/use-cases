@@ -124,7 +124,9 @@ function App() {
           throw new Error(res.statusText);
         }
 
-        const data = await res.json();
+        const data = (await res.json()).filter(
+          (event) => event.status !== 'cancelled'
+        );
 
         setEvents(data);
         setIsLoading(false);
