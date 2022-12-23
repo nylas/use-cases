@@ -192,7 +192,10 @@ app.get('/nylas/get-mock-orders', async (req, res) => {
             product_id: null,
             color: null,
             size: null,
-            url: 'https://help.etsy.com/hc/articles/360020601674?campaign_label=shipping_notification_boe_convourl_treatment&utm_source=transactional&utm_campaign=shipping_notification_boe_convourl_treatment_010170_433263510924_0_0&utm_medium=email&utm_content=&email_sent=1640469464&euid=9Pr53Yl4PfY48SgbkTDkNq7fUJ3A&eaid=36678400514&x_eaid=61c3f1b72d&link_clicked=0',
+            url: `https://help.etsy.com/hc/articles/360020601674?
+              campaign_label=shipping_notification_boe_convourl_treatment
+              &utm_source=transactional&utm_campaign=shipping_notification_boe_convourl_treatment_010170_433263510924_0_0
+              &utm_medium=email&utm_content=&email_sent=1640469464&euid=9Pr53Yl4PfY48SgbkTDkNq7fUJ3A&eaid=36678400514&x_eaid=61c3f1b72d&link_clicked=0`,
             product_image_uri:
               'https://i.etsystatic.com/7120425/r/il/821aa3/2792420144/il_170x135.2792420144_7dou.jpg',
           },
@@ -203,7 +206,10 @@ app.get('/nylas/get-mock-orders', async (req, res) => {
             product_id: null,
             color: null,
             size: null,
-            url: 'https://help.etsy.com/hc/articles/360020601674?campaign_label=shipping_notification_boe_convourl_treatment&utm_source=transactional&utm_campaign=shipping_notification_boe_convourl_treatment_010170_433263510924_0_0&utm_medium=email&utm_content=&email_sent=1640469464&euid=9Pr53Yl4PfY48SgbkTDkNq7fUJ3A&eaid=36678400514&x_eaid=61c3f1b72d&link_clicked=0',
+            url: `https://help.etsy.com/hc/articles/360020601674?
+            campaign_label=shipping_notification_boe_convourl_treatment
+            &utm_source=transactional&utm_campaign=shipping_notification_boe_convourl_treatment_010170_433263510924_0_0
+            &utm_medium=email&utm_content=&email_sent=1640469464&euid=9Pr53Yl4PfY48SgbkTDkNq7fUJ3A&eaid=36678400514&x_eaid=61c3f1b72d&link_clicked=0`,
             product_image_uri:
               'https://i.etsystatic.com/7120425/r/il/821aa3/2792420144/il_170x135.2792420144_7dou.jpg',
           },
@@ -258,7 +264,12 @@ app.get('/nylas/get-mock-orders', async (req, res) => {
             product_id: null,
             color: null,
             size: null,
-            url: 'https://www.etsy.com/your/purchases/claim?token=NTY5ODI4NDg4fDIyOTA5MTI2NDY%3D&signature=i4Go3j75LPZBBPGxzR3Bp2QLHQAq3RXb9cUlaVnZF9Q%3D&campaign_label=proteus_transaction_guest_buyer_notification_v2&utm_source=transactional&utm_campaign=proteus_transaction_buyer_notification_010170_239793797795_0_0&utm_medium=email&from_email=order_confirmation&utm_content=&email_sent=1638674203&euid=AeIyt8YcvsBBW_FAG5JZZEydQ_u0&eaid=36678400514&x_eaid=61c3f1b72d&link_clicked=4',
+            url: `https://www.etsy.com/your/purchases/claim?
+            token=NTY5ODI4NDg4fDIyOTA5MTI2NDY%3D&signature=i4Go3j75LPZBBPGxzR3Bp2QLHQAq3RXb9cUlaVnZF9Q%3D
+            &campaign_label=proteus_transaction_guest_buyer_notification_v2&utm_source=transactional
+            &utm_campaign=proteus_transaction_buyer_notification_010170_239793797795_0_0&utm_medium=email
+            &from_email=order_confirmation&utm_content=&email_sent=1638674203&euid=AeIyt8YcvsBBW_FAG5JZZEydQ_u0
+            &eaid=36678400514&x_eaid=61c3f1b72d&link_clicked=4`,
             product_image_uri:
               'https://i.etsystatic.com/7120425/r/il/821aa3/2792420144/il_340x270.2792420144_7dou.jpg',
           },
@@ -269,7 +280,11 @@ app.get('/nylas/get-mock-orders', async (req, res) => {
             product_id: null,
             color: null,
             size: null,
-            url: 'https://www.etsy.com/your/purchases/claim?token=NTY5ODI4NDg4fDIyOTA5MTI2NDY%3D&signature=i4Go3j75LPZBBPGxzR3Bp2QLHQAq3RXb9cUlaVnZF9Q%3D&campaign_label=proteus_transaction_guest_buyer_notification_v2&utm_source=transactional&utm_campaign=proteus_transaction_buyer_notification_010170_239793797795_0_0&utm_medium=email&from_email=order_confirmation&utm_content=&email_sent=1638674203&euid=AeIyt8YcvsBBW_FAG5JZZEydQ_u0&eaid=36678400514&x_eaid=61c3f1b72d&link_clicked=6',
+            url: `https://www.etsy.com/your/purchases/claim?token=NTY5ODI4NDg4fDIyOTA5MTI2NDY%3D
+            &signature=i4Go3j75LPZBBPGxzR3Bp2QLHQAq3RXb9cUlaVnZF9Q%3D&campaign_label=proteus_transaction_guest_buyer_notification_v2
+            &utm_source=transactional&utm_campaign=proteus_transaction_buyer_notification_010170_239793797795_0_0&utm_medium=email
+            &from_email=order_confirmation&utm_content=&email_sent=1638674203&euid=AeIyt8YcvsBBW_FAG5JZZEydQ_u0
+            &eaid=36678400514&x_eaid=61c3f1b72d&link_clicked=6`,
             product_image_uri:
               'https://i.etsystatic.com/7120425/r/il/fbf5be/3311186749/il_340x270.3311186749_ppqp.jpg',
           },
