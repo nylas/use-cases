@@ -125,7 +125,7 @@ app.get('/nylas/file', async (req, res) => {
 
   // Files will be returned as a binary object
   const fileData = await file.download();
-  return res.json(fileData?.body);
+  return res.end(fileData?.body);
 });
 
 // Before we start our backend, we should whitelist our frontend

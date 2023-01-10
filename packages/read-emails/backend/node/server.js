@@ -127,7 +127,7 @@ mockServer.get('/nylas/file', async (req, res) => {
   // Files will be returned as a binary object
   const fileData = await file.download();
 
-  return res.writeHead(200).end(JSON.stringify(fileData?.body));
+  return res.writeHead(200).end(fileData?.body);
 });
 
 // Start the Nylas webhook
