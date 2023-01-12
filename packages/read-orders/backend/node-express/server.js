@@ -63,32 +63,16 @@ function isOrderEmail(message) {
 }
 
 function prepEmailForParser(messageObj, rawEmail) {
-  const senderEmail = isForwardedMessage(messageObj)
-    ? getOriginalSender(messageObj)
-    : messageObj.from[0].email;
-  const senderDomain = senderEmail.split('@')[1].replace(/.ca$/, '.com');
+  const encodeBase64 = (data) => Buffer.from(data).toString('base64');
+  const senderEmail = messageObj.from[0].email;
 
   return {
     emailTimestamp: +messageObj.date * 1000,
     fetchedEmailId: messageObj.id,
     from: senderEmail,
-    senderDomain: senderDomain,
+    senderDomain: senderEmail.split('@')[1],
     textBase64: encodeBase64(rawEmail),
   };
-
-  function isForwardedMessage(message) {
-    return message.snippet
-      .toLowerCase()
-      .includes('---------- forwarded message ---------');
-  }
-
-  function getOriginalSender(message) {
-    return message.snippet.match(/<(\S+@\S+)>/)[1];
-  }
-
-  function encodeBase64(data) {
-    return Buffer.from(data).toString('base64');
-  }
 }
 
 // Mount the express middleware to your express app
@@ -108,7 +92,7 @@ expressBinding.startDevelopmentWebsocket().then((webhookDetails) => {
   console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id);
 });
 
-// WIP: Get messages and pass "order" emails to parser API
+// Get messages and pass "order" emails to parser API
 app.get('/nylas/get-orders', async (req, res) => {
   if (!req.headers.authorization) {
     return res.json('Unauthorized');
@@ -125,7 +109,8 @@ app.get('/nylas/get-orders', async (req, res) => {
     .with(user.accessToken)
     .messages.list({ limit: 100, expanded: true });
 
-  let preppedEmails = await Promise.all(
+  // Prepare raw emails for sending to the Nylas parser API
+  const preppedEmails = await Promise.all(
     messages
       .filter(isOrderEmail)
       .map(async (message) =>
@@ -133,9 +118,9 @@ app.get('/nylas/get-orders', async (req, res) => {
       )
   );
 
-  const url = `https://nylas-neural-parsers-test.us.nylas.com/parse_order`;
+  const parserUrl = `https://nylas-neural-parsers-test.us.nylas.com/parse_order`;
 
-  const parserResponse = await axios.post(url, {
+  const parserResponse = await axios.post(parserUrl, {
     metadata: { market: 'US' },
     emails: preppedEmails,
   });
