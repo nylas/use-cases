@@ -98,7 +98,6 @@ app.get('/nylas/get-orders', async (req, res) => {
     return res.json('Unauthorized');
   }
 
-  // We still provide access to the RFC-2822 raw message object by passing in Accept: message/rfc822 as the header.
   const user = await mockDb.findUser(req.headers.authorization);
 
   if (!user) {
