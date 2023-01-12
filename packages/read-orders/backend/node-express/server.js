@@ -92,7 +92,7 @@ expressBinding.startDevelopmentWebsocket().then((webhookDetails) => {
   console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id);
 });
 
-// Get messages and pass "order" emails to parser API
+// Get messages and pass relevant order emails to parser API
 app.get('/nylas/get-orders', async (req, res) => {
   if (!req.headers.authorization) {
     return res.json('Unauthorized');
