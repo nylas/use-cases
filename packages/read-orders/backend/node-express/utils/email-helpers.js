@@ -17,7 +17,12 @@ function prepEmailForParser(messageObj, rawEmail) {
   };
 }
 
+async function getRawMessage(messageObj, client, user) {
+  return await client.with(user.accessToken).messages.findRaw(messageObj.id);
+}
+
 module.exports = {
   isOrderEmail,
   prepEmailForParser,
+  getRawMessage,
 };

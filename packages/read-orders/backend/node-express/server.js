@@ -2,7 +2,11 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const mockDb = require('./utils/mock-db');
-const { isOrderEmail, prepEmailForParser } = require('./utils/email-helpers');
+const {
+  isOrderEmail,
+  prepEmailForParser,
+  getRawMessage,
+} = require('./utils/email-helpers');
 const axios = require('axios');
 
 const Nylas = require('nylas');
@@ -95,12 +99,16 @@ app.get('/nylas/get-orders', async (req, res) => {
     messages
       .filter(isOrderEmail)
       .map(async (message) =>
-        prepEmailForParser(message, await getRawMessage(message))
+        prepEmailForParser(
+          message,
+          await getRawMessage(message, nylasClient, user)
+        )
       )
   );
 
   const parserUrl = `https://nylas-neural-parsers-test.us.nylas.com/parse_order`;
 
+  // Send raw emails to order info to the Nylas parser API
   const parserResponse = await axios.post(parserUrl, {
     metadata: { market: 'US' },
     emails: preppedEmails,
@@ -121,12 +129,6 @@ app.get('/nylas/get-orders', async (req, res) => {
   return res.json(
     parsedResponses.filter((email) => email.email_category !== 'other')
   );
-
-  async function getRawMessage(messageObj) {
-    return await nylasClient
-      .with(user.accessToken)
-      .messages.findRaw(messageObj.id);
-  }
 });
 
 // Before we start our backend, we should whitelist our frontend
