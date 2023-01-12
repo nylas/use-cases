@@ -1,4 +1,5 @@
 import os
+import json
 from enum import Enum
 
 from utils.mock_db import MockDb
@@ -14,8 +15,8 @@ from nylas import APIClient
 from nylas.server_bindings.flask_binding import FlaskBinding
 
 # TODO: implement webhooks
-# from nylas.client.restful_models import Webhook
-# from nylas.services.tunnel import open_webhook_tunnel
+from nylas.client.restful_models import Webhook
+from nylas.services.tunnel import open_webhook_tunnel
 
 
 class AppPaths(str, Enum):  # define app routes as a string enum
@@ -23,6 +24,10 @@ class AppPaths(str, Enum):  # define app routes as a string enum
     READ_EMAILS = '/nylas/read-emails'
     MESSAGE = '/nylas/message'
 
+
+# TODO: initialize elsewhere?
+# spin up mock db
+mock_db = MockDb('datastore.json')
 
 # # Initialize an instance of the Nylas SDK using the client credentials
 nylas = APIClient(
@@ -33,10 +38,6 @@ nylas = APIClient(
 # set client side URI
 CLIENT_URI = os.environ.get(
     "CLIENT_URI") or f'http://localhost:{os.environ.get("PORT") or 3000}'
-
-# TODO: initialize elsewhere?
-# spin up mock db
-mock_db = MockDb('datastore.json')
 
 
 def exchange_mailbox_token_callback(access_token_obj):
@@ -56,6 +57,26 @@ def exchange_mailbox_token_callback(access_token_obj):
         'emailAddress': user['email_address']
     }
 
+
+def account_connected_webhook():
+    def on_message(wsapp, message):
+        delta = json.loads(message)
+        if delta['type'] == Webhook.Trigger.ACCOUNT_CONNECTED:
+            "Webhook trigger received, account connected. Details: {}".format(
+                delta['object_data'])
+
+    def on_open(ws):
+        print("opened")
+
+    def on_error(ws, err):
+        print("Error found")
+        print(err)
+
+    open_webhook_tunnel(
+        nylas, {'on_message': on_message, 'on_open': on_open, 'on_error': on_error})
+
+
+account_connected_webhook()
 
 flask_app = Flask(__name__)
 with flask_app.app_context():
@@ -122,12 +143,10 @@ def get_message():
 
 @flask_app.route(AppPaths.FILE, methods=['GET'])
 def download_file():
-    # TODO: fix
     file_id = request.args.get('id')
     file_metadata = nylas.files.get(file_id)
 
     file = file_metadata.download()
 
-    print(file_metadata.filename)
-
-    return send_file(BytesIO(file), download_name=file_metadata.filename, mimetype=file_metadata.content_type)
+    # return BytesIO(file)
+    return send_file(BytesIO(file), download_name=file_metadata.filename, mimetype=file_metadata.content_type, as_attachment=True)
