@@ -10,17 +10,6 @@ function App() {
   const [userEmail, setUserEmail] = useState('');
 
   useEffect(() => {
-    const userIdString = sessionStorage.getItem('userId');
-    const userEmail = sessionStorage.getItem('userEmail');
-    if (userIdString) {
-      setUserId(userIdString);
-    }
-    if (userEmail) {
-      setUserEmail(userEmail);
-    }
-  }, []);
-
-  useEffect(() => {
     if (!nylas) {
       return;
     }
@@ -41,6 +30,17 @@ function App() {
         });
     }
   }, [nylas]);
+
+  useEffect(() => {
+    const userIdString = sessionStorage.getItem('userId');
+    const userEmail = sessionStorage.getItem('userEmail');
+    if (userIdString) {
+      setUserId(userIdString);
+    }
+    if (userEmail) {
+      setUserEmail(userEmail);
+    }
+  }, []);
 
   useEffect(() => {
     if (userId?.length) {
