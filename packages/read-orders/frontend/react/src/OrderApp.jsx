@@ -44,7 +44,9 @@ function OrderApp({ userEmail, orders, isLoading, serverBaseUrl, userId }) {
 
   return (
     <>
-      <div className={`order-app ${isLoading ? '' : 'loaded'}`}>
+      <div
+        className={`order-app ${!isLoading && orders.length ? 'loaded' : ''}`}
+      >
         {isLoading ? (
           <p className="loading-text">Loading orders...</p>
         ) : selectedTabOrders.length ? (
@@ -89,7 +91,7 @@ function OrderApp({ userEmail, orders, isLoading, serverBaseUrl, userId }) {
             </div>
           </>
         ) : (
-          <p className="loading-text">No available order</p>
+          <p className="loading-text">No available orders</p>
         )}
       </div>
       <div className="mobile-warning hidden-desktop">
