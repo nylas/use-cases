@@ -14,7 +14,6 @@ from flask_cors import CORS
 from nylas import APIClient
 from nylas.server_bindings.flask_binding import FlaskBinding
 
-# TODO: implement webhooks
 from nylas.client.restful_models import Webhook
 from nylas.services.tunnel import open_webhook_tunnel
 
@@ -58,17 +57,27 @@ def exchange_mailbox_token_callback(access_token_obj):
     }
 
 
+# test = {"deltas": [{"date": 1673559260, "object": "message", "type": "message.updated", "object_data": {"namespace_id": "f0ot8laqgf692zhrzuz98bvgt",
+#                                                                                                         "account_id": "f0ot8laqgf692zhrzuz98bvgt", "object": "message", "attributes": {"thread_id": "e1x4z0j9pfq8redc08cu8yx1w"}, "id": "1jqgli0qz5v1he52yoxah0s2h", "metadata": None}}]}
+
+
 def account_connected_webhook():
-    def on_message(wsapp, message):
+    def on_message(_ws, message):
+        print("message received UPDATED")
+        print('wut')
         delta = json.loads(message)
+        body = json.loads(delta['body'])
+        print('body: ', body)
+        print('webhook type: ', body['deltas'][0]["type"])
+
         if delta['type'] == Webhook.Trigger.ACCOUNT_CONNECTED:
-            "Webhook trigger received, account connected. Details: {}".format(
-                delta['object_data'])
+            print("Webhook trigger received, account connected. Details: {}".format(
+                delta['object_data']))
 
-    def on_open(ws):
-        print("opened")
+    def on_open(_ws):
+        print("opened UPDATED")
 
-    def on_error(ws, err):
+    def on_error(_ws, err):
         print("Error found")
         print(err)
 
@@ -120,7 +129,7 @@ def after_request(response):
 
 @flask_app.route(AppPaths.READ_EMAILS, methods=['GET'])
 def read_emails():
-    res = nylas.threads.where(limit=10, view="expanded").all()
+    res = nylas.threads.where(limit=5, view="expanded").all()
     res_json = [item.as_json(enforce_read_only=False) for item in res]
 
     # TODO: remove these hack
@@ -148,5 +157,4 @@ def download_file():
 
     file = file_metadata.download()
 
-    # return BytesIO(file)
     return send_file(BytesIO(file), download_name=file_metadata.filename, mimetype=file_metadata.content_type, as_attachment=True)
