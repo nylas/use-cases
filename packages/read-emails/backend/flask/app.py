@@ -57,22 +57,14 @@ def exchange_mailbox_token_callback(access_token_obj):
     }
 
 
-# test = {"deltas": [{"date": 1673559260, "object": "message", "type": "message.updated", "object_data": {"namespace_id": "f0ot8laqgf692zhrzuz98bvgt",
-#                                                                                                         "account_id": "f0ot8laqgf692zhrzuz98bvgt", "object": "message", "attributes": {"thread_id": "e1x4z0j9pfq8redc08cu8yx1w"}, "id": "1jqgli0qz5v1he52yoxah0s2h", "metadata": None}}]}
-
-
 def account_connected_webhook():
     def on_message(_ws, message):
-        print("message received UPDATED")
-        print('wut')
-        delta = json.loads(message)
-        body = json.loads(delta['body'])
-        print('body: ', body)
-        print('webhook type: ', body['deltas'][0]["type"])
+        res = json.loads(message)
+        body = json.loads(res['body'])
 
-        if delta['type'] == Webhook.Trigger.ACCOUNT_CONNECTED:
+        if body['deltas'][0]['type'] == Webhook.Trigger.ACCOUNT_CONNECTED:
             print("Webhook trigger received, account connected. Details: {}".format(
-                delta['object_data']))
+                body['deltas'][0]['object_data']))
 
     def on_open(_ws):
         print("opened UPDATED")
