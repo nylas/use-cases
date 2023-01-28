@@ -1,5 +1,4 @@
 from io import BytesIO
-from http.server import HTTPServer
 from nylas import APIClient
 from enum import Enum
 from server import *
@@ -148,6 +147,39 @@ def create_event():
     return event.as_json(enforce_read_only=False)
 
 
+@app.route(AppRoutes.READ_EVENTS, methods=['GET'])
+@is_authenticated
+def read_events():
+    query_params = app.req['query']
+
+    calendar_id = query_params['calendarId'][0]
+    starts_after = query_params['startsAfter'][0]
+    ends_before = query_params['endsBefore'][0]
+    limit = query_params['limit'][0]
+
+    res = nylas.events.where(
+        calendar_id=calendar_id,
+        starts_after=starts_after,
+        ends_before=ends_before,
+        limit=int(limit)
+    ).all()
+
+    res_json = [item.as_json(enforce_read_only=False)
+                for item in res]
+
+    return res_json
+
+
+@app.route(AppRoutes.READ_CALENDARS, methods=['GET'])
+@is_authenticated
+def read_calendars():
+    res = nylas.calendars.all()
+    res_json = [item.as_json(enforce_read_only=False)
+                for item in res]
+
+    return res_json
+
+
 @app.route(AppRoutes.SEND_EMAIL, methods=['POST'])
 @is_authenticated
 def send_email():
@@ -183,39 +215,6 @@ def read_emails():
 
     for item in res_json:
         item['labels'] = item.pop('_labels')
-
-    return res_json
-
-
-@app.route(AppRoutes.READ_EVENTS, methods=['GET'])
-@is_authenticated
-def read_events():
-    query_params = app.req['query']
-
-    calendar_id = query_params['calendarId'][0]
-    starts_after = query_params['startsAfter'][0]
-    ends_before = query_params['endsBefore'][0]
-    limit = query_params['limit'][0]
-
-    res = nylas.events.where(
-        calendar_id=calendar_id,
-        starts_after=starts_after,
-        ends_before=ends_before,
-        limit=int(limit)
-    ).all()
-
-    res_json = [item.as_json(enforce_read_only=False)
-                for item in res]
-
-    return res_json
-
-
-@app.route(AppRoutes.READ_CALENDARS, methods=['GET'])
-@is_authenticated
-def read_calendars():
-    res = nylas.calendars.all()
-    res_json = [item.as_json(enforce_read_only=False)
-                for item in res]
 
     return res_json
 

@@ -22,6 +22,7 @@ class AppPaths(str, Enum):  # define app routes as a string enum
     FILE = '/nylas/file'
     READ_EMAILS = '/nylas/read-emails'
     MESSAGE = '/nylas/message'
+    SEND_EMAIL = '/nylas/send-email'
 
 
 # TODO: initialize elsewhere?
@@ -85,7 +86,7 @@ with flask_app.app_context():
         __name__,
         'python-flask-read-emails',
         nylas,
-        ['email.read_only'],
+        ['email.read_only', 'email.send', 'email.modify'],
         exchange_mailbox_token_callback,
         CLIENT_URI,
     ).build()
@@ -121,7 +122,7 @@ def after_request(response):
 
 @flask_app.route(AppPaths.READ_EMAILS, methods=['GET'])
 def read_emails():
-    res = nylas.threads.where(limit=5, view="expanded").all()
+    res = nylas.threads.where(limit=20, view="expanded").all()
     res_json = [item.as_json(enforce_read_only=False) for item in res]
 
     # TODO: remove these hack
@@ -150,3 +151,34 @@ def download_file():
     file = file_metadata.download()
 
     return send_file(BytesIO(file), download_name=file_metadata.filename, mimetype=file_metadata.content_type, as_attachment=True)
+
+
+@flask_app.route(AppPaths.SEND_EMAIL, methods=['POST'])
+def send_email():
+    auth_headers = request.headers.get('Authorization')
+    if not auth_headers:
+        return 'Unauthorized', 401
+
+    user = mock_db.find_user(auth_headers)
+
+    print(user)
+    if not user:
+        return 'Unauthorized', 401
+
+    nylas.access_token = user['access_token']
+
+    request_body = request.get_json()
+
+    to = request_body['to']
+    body = request_body['body']
+    subject = request_body['subject']
+
+    draft = nylas.drafts.create()
+    draft['to'] = [{'email': to}]
+    draft['body'] = body
+    draft['subject'] = subject
+    draft['from'] = [{'email': user['email_address']}]
+
+    message = draft.send()
+
+    return message

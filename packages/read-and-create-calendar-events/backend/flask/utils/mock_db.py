@@ -74,7 +74,4 @@ class MockDb:
             return self.create_user(attributes)
 
 
-# const mockDB = new MockDB('datastore.json');
-
-# # 'datastore.json' is created at runtime
-# module.exports = mockDB;
+db = MockDb('datastore.json')

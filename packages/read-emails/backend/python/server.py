@@ -123,6 +123,12 @@ class MyHandler(BaseHTTPRequestHandler):
 
     # very naive
     def process_response(self,  res):
+
+        if isinstance(res, int):
+            if res > 299:
+                self.send_error(res)
+                return
+
         # response is file
         if isinstance(res, bytes):
             self.wfile.write(res)
