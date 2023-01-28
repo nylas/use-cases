@@ -4,3 +4,4 @@ node_modules/
 datastore.json
 .idea
 .husky/_
+__pycache__/
