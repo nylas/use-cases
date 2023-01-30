@@ -213,7 +213,7 @@ function EmailDetail({
           'Content-Type': 'application/json',
         },
       });
-      const fileBuffer = await res.json();
+      const fileBuffer = await res.text();
       if (fileBuffer) downloadAttachedFile(fileBuffer, file);
     } catch (e) {
       console.warn(`Error retrieving emails:`, e);
@@ -222,8 +222,7 @@ function EmailDetail({
   };
 
   function downloadAttachedFile(fileBuffer, file) {
-    const buffer = Uint8Array.from(fileBuffer.data);
-    const blob = new Blob([buffer], { type: file.content_type });
+    const blob = new Blob([fileBuffer], { type: file.content_type });
     const blobFile = window.URL.createObjectURL(blob);
 
     const a = document.createElement('a');
