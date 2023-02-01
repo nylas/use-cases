@@ -11,7 +11,6 @@ function EmailApp({
   isLoading,
   serverBaseUrl,
   userId,
-  reloadEmail,
   setToastNotification,
 }) {
   // const [selectedEmail, setSelectedEmail] = useState(null);
@@ -44,7 +43,7 @@ function EmailApp({
 
   const onEmailSent = () => {
     setDraftEmail(null);
-    reloadEmail();
+    // reloadEmail();
     setToastNotification('success');
   };
 
@@ -67,7 +66,9 @@ function EmailApp({
             }
             onEmailSent={onEmailSent}
             setToastNotification={setToastNotification}
-            discardComposer={() => {}}
+            discardComposer={() => {
+              alert('TODO');
+            }}
           />
         )}
       </div>
@@ -89,7 +90,6 @@ EmailApp.propTypes = {
   isLoading: PropTypes.bool.isRequired,
   serverBaseUrl: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired,
-  reloadEmail: PropTypes.func.isRequired,
   setToastNotification: PropTypes.func.isRequired,
 };
 

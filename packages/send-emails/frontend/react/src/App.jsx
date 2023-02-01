@@ -56,25 +56,7 @@ function App() {
 
   const getEmails = async () => {
     setIsLoading(true);
-    try {
-      const url = SERVER_URI + '/nylas/read-emails';
-      const res = await fetch(url, {
-        method: 'GET',
-        headers: {
-          Authorization: userId,
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await res.json();
-      if (Array.isArray(data)) {
-        setEmails(data);
-      } else {
-        setEmails([]);
-      }
-    } catch (e) {
-      console.warn(`Error retrieving emails:`, e);
-      return false;
-    }
+    setEmails([]);
     setIsLoading(false);
   };
 
@@ -85,15 +67,10 @@ function App() {
     setUserEmail('');
   };
 
-  const refresh = () => {
-    getEmails();
-  };
-
   return (
     <Layout
       showMenu={!!userId}
       disconnectUser={disconnectUser}
-      refresh={refresh}
       isLoading={isLoading}
       title="Send email sample app"
       toastNotification={toastNotification}
@@ -109,7 +86,6 @@ function App() {
             isLoading={isLoading}
             serverBaseUrl={SERVER_URI}
             userId={userId}
-            reloadEmail={refresh}
             setToastNotification={setToastNotification}
           />
         </div>

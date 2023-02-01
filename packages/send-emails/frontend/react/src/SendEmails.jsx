@@ -129,6 +129,7 @@ function SendEmails({
         </button>
         <button className="icon" onClick={discardComposer}>
           <IconDelete />
+          Clear email
         </button>
       </div>
     </form>

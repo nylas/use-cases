@@ -9,18 +9,12 @@ const Layout = ({
   children,
   showMenu = false,
   disconnectUser,
-  refresh,
   isLoading,
   title,
   toastNotification,
   setToastNotification,
 }) => {
   const [isDisconnecting, setIsDisconnecting] = useState(false);
-
-  const handleRefresh = (e) => {
-    e.preventDefault();
-    refresh();
-  };
 
   const handleDisconnect = (e) => {
     e.preventDefault();
@@ -42,18 +36,6 @@ const Layout = ({
         />
         {showMenu && !toastNotification && (
           <div className="menu">
-            <button
-              onClick={handleRefresh}
-              disabled={isLoading || isDisconnecting}
-            >
-              <div className={`menu-icon ${isLoading ? 'syncing' : ''}`}>
-                <IconSync />
-              </div>
-              <span className="hidden-mobile">
-                {isLoading ? 'Refreshing' : 'Refresh'}
-              </span>
-            </button>
-            <div className="hidden-mobile">·</div>
             <button
               onClick={handleDisconnect}
               disabled={isLoading || isDisconnecting}
@@ -83,7 +65,6 @@ Layout.propTypes = {
   children: PropTypes.element.isRequired,
   showMenu: PropTypes.bool.isRequired,
   disconnectUser: PropTypes.func,
-  refresh: PropTypes.func,
   isLoading: PropTypes.bool.isRequired,
   title: PropTypes.string,
   toastNotification: PropTypes.string,
