@@ -19,6 +19,7 @@ function EmailApp({
 
   useEffect(() => {
     setSelectedEmail(null);
+    composeEmail();
   }, [emails]);
 
   const composeEmail = () => {
