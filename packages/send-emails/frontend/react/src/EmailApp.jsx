@@ -7,20 +7,20 @@ import './styles/email.scss';
 
 function EmailApp({
   userEmail,
-  emails,
+  // emails,
   isLoading,
   serverBaseUrl,
   userId,
   reloadEmail,
   setToastNotification,
 }) {
-  const [selectedEmail, setSelectedEmail] = useState(null);
+  // const [selectedEmail, setSelectedEmail] = useState(null);
   const [draftEmail, setDraftEmail] = useState(null);
 
   useEffect(() => {
-    setSelectedEmail(null);
+    // setSelectedEmail(null);
     composeEmail();
-  }, [emails]);
+  }, []);
 
   const composeEmail = () => {
     if (draftEmail) {
@@ -39,7 +39,7 @@ function EmailApp({
       };
       setDraftEmail(newDraft);
     }
-    setSelectedEmail(null);
+    // setSelectedEmail(null);
   };
 
   const onEmailSent = () => {
@@ -51,52 +51,29 @@ function EmailApp({
   return (
     <>
       <div className="email-app">
-        {isLoading ? (
-          <p className="loading-text">Loading emails...</p>
-        ) : emails.length ? (
-          <>
-            <EmailList
-              emails={emails}
-              selectedEmail={selectedEmail}
-              setSelectedEmail={setSelectedEmail}
-              composeEmail={composeEmail}
-              draftEmail={draftEmail}
-              setDraftEmail={setDraftEmail}
-            />
-            {draftEmail?.isOpen ? (
-              <SendEmails
-                userId={userId}
-                draftEmail={draftEmail}
-                setDraftEmail={(draftUpdates) =>
-                  setDraftEmail((prev) => {
-                    return {
-                      ...prev,
-                      ...draftUpdates,
-                    };
-                  })
-                }
-                onEmailSent={onEmailSent}
-                setToastNotification={setToastNotification}
-                discardComposer={() => setDraftEmail(null)}
-              />
-            ) : (
-              <EmailDetail
-                selectedEmail={selectedEmail}
-                userEmail={userEmail}
-                serverBaseUrl={serverBaseUrl}
-                userId={userId}
-                onEmailSent={onEmailSent}
-                setToastNotification={setToastNotification}
-              />
-            )}
-          </>
+        {isLoading || !draftEmail ? (
+          <p className="loading-text">Loading composer...</p>
         ) : (
-          <p className="loading-text">No available email</p>
+          <SendEmails
+            userId={userId}
+            draftEmail={draftEmail}
+            setDraftEmail={(draftUpdates) =>
+              setDraftEmail((prev) => {
+                return {
+                  ...prev,
+                  ...draftUpdates,
+                };
+              })
+            }
+            onEmailSent={onEmailSent}
+            setToastNotification={setToastNotification}
+            discardComposer={() => {}}
+          />
         )}
       </div>
       <div className="mobile-warning hidden-desktop">
         <h2>
-          Email sample app is currently designed for a desktop experience.
+          Send email sample app is currently designed for a desktop experience.
         </h2>
         <p>
           Visit Nylas dashboard for more use-cases: https://dashboard.nylas.com
