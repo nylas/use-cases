@@ -8,6 +8,7 @@ from flask import Flask, request, g
 from flask_cors import CORS
 
 from nylas import APIClient
+from nylas.client.restful_models import Webhook
 from nylas.services.tunnel import open_webhook_tunnel
 
 # Initialize the Nylas API client using the client id and secret specified in the .env file
@@ -17,8 +18,7 @@ nylas = APIClient(
 )
 
 # Set the URI for the client
-CLIENT_URI = os.environ.get(
-    "CLIENT_URI") or f'http://localhost:{os.environ.get("PORT") or 3000}'
+CLIENT_URI = 'http://localhost:3000'
 
 # Set the default scopes for auth
 DEFAULT_SCOPES = ['email.send', 'email.modify']
@@ -29,12 +29,14 @@ def run_webhook():
     Run a webhook to receive real-time updates from the Nylas API.
     In this example, webhook open and error events and the messages received from the API are printed to the console.
     """
-    def on_message(wsapp, message):
-        # Parse the Nylas message and print the delta
-        msg = json.loads(message)
-        jsn = json.loads(msg['body'])
-        delta = jsn['deltas'][0]
-        print(delta)
+    def on_message(delta):
+        """
+        Raw webhook messages are parsed in the Nylas SDK and sent to this function as a delta
+        """
+
+        # Trigger logic on any webhook trigger Enum
+        if delta["type"] == Webhook.Trigger.MESSAGE_CREATED:
+            print(delta)
 
     def on_open(ws):
         print("opened")
