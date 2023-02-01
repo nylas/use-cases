@@ -5,3 +5,5 @@ datastore.json
 .idea
 .husky/_
 __pycache__/
+Pipfile
+Pipfile.lock
