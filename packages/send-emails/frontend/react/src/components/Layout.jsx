@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import IconSync from './icons/IconSync.jsx';
 import IconLogout from './icons/IconLogout.jsx';
 import NylasLogo from './icons/nylas-logo-horizontal.svg';
 import PropTypes from 'prop-types';
@@ -9,7 +8,6 @@ const Layout = ({
   children,
   showMenu = false,
   disconnectUser,
-  isLoading,
   title,
   toastNotification,
   setToastNotification,
@@ -36,10 +34,7 @@ const Layout = ({
         />
         {showMenu && !toastNotification && (
           <div className="menu">
-            <button
-              onClick={handleDisconnect}
-              disabled={isLoading || isDisconnecting}
-            >
+            <button onClick={handleDisconnect} disabled={isDisconnecting}>
               <div className="menu-icon">
                 <IconLogout />
               </div>
@@ -65,7 +60,6 @@ Layout.propTypes = {
   children: PropTypes.element.isRequired,
   showMenu: PropTypes.bool.isRequired,
   disconnectUser: PropTypes.func,
-  isLoading: PropTypes.bool.isRequired,
   title: PropTypes.string,
   toastNotification: PropTypes.string,
   setToastNotification: PropTypes.func.isRequired,

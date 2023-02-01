@@ -1,18 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import EmailList from './EmailList';
-import EmailDetail from './EmailDetail';
 import SendEmails from './SendEmails';
 import './styles/email.scss';
 
-function EmailApp({
-  userEmail,
-  // emails,
-  isLoading,
-  serverBaseUrl,
-  userId,
-  setToastNotification,
-}) {
+function EmailApp({ serverBaseUrl, userId, setToastNotification }) {
   // const [selectedEmail, setSelectedEmail] = useState(null);
   const [draftEmail, setDraftEmail] = useState(null);
 
@@ -50,7 +41,7 @@ function EmailApp({
   return (
     <>
       <div className="email-app">
-        {isLoading || !draftEmail ? (
+        {!draftEmail ? (
           <p className="loading-text">Loading composer...</p>
         ) : (
           <SendEmails
@@ -66,7 +57,8 @@ function EmailApp({
             }
             onEmailSent={onEmailSent}
             setToastNotification={setToastNotification}
-            discardComposer={() => {
+            discardComposer={(e) => {
+              e.preventDefault();
               alert('TODO');
             }}
           />
@@ -86,8 +78,6 @@ function EmailApp({
 
 EmailApp.propTypes = {
   userEmail: PropTypes.string.isRequired,
-  emails: PropTypes.array.isRequired,
-  isLoading: PropTypes.bool.isRequired,
   serverBaseUrl: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired,
   setToastNotification: PropTypes.func.isRequired,

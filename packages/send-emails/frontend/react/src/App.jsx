@@ -8,8 +8,6 @@ function App() {
   const nylas = useNylas();
   const [userId, setUserId] = useState('');
   const [userEmail, setUserEmail] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [emails, setEmails] = useState([]);
   const [toastNotification, setToastNotification] = useState('');
   const SERVER_URI = import.meta.env.VITE_SERVER_URI || 'http://localhost:9000';
 
@@ -48,17 +46,10 @@ function App() {
   useEffect(() => {
     if (userId?.length) {
       window.history.replaceState({}, '', `/?userId=${userId}`);
-      getEmails();
     } else {
       window.history.replaceState({}, '', '/');
     }
   }, [userId]);
-
-  const getEmails = async () => {
-    setIsLoading(true);
-    setEmails([]);
-    setIsLoading(false);
-  };
 
   const disconnectUser = () => {
     sessionStorage.removeItem('userId');
@@ -71,7 +62,6 @@ function App() {
     <Layout
       showMenu={!!userId}
       disconnectUser={disconnectUser}
-      isLoading={isLoading}
       title="Send email sample app"
       toastNotification={toastNotification}
       setToastNotification={setToastNotification}
@@ -82,8 +72,6 @@ function App() {
         <div className="app-card">
           <EmailApp
             userEmail={userEmail}
-            emails={emails}
-            isLoading={isLoading}
             serverBaseUrl={SERVER_URI}
             userId={userId}
             setToastNotification={setToastNotification}
