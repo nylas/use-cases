@@ -12,8 +12,8 @@ from nylas.services.tunnel import open_webhook_tunnel
 
 # Initialize the Nylas API client using the client id and secret specified in the .env file
 nylas = APIClient(
-    os.environ.get("CLIENT_ID"),
-    os.environ.get("CLIENT_SECRET"),
+    os.environ.get("NYLAS_CLIENT_ID"),
+    os.environ.get("NYLAS_CLIENT_SECRET"),
 )
 
 # Set the URI for the client
