@@ -1,12 +1,43 @@
 import { useNylas } from '@nylas/nylas-react';
-import { useState } from 'react';
-import { styles } from './styles';
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import IconDelete from './components/icons/IconDelete.jsx';
 
-function SendEmails({ userId }) {
+function SendEmails({
+  userId,
+  draftEmail,
+  setDraftEmail,
+  onEmailSent,
+  setToastNotification,
+  discardComposer,
+  style,
+}) {
   const nylas = useNylas();
 
   const [to, setTo] = useState('');
+  const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
+  const [isSending, setIsSending] = useState(false);
+
+  useEffect(() => {
+    setTo(draftEmail.to);
+    setSubject(draftEmail.subject);
+    setBody(draftEmail.body);
+  }, []);
+
+  useEffect(() => {
+    const updateTimer = setTimeout(function () {
+      const currentDate = new Date();
+      const draftUpdates = {
+        to: to,
+        subject,
+        body,
+        last_message_timestamp: Math.floor(currentDate.getTime() / 1000),
+      };
+      setDraftEmail(draftUpdates);
+    }, 500);
+    return () => clearTimeout(updateTimer);
+  }, [to, subject, body]);
 
   const sendEmail = async ({ userId, to, body }) => {
     try {
@@ -18,14 +49,20 @@ function SendEmails({ userId }) {
           Authorization: userId,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ to, body }),
+        body: JSON.stringify({ ...draftEmail, to, subject, body }),
       });
+
+      if (!res.ok) {
+        setToastNotification('error');
+        throw new Error(res.statusText);
+      }
 
       const data = await res.json();
 
       return data;
-    } catch (e) {
-      console.warn(`Error sending emails:`, e);
+    } catch (error) {
+      console.warn(`Error sending emails:`, error);
+      setToastNotification('error');
 
       return false;
     }
@@ -37,44 +74,75 @@ function SendEmails({ userId }) {
     if (!userId) {
       return;
     }
-
+    setIsSending(true);
     const message = await sendEmail({ userId, to, body });
-    console.log(message);
-
-    alert('Sent. Check console for confirmation...');
-
-    setTo('');
-    setBody('');
+    console.log('message sent', message);
+    setIsSending(false);
+    onEmailSent();
   };
 
   return (
-    <form style={styles.SendEmail.sendEmailForm} onSubmit={send}>
-      <div style={styles.SendEmail.sendEmailHeader}>New Message</div>
-      <input
-        aria-label="To"
-        style={styles.SendEmail.sendEmailTo}
-        placeholder="To"
-        value={to}
-        onChange={(e) => setTo(e.target.value)}
-      />
+    <form onSubmit={send} className={`email-compose-view ${style}`}>
+      {!style && <h3 className="title">New Message</h3>}
+      <div className="input-container">
+        <label className="input-label" htmlFor="To">
+          To
+        </label>
+        <input
+          aria-label="To"
+          type="email"
+          value={to}
+          onChange={(e) => setTo(e.target.value)}
+        />
+        {!style && (
+          <>
+            <div className="line"></div>
+
+            <label className="input-label" htmlFor="Subject">
+              Subject
+            </label>
+            <input
+              aria-label="Subject"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+            />
+            <div className="line"></div>
+          </>
+        )}
+      </div>
       <textarea
+        className="message-body"
         aria-label="Message body"
-        style={styles.SendEmail.sendEmailBody}
-        rows={20}
+        placeholder="Type your message..."
+        rows={style === 'small' ? 3 : 20}
         value={body}
         onChange={(e) => setBody(e.target.value)}
       />
-      <div style={styles.SendEmail.sendEmailAction}>
+
+      <div className="composer-button-group">
         <button
-          style={styles.SendEmail.button}
-          disabled={!to || !body}
+          className={`primary ${style}`}
+          disabled={!to || !body || isSending}
           type="submit"
         >
-          Send
+          {isSending ? 'Sending...' : 'Send email'}
+        </button>
+        <button className="icon" onClick={discardComposer}>
+          <IconDelete />
         </button>
       </div>
     </form>
   );
 }
+
+SendEmails.propTypes = {
+  userId: PropTypes.string.isRequired,
+  draftEmail: PropTypes.object.isRequired,
+  setDraftEmail: PropTypes.func.isRequired,
+  onEmailSent: PropTypes.func.isRequired,
+  setToastNotification: PropTypes.func.isRequired,
+  discardComposer: PropTypes.func.isRequired,
+  style: PropTypes.string,
+};
 
 export default SendEmails;

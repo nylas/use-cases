@@ -1,13 +1,13 @@
 const dotenv = require('dotenv');
 const mockDb = require('./utils/mock-db');
 const { mockServer, getReqBody } = require('./utils/mock-server');
-const route = require('./route');
 
 const Nylas = require('nylas');
 const { WebhookTriggers } = require('nylas/lib/models/webhook');
 const { Scope } = require('nylas/lib/models/connect');
 const { Routes: NylasRoutes } = require('nylas/lib/services/routes');
 const { DefaultPaths } = require('nylas/lib/services/routes');
+const { default: Draft } = require('nylas/lib/models/draft');
 const { openWebhookTunnel } = require('nylas/lib/services/tunnel');
 
 dotenv.config();
@@ -30,13 +30,13 @@ const CLIENT_URI =
 const { buildAuthUrl, exchangeCodeForToken } = NylasRoutes(nylasClient);
 
 // Configure the Nylas routes using your flavour of backend framework
-// '/nylas/generate-auth-url': This route builds the URL for authenticating
-// users to your Nylas application via Hosted Authentication
+// '/nylas/generate-auth-url': This route builds the URL for
+// authenticating users to your Nylas application via Hosted Authentication
 mockServer.post(DefaultPaths.buildAuthUrl, async (req, res) => {
   const body = await getReqBody(req);
 
   const authUrl = await buildAuthUrl({
-    scopes: [Scope.EmailModify, Scope.EmailSend, Scope.EmailReadOnly],
+    scopes: [Scope.EmailModify, Scope.EmailSend],
     emailAddress: body.email_address,
     successUrl: body.success_url,
     clientUri: CLIENT_URI,
@@ -88,21 +88,36 @@ openWebhookTunnel(nylasClient, {
         break;
     }
   },
-}).then((webhookDetails) =>
-  console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id)
-);
+}).then((webhookDetails) => {
+  console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id);
+});
 
 // Handle routes
-mockServer.post('/nylas/send-email', (req, res) =>
-  route.sendEmail(req, res, nylasClient)
-);
+mockServer.post('/nylas/send-email', async (req, res) => {
+  if (!req.headers.authorization) {
+    return res.writeHead(401).end('Unauthorized');
+  }
 
-mockServer.get('/nylas/read-emails', (req, res) =>
-  route.readEmails(req, res, nylasClient)
-);
+  const user = await mockDb.findUser(req.headers.authorization);
+  if (!user) {
+    return res.writeHead(401).end('Unauthorized');
+  }
 
-// Before we start our backend, we should whitelist our frontend as a redirect
-// URI to ensure the auth completes
+  const { to, body } = await getReqBody(req);
+
+  const draft = new Draft(nylasClient.with(user.accessToken));
+
+  draft.to = [{ email: to }];
+  draft.body = body;
+  draft.from = [{ email: user.emailAddress }];
+
+  const message = await draft.send();
+
+  return res.writeHead(200).end(JSON.stringify(message));
+});
+
+// Before we start our backend, we should whitelist our frontend
+// as a redirect URI to ensure the auth completes
 nylasClient
   .application({
     redirectUris: [CLIENT_URI],

@@ -2,14 +2,19 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const mockDb = require('./utils/mock-db');
-const route = require('./route');
 
 const Nylas = require('nylas');
 const { WebhookTriggers } = require('nylas/lib/models/webhook');
 const { Scope } = require('nylas/lib/models/connect');
 const { ServerBindings } = require('nylas/lib/config');
+const { default: Draft } = require('nylas/lib/models/draft');
 
 dotenv.config();
+
+const app = express();
+
+// Enable CORS
+app.use(cors());
 
 // The port the express app will run on
 const port = 9000;
@@ -20,11 +25,6 @@ const nylasClient = new Nylas({
   clientSecret: process.env.NYLAS_CLIENT_SECRET,
 });
 
-const app = express();
-
-// Enable CORS
-app.use(cors());
-
 // The uri for the frontend
 const CLIENT_URI =
   process.env.CLIENT_URI || `http://localhost:${process.env.PORT || 3000}`;
@@ -32,13 +32,14 @@ const CLIENT_URI =
 // Use the express bindings provided by the SDK and pass in additional
 // configuration such as auth scopes
 const expressBinding = new ServerBindings.express(nylasClient, {
-  defaultScopes: [Scope.EmailModify, Scope.EmailSend, Scope.EmailReadOnly],
+  defaultScopes: [Scope.EmailModify, Scope.EmailSend],
   exchangeMailboxTokenCallback: async function exchangeMailboxTokenCallback(
     accessTokenObj,
     res
   ) {
+    const { emailAddress, accessToken } = accessTokenObj;
+
     // Normally store the access token in the DB
-    const { accessToken, emailAddress } = accessTokenObj;
     console.log('Access Token was generated for: ' + emailAddress);
 
     // Replace this mock code with your actual database operations
@@ -47,7 +48,7 @@ const expressBinding = new ServerBindings.express(nylasClient, {
       emailAddress,
     });
 
-    // Return an authorization object to the user
+    // Replace this mock code with your actual database operations
     res.json({
       id: user.id,
       emailAddress: user.emailAddress,
@@ -64,7 +65,7 @@ app.use(nylasMiddleware);
 expressBinding.on(WebhookTriggers.AccountConnected, (payload) => {
   console.log(
     'Webhook trigger received, account connected. Details: ',
-    JSON.stringify(payload.objectData)
+    JSON.stringify(payload.objectData, undefined, 2)
   );
 });
 
@@ -72,7 +73,7 @@ expressBinding.on(WebhookTriggers.AccountConnected, (payload) => {
 expressBinding.on(WebhookTriggers.MessageCreated, (payload) => {
   console.log(
     'Webhook trigger received, message created. Details: ',
-    JSON.stringify(payload.objectData)
+    JSON.stringify(payload.objectData, undefined, 2)
   );
 });
 
@@ -81,25 +82,35 @@ expressBinding.startDevelopmentWebsocket().then((webhookDetails) => {
   console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id);
 });
 
-// Handle routes
-app.post('/nylas/send-email', (req, res) =>
-  route.sendEmail(req, res, nylasClient)
-);
+// Add some routes for the backend
+app.post('/nylas/send-email', async (req, res) => {
+  const requestBody = req.body;
 
-app.get('/nylas/read-emails', (req, res) =>
-  route.readEmails(req, res, nylasClient)
-);
+  if (!req.headers.authorization) {
+    return res.json('Unauthorized');
+  }
 
-app.get('/nylas/message', async (req, res) => {
-  route.getMessage(req, res, nylasClient);
+  const user = await mockDb.findUser(req.headers.authorization);
+
+  if (!user) {
+    return res.json('Unauthorized');
+  }
+
+  const { to, body } = requestBody;
+
+  const draft = new Draft(nylasClient.with(user.accessToken));
+
+  draft.to = [{ email: to }];
+  draft.body = body;
+  draft.from = [{ email: user.emailAddress }];
+
+  const message = await draft.send();
+
+  return res.json({ message });
 });
 
-app.get('/nylas/file', async (req, res) => {
-  route.getFile(req, res, nylasClient);
-});
-
-// Before we start our backend, we should whitelist our frontend as a redirect
-// URI to ensure the auth completes
+// Before we start our backend, we should whitelist our frontend
+// as a redirect URI to ensure the auth completes
 nylasClient
   .application({
     redirectUris: [CLIENT_URI],
