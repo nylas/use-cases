@@ -1,96 +1,125 @@
-from io import BytesIO
-from nylas import APIClient
-from enum import Enum
-from server import *
-from nylas import APIClient
-from nylas.services.routes import DefaultPaths, Routes
-from utils import mock_db
-from dotenv import load_dotenv
 import os
+from functools import wraps
+import json
 
-load_dotenv()
+from utils.mock_db import db
+
+from io import BytesIO
+from flask import Flask, request, send_file, g
+from flask_cors import CORS
+
+from nylas import APIClient
+from nylas.client.restful_models import Webhook
+from nylas.services.tunnel import open_webhook_tunnel
 
 
-hostName = "localhost"
-serverPort = 9000
-
+# Initialize the Nylas API client using the client id and secret specified in the .env file
 nylas = APIClient(
-    os.environ.get("CLIENT_ID"),
-    os.environ.get("CLIENT_SECRET"),
+    os.environ.get("NYLAS_CLIENT_ID"),
+    os.environ.get("NYLAS_CLIENT_SECRET"),
 )
-routes = Routes(nylas)
 
-default_scopes = ['email.read_only', 'calendar', 'email.send', 'email.modify']
+# Set the URI for the client
+CLIENT_URI = 'http://localhost:3000'
 
-client_uri = 'http://localhost:3000'
+# Set the default scopes for auth
+DEFAULT_SCOPES = ['email.send', 'email.modify']
 
+# Before we start our backend, we should whitelist our frontend
+# as a redirect URI to ensure the auth completes
+updated_application_details = nylas.update_application_details(redirect_uris=[CLIENT_URI])
+print('Application whitelisted. Application Details: ', updated_application_details)
 
-class AppRoutes(str, Enum):  # define app routes as a string enum
-    FILE = '/nylas/file'
-    READ_EMAILS = '/nylas/read-emails'
-    MESSAGE = '/nylas/message'
-    SEND_EMAIL = '/nylas/send-email'
-    READ_EVENTS = '/nylas/read-events'
-    READ_CALENDARS = '/nylas/read-calendars'
-    CREATE_EVENTS = '/nylas/create-events'
+def run_webhook():
+    """
+    Run a webhook to receive real-time updates from the Nylas API.
+    In this example, webhook open and error events and the messages received from the API are printed to the console.
+    """
+    def on_message(delta):
+        """
+        Raw webhook messages are parsed in the Nylas SDK and sent to this function as a delta
+        """
 
+        # Trigger logic on any webhook trigger Enum
+        if delta["type"] == Webhook.Trigger.ACCOUNT_CONNECTED:
+            print(delta)
 
-cors_config = {
-    'origins': [client_uri],
-    'methods': ['GET', 'POST', 'OPTIONS'],
-    'headers': ['Content-Type', 'Authorization', 'Referer'],
-    'credentials': 'true'
-}
-app = MyServer((hostName, serverPort), cors_config)
+    def on_open(ws):
+        print("opened")
 
+    def on_error(ws, err):
+        print("Error found")
+        print(err)
 
-def is_authenticated(func):
-    def wrapper(*args, **kwargs):
-        auth_headers = app.req['headers'].get('Authorization')
-        if not auth_headers:
-            return 401
-
-        user = mock_db.db.find_user(auth_headers)
-        if not user:
-            return 401
-
-        nylas.access_token = user['access_token']
-
-        app.ctx['user'] = user
-
-        return func
-    return wrapper
+    open_webhook_tunnel(
+        nylas, {'on_message': on_message, 'on_open': on_open, 'on_error': on_error})
 
 
-@app.register_after_request
-def remove_access_token(response):
-    print('Removing Nylas access token')
-    nylas.access_token = None
-    return response
+# Run the webhook
+run_webhook()
+
+# Initialize the Flask app
+flask_app = Flask(__name__)
+
+# Enable CORS for the Flask app
+CORS(flask_app, supports_credentials=True)
 
 
-@app.route(DefaultPaths.BUILD_AUTH_URL, methods=['POST'])
+@flask_app.route("/nylas/generate-auth-url", methods=["POST"])
 def build_auth_url():
-    request_body = app.req['body']
+    """
+    Generates a Nylas Hosted Authentication URL with the given arguments. 
+    The endpoint also uses the app level constants CLIENT_URI and DEFAULT_SCOPES to build the URL.
 
-    auth_url = routes.build_auth_url(
-        default_scopes,
-        request_body["email_address"],
-        request_body["success_url"],
-        client_uri=client_uri,
+    This endpoint is a POST request and accepts the following parameters in the request body:
+        success_url: The URL to redirect the user to after successful authorization.
+        email_address: The email address of the user who is authorizing the app.
+
+    Returns the generated authorization URL.
+    """
+
+    request_body = request.get_json()
+
+    # Use the SDK method to generate a Nylas Hosted Authentication URL
+    auth_url = nylas.authentication_url(
+        (CLIENT_URI or "") + request_body["success_url"],
+        login_hint=request_body["email_address"],
+        scopes=DEFAULT_SCOPES,
+        state=None,
     )
 
-    # this is a string, not a json object
     return auth_url
 
 
-def exchange_mailbox_token_callback(access_token_obj):
+@flask_app.route("/nylas/exchange-mailbox-token", methods=["POST"])
+def exchange_code_for_token():
+    """
+    Exchanges an authorization code for an access token. 
+    Once the access token is generated, it can be used to make API calls on behalf of the user. 
+    For this example, we store the access token in our mock database.
+
+    This endpoint is a POST request and accepts the following parameters: 
+    
+    Request Body:
+        token: The authorization code generated by the Nylas Hosted Authentication.
+
+    Returns a JSON object with the following information about the user:
+        id: The identifier of the user in the database.
+        emailAddress: The email address of the user.
+    """
+
+    request_body = request.get_json()
+
+    # Use the SDK method to exchange our authorization code for an access token with the Nylas API
+    access_token_obj = nylas.send_authorization(request_body["token"])
+
+    # process the result and send to client however you want
     access_token = access_token_obj['access_token']
     email_address = access_token_obj['email_address']
 
     print('Access Token was generated for: ' + email_address)
 
-    user = mock_db.db.create_or_update_user(email_address, {
+    user = db.create_or_update_user(email_address, {
         'access_token': access_token,
         'email_address': email_address
     })
@@ -101,157 +130,116 @@ def exchange_mailbox_token_callback(access_token_obj):
     }
 
 
-@app.route(DefaultPaths.EXCHANGE_CODE_FOR_TOKEN, methods=['POST'])
-def exchange_code_for_token():
+def is_authenticated(f):
+    """
+    A decorator that checks if the user is authenticated. 
+    If the user is authenticated, the decorator sets the user's access token and returns the decorated function. 
+    If the user is not authenticated, the decorator returns a 401 error. 
 
-    access_token_obj = routes.exchange_code_for_token(
-        app.req['body']["token"])
+    This decorator is used for any endpoint that requires an access token to call the Nylas API.
+    """
 
-    # this is a json object
-    return exchange_mailbox_token_callback(access_token_obj)
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        auth_headers = request.headers.get('Authorization')
+        if not auth_headers:
+            return 401
 
+        # Find the user in the mock database
+        user = db.find_user(auth_headers)
+        if not user:
+            return 401
 
-@app.route(AppRoutes.CREATE_EVENTS, methods=['POST'])
-@is_authenticated
-def create_event():
-    request_body = app.req['body']
+        # Set the access token for the Nylas API client
+        nylas.access_token = user['access_token']
 
-    calendar_id = request_body['calendarId']
-    title = request_body['title']
-    description = request_body['description']
-    start_time = request_body['startTime']
-    end_time = request_body['endTime']
-    participants = request_body['participants']
+        # Set the user in the Flask global object
+        g.user = user
 
-    if not calendar_id or not title or not start_time or not end_time:
-        app.send_error(400)
-        app.wfile.write(bytes(
-            'Missing required fields: calendarId, title, starTime or endTime', "utf-8"))
-        return
-
-    event = nylas.events.create()
-
-    event.title = title
-    event.description = description
-    event.when = {
-        'start_time': start_time,
-        'end_time': end_time,
-    }
-    event.calendar_id = calendar_id
-    if participants:
-        event.participants = [{"email": email}
-                              for email in participants.split(", ")]
-
-    event.save(notify_participants=True)
-
-    return event.as_json(enforce_read_only=False)
+        return f(*args, **kwargs)
+    return decorator
 
 
-@app.route(AppRoutes.READ_EVENTS, methods=['GET'])
-@is_authenticated
-def read_events():
-    query_params = app.req['query']
+@flask_app.after_request
+def after_request(response):
+    """
+    After request middleware that clear the Nylas access token after each request.
+    """
 
-    calendar_id = query_params['calendarId'][0]
-    starts_after = query_params['startsAfter'][0]
-    ends_before = query_params['endsBefore'][0]
-    limit = query_params['limit'][0]
+    nylas.access_token = None
 
-    res = nylas.events.where(
-        calendar_id=calendar_id,
-        starts_after=starts_after,
-        ends_before=ends_before,
-        limit=int(limit)
-    ).all()
-
-    res_json = [item.as_json(enforce_read_only=False)
-                for item in res]
-
-    return res_json
+    return response
 
 
-@app.route(AppRoutes.READ_CALENDARS, methods=['GET'])
-@is_authenticated
-def read_calendars():
-    res = nylas.calendars.all()
-    res_json = [item.as_json(enforce_read_only=False)
-                for item in res]
-
-    return res_json
-
-
-@app.route(AppRoutes.SEND_EMAIL, methods=['POST'])
-@is_authenticated
-def send_email():
-    authed_user = app.ctx['authed_user']
-
-    request_body = app.req['body']
-
-    to = request_body['to']
-    body = request_body['body']
-    subject = request_body['subject']
-
-    draft = nylas.drafts.create()
-    draft['to'] = [{'email': to}]
-    draft['body'] = body
-    draft['subject'] = subject
-    draft['from'] = [{'email': authed_user['email_address']}]
-
-    message = draft.send()
-
-    return message
-
-
-@app.route(AppRoutes.READ_EMAILS, methods=['GET'])
+@flask_app.route('/nylas/read-emails', methods=['GET'])
 @is_authenticated
 def read_emails():
+    """
+    Retrieve the first 20 threads of the authenticated account from the Nylas API.
+
+    This endpoint is a GET request and accepts no parameters.
+
+    The threads are retrieved using the Nylas API client, with the view set to "expanded".
+
+    The threads are then returned as a JSON object.
+    See our docs for more information about the thread object.
+    https://developer.nylas.com/docs/api/#tag--Threads
+    """
     res = nylas.threads.where(limit=20, view="expanded").all()
-    res_json = [item.as_json(enforce_read_only=False)
-                for item in res]
-
-    # TODO: remove these hack
-    for item in res_json:
-        item['messages'] = item.pop('_messages')
-
-    for item in res_json:
-        item['labels'] = item.pop('_labels')
+    res_json = [item.as_json(enforce_read_only=False) for item in res]
 
     return res_json
 
 
-@app.route(AppRoutes.FILE, methods=['GET'])
-@is_authenticated
-def get_file():
-    query_params = app.req['query']
-
-    file_id = query_params['id'][0]
-    file_metadata = nylas.files.get(file_id)
-    file = file_metadata.download()
-
-    return app.send_file(file=BytesIO(file).getvalue(),
-                         content_type=file_metadata.content_type,
-                         as_attachment=True,
-                         filename=file_metadata.filename,
-                         size=file_metadata.size)
-
-
-@app.route(AppRoutes.MESSAGE, methods=['GET'])
+@flask_app.route('/nylas/message', methods=['GET'])
 @is_authenticated
 def get_message():
-    query_params = app.req['query']
+    """
+    Retrieve a message from the Nylas API.
 
-    message_id = query_params['id'][0]
+    This endpoint is a GET request and accepts the following:
+    
+    Query Parameters:
+        'id': The identifier of the message to retrieve.
+
+    The message is retrieved using the Nylas API client by id, with the view set to "expanded".
+
+    The message is then returned as a JSON object.
+    See our docs for more information about the message object.
+    https://developer.nylas.com/docs/api/#tag--Messages
+    """
+
+    message_id = request.args.get('id')
     message = nylas.messages.where(view="expanded").get(message_id)
 
+    # enforce_read_only=False is required to return all object properties
     return message.as_json(enforce_read_only=False)
 
 
-if __name__ == '__main__':
-    try:
-        print("Server started http://%s:%s" % (hostName, serverPort))
-        app.serve_forever()
-    except KeyboardInterrupt:
-        pass
+@flask_app.route('/nylas/file', methods=['GET'])
+@is_authenticated
+def download_file():
+    """
+    Retrieve and download a file from the Nylas API.
 
-    app.server_close()
-    print("Server stopped.")
+    This endpoint is a GET request and accepts the following:
+
+    Query Parameters:
+        id: The identifier of the file to download.
+
+    The file metadata is retrieved using the Nylas API client.
+    A second request is sent to the API and the file is downloaded.
+
+    Returns the file with metadata to the client for download.
+
+    See our docs for more information about the file object.
+    https://developer.nylas.com/docs/api/#tag--Files
+    """
+
+    file_id = request.args.get('id')
+    file_metadata = nylas.files.get(file_id)
+
+    file = file_metadata.download()
+
+    return send_file(BytesIO(file), download_name=file_metadata.filename, mimetype=file_metadata.content_type, as_attachment=True)
+
