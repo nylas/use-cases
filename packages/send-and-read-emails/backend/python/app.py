@@ -186,6 +186,8 @@ def read_emails():
     https://developer.nylas.com/docs/api/#tag--Threads
     """
     res = nylas.threads.where(limit=20, view="expanded").all()
+
+    # enforce_read_only=False is used to return the full thread objects
     res_json = [item.as_json(enforce_read_only=False) for item in res]
 
     return res_json
@@ -212,7 +214,7 @@ def get_message():
     message_id = request.args.get('id')
     message = nylas.messages.where(view="expanded").get(message_id)
 
-    # enforce_read_only=False is required to return all object properties
+    # enforce_read_only=False is required to return the full message object
     return message.as_json(enforce_read_only=False)
 
 
