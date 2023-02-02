@@ -36,7 +36,7 @@ mockServer.post(DefaultPaths.buildAuthUrl, async (req, res) => {
   const body = await getReqBody(req);
 
   const authUrl = await buildAuthUrl({
-    scopes: [Scope.EmailModify, Scope.EmailSend, Scope.EmailReadOnly],
+    scopes: [Scope.EmailSend],
     emailAddress: body.email_address,
     successUrl: body.success_url,
     clientUri: CLIENT_URI,
@@ -95,10 +95,6 @@ openWebhookTunnel(nylasClient, {
 // Handle routes
 mockServer.post('/nylas/send-email', (req, res) =>
   route.sendEmail(req, res, nylasClient)
-);
-
-mockServer.get('/nylas/read-emails', (req, res) =>
-  route.readEmails(req, res, nylasClient)
 );
 
 // Before we start our backend, we should whitelist our frontend as a redirect

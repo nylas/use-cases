@@ -24,20 +24,3 @@ exports.sendEmail = async (req, res, nylasClient) => {
 
   return res.writeHead(200).end(JSON.stringify(message));
 };
-
-exports.readEmails = async (req, res, nylasClient) => {
-  if (!req.headers.authorization) {
-    return res.writeHead(401).end('Unauthorized');
-  }
-
-  const user = await mockDb.findUser(req.headers.authorization);
-  if (!user) {
-    return res.writeHead(401).end('Unauthorized');
-  }
-
-  const nylas = nylasClient.with(user.accessToken);
-
-  const threads = await nylas.threads.list({ limit: 5 });
-
-  return res.writeHead(200).end(JSON.stringify({ threads }));
-};
