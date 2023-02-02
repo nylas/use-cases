@@ -32,7 +32,7 @@ const CLIENT_URI =
 // Use the express bindings provided by the SDK and pass in additional
 // configuration such as auth scopes
 const expressBinding = new ServerBindings.express(nylasClient, {
-  defaultScopes: [Scope.EmailModify, Scope.EmailSend, Scope.EmailReadOnly],
+  defaultScopes: [Scope.EmailSend],
   exchangeMailboxTokenCallback: async function exchangeMailboxTokenCallback(
     accessTokenObj,
     res
@@ -85,18 +85,6 @@ expressBinding.startDevelopmentWebsocket().then((webhookDetails) => {
 app.post('/nylas/send-email', (req, res) =>
   route.sendEmail(req, res, nylasClient)
 );
-
-app.get('/nylas/read-emails', (req, res) =>
-  route.readEmails(req, res, nylasClient)
-);
-
-app.get('/nylas/message', async (req, res) => {
-  route.getMessage(req, res, nylasClient);
-});
-
-app.get('/nylas/file', async (req, res) => {
-  route.getFile(req, res, nylasClient);
-});
 
 // Before we start our backend, we should whitelist our frontend as a redirect
 // URI to ensure the auth completes
