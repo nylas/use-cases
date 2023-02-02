@@ -20,6 +20,14 @@ If you don’t see a version returned, you may not have Node installed. Try the 
 
 The minimum required Node version is `v18.0.0`. As a quick check, try running `node -v` again to confirm the version. You may need to restart your terminal for the changes to take effect.
 
+### Python
+
+If choosing a `python` backend for your demo application, please make sure you have `python 3.7` or higher installed. Check your installation with:
+
+```
+python3 --version
+```
+
 ## ⚡️ App Setup
 
 1. Installation

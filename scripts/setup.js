@@ -6,6 +6,8 @@ import chalk from 'chalk';
 
 console.clear();
 
+const os = process.platform;
+
 console.log(`
 
                 *///////,                                    ///                                    
@@ -79,6 +81,19 @@ async function getFrameworkOptions(useCase) {
   return { server: serverOptions, client: clientOptions };
 }
 
+const INSTALLATION_COMMANDS = {
+  default: {
+    node: 'npm install',
+    python:
+      'python3 -m venv env && source env/bin/activate && pip install -r requirements.txt',
+  },
+  win32: {
+    node: 'npm install',
+    python:
+      'python3 -m venv env && .\\env\\Scripts\\activate.bat && pip install -r requirements.txt',
+  },
+};
+
 function installDependencies({ usecase, client = null, server = null }) {
   const { result } = concurrently([
     {
@@ -90,7 +105,7 @@ function installDependencies({ usecase, client = null, server = null }) {
     },
     {
       name: 'installing server dependencies',
-      command: `npm install`,
+      command: INSTALLATION_COMMANDS[os === 'win32' ? os : 'default'][server],
       cwd: server
         ? `${projectRoot}/packages/${usecase}/backend/${server}`
         : `${projectRoot}/src/backend`,

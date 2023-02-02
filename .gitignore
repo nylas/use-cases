@@ -4,6 +4,8 @@ node_modules/
 datastore.json
 .idea
 .husky/_
+
+# python
 __pycache__/
 Pipfile
 Pipfile.lock

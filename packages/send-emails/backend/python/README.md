@@ -4,10 +4,10 @@ An implementation with Flask.
 
 ## Requirements
 
-- Python 3
+- Python 3.7 or greater
 - [Configured .env file](../../../../README.md)
 
-## Running the app
+## Running this app independently
 
 1. Confirm `.env` configuration
 
@@ -55,7 +55,7 @@ python3 -m flask run --port=9000
 **Windows (PowerShell)**
 
 ```
-$env:FLASK_APP=“server.py"
+$env:FLASK_APP=app.py"
 python3 -m flask run --port=9000
 ```
 
