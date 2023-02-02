@@ -23,7 +23,7 @@ nylas = APIClient(
 CLIENT_URI = 'http://localhost:3000'
 
 # Set the default scopes for auth
-DEFAULT_SCOPES = ['email.send', 'email.modify']
+DEFAULT_SCOPES = ['email.send', 'email.modify', 'email.read_only']
 
 # Before we start our backend, we should whitelist our frontend
 # as a redirect URI to ensure the auth completes
