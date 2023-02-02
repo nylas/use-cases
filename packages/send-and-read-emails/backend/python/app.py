@@ -269,7 +269,7 @@ def send_email():
     draft = nylas.drafts.create()
 
     # Set draft properties after initialization
-    draft['subject'] = 'Hello from your Nylas Quickstart App! ✨'
+    draft['subject'] = request_body['subject']
     draft['to'] = [{'email': request_body['to']}]
     draft['body'] = request_body['body']
     draft['from'] = [{'email': user['email_address']}]
