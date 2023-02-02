@@ -1,5 +1,5 @@
 {
-  "name": "nylas-send-read-emails-node",
+  "name": "nylas-send-emails-node",
   "version": "0.1.0",
   "description": "Demo using the Nylas Node SDK and any Node JS-compatible server framework.",
   "main": "server.js",
