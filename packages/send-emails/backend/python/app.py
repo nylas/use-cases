@@ -23,6 +23,10 @@ CLIENT_URI = 'http://localhost:3000'
 # Set the default scopes for auth
 DEFAULT_SCOPES = ['email.send', 'email.modify']
 
+# Before we start our backend, we should whitelist our frontend
+# as a redirect URI to ensure the auth completes
+updated_application_details = nylas.update_application_details(redirect_uris=[CLIENT_URI])
+print('Application whitelisted. Application Details: ', updated_application_details)
 
 def run_webhook():
     """
