@@ -1,7 +1,7 @@
 {
-  "name": "nylas-send-emails-node",
+  "name": "nylas-send-emails-node-express",
   "version": "0.1.0",
-  "description": "Demo using the Nylas Node SDK and any Node JS-compatible server framework.",
+  "description": "Demo using the Nylas Node SDK and ExpressJS.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -10,8 +10,10 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.15.2",
-    "uuid": "^8.3.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
     "nylas": "7.0.0-beta.0",
-    "request": "^2.74.0"
+    "request": "^2.74.0",
+    "uuid": "^8.3.2"
   }
 }
