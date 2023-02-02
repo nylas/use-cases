@@ -176,6 +176,7 @@ def send_email():
 
     Returns the message object from the Nylas API. 
     See our docs for more information about the message object.
+    https://developer.nylas.com/docs/api/#tag--Messages
     """
 
     user = g.user
