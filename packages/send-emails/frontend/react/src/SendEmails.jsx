@@ -1,17 +1,9 @@
 import { useNylas } from '@nylas/nylas-react';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import IconDelete from './components/icons/IconDelete.jsx';
 
-function SendEmails({
-  userId,
-  draftEmail,
-  setDraftEmail,
-  onEmailSent,
-  setToastNotification,
-  discardComposer,
-  style,
-}) {
+function SendEmails({ userId, setToastNotification, style }) {
   const nylas = useNylas();
 
   const [to, setTo] = useState('');
@@ -19,25 +11,11 @@ function SendEmails({
   const [body, setBody] = useState('');
   const [isSending, setIsSending] = useState(false);
 
-  useEffect(() => {
-    setTo(draftEmail.to);
-    setSubject(draftEmail.subject);
-    setBody(draftEmail.body);
-  }, []);
-
-  useEffect(() => {
-    const updateTimer = setTimeout(function () {
-      const currentDate = new Date();
-      const draftUpdates = {
-        to: to,
-        subject,
-        body,
-        last_message_timestamp: Math.floor(currentDate.getTime() / 1000),
-      };
-      setDraftEmail(draftUpdates);
-    }, 500);
-    return () => clearTimeout(updateTimer);
-  }, [to, subject, body]);
+  const clearEmail = () => {
+    setTo('');
+    setSubject('');
+    setBody('');
+  };
 
   const sendEmail = async ({ userId, to, body }) => {
     try {
@@ -49,7 +27,7 @@ function SendEmails({
           Authorization: userId,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ...draftEmail, to, subject, body }),
+        body: JSON.stringify({ to, subject, body }),
       });
 
       if (!res.ok) {
@@ -58,6 +36,7 @@ function SendEmails({
       }
 
       const data = await res.json();
+      setToastNotification('success');
 
       return data;
     } catch (error) {
@@ -77,8 +56,8 @@ function SendEmails({
     setIsSending(true);
     const message = await sendEmail({ userId, to, body });
     console.log('message sent', message);
+    clearEmail();
     setIsSending(false);
-    onEmailSent();
   };
 
   return (
@@ -127,7 +106,7 @@ function SendEmails({
         >
           {isSending ? 'Sending...' : 'Send email'}
         </button>
-        <button className="icon" onClick={discardComposer}>
+        <button className="icon" type="button" onClick={clearEmail}>
           <IconDelete />
           Clear email
         </button>
@@ -137,13 +116,9 @@ function SendEmails({
 }
 
 SendEmails.propTypes = {
-  userId: PropTypes.string.isRequired,
-  draftEmail: PropTypes.object.isRequired,
-  setDraftEmail: PropTypes.func.isRequired,
-  onEmailSent: PropTypes.func.isRequired,
-  setToastNotification: PropTypes.func.isRequired,
-  discardComposer: PropTypes.func.isRequired,
   style: PropTypes.string,
+  userId: PropTypes.string.isRequired,
+  setToastNotification: PropTypes.func.isRequired,
 };
 
 export default SendEmails;

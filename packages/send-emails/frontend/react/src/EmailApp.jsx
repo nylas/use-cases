@@ -4,18 +4,19 @@ import SendEmails from './SendEmails';
 import './styles/email.scss';
 
 function EmailApp({ serverBaseUrl, userId, setToastNotification }) {
-  // const [selectedEmail, setSelectedEmail] = useState(null);
   const [draftEmail, setDraftEmail] = useState(null);
 
   useEffect(() => {
-    // setSelectedEmail(null);
+    // if (!draftEmail)
     composeEmail();
   }, []);
 
   const composeEmail = () => {
+    // console.log(draftEmail);
+    // alert('get here');
     if (draftEmail) {
       // Open the existing draft email
-      setDraftEmail((prev) => ({ ...prev, isOpen: true }));
+      setDraftEmail((prev) => ({ ...prev }));
     } else {
       // Create new draft email
       const currentDate = new Date();
@@ -25,17 +26,17 @@ function EmailApp({ serverBaseUrl, userId, setToastNotification }) {
         subject: '',
         body: '',
         last_message_timestamp: Math.floor(currentDate.getTime() / 1000),
-        isOpen: true,
+        // isOpen: true,
       };
       setDraftEmail(newDraft);
     }
-    // setSelectedEmail(null);
   };
 
   const onEmailSent = () => {
     setDraftEmail(null);
     // reloadEmail();
     setToastNotification('success');
+    // composeEmail();
   };
 
   return (
@@ -46,21 +47,7 @@ function EmailApp({ serverBaseUrl, userId, setToastNotification }) {
         ) : (
           <SendEmails
             userId={userId}
-            draftEmail={draftEmail}
-            setDraftEmail={(draftUpdates) =>
-              setDraftEmail((prev) => {
-                return {
-                  ...prev,
-                  ...draftUpdates,
-                };
-              })
-            }
-            onEmailSent={onEmailSent}
             setToastNotification={setToastNotification}
-            discardComposer={(e) => {
-              e.preventDefault();
-              alert('TODO');
-            }}
           />
         )}
       </div>
