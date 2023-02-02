@@ -7,3 +7,5 @@ datastore.json
 __pycache__/
 Pipfile
 Pipfile.lock
+env
+venv
