@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import IconLogout from './icons/IconLogout.jsx';
 import NylasLogo from './icons/nylas-logo-horizontal.svg';
 import PropTypes from 'prop-types';
@@ -32,9 +32,12 @@ const Layout = ({
           toastNotification={toastNotification}
           setToastNotification={setToastNotification}
         />
-        {showMenu && !toastNotification && (
+        {showMenu && (
           <div className="menu">
-            <button onClick={handleDisconnect} disabled={isDisconnecting}>
+            <button
+              onClick={handleDisconnect}
+              disabled={isDisconnecting || toastNotification}
+            >
               <div className="menu-icon">
                 <IconLogout />
               </div>

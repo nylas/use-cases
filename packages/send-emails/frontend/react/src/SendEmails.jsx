@@ -15,6 +15,7 @@ function SendEmails({ userId, setToastNotification, style }) {
     setTo('');
     setSubject('');
     setBody('');
+    setToastNotification('success');
   };
 
   const sendEmail = async ({ userId, to, body }) => {
