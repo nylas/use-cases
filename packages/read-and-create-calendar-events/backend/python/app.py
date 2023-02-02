@@ -21,7 +21,7 @@ nylas = APIClient(
 CLIENT_URI = 'http://localhost:3000'
 
 # Set the default scopes for auth
-DEFAULT_SCOPES = ['email.send', 'email.modify']
+DEFAULT_SCOPES = ['calendar']
 
 # Before we start our backend, we should whitelist our frontend
 # as a redirect URI to ensure the auth completes
@@ -37,9 +37,9 @@ def run_webhook():
         """
         Raw webhook messages are parsed in the Nylas SDK and sent to this function as a delta
         """
-
+        
         # Trigger logic on any webhook trigger Enum
-        if delta["type"] == Webhook.Trigger.MESSAGE_CREATED:
+        if delta["type"] == Webhook.Trigger.EVENT_CREATED:
             print(delta)
 
     def on_open(ws):
