@@ -90,17 +90,20 @@ openWebhookTunnel(nylasClient, {
   console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id);
 });
 
+// Middleware to check if the user is authenticated
 async function isAuthenticated(req, res, next) {
   if (!req.headers.authorization) {
     return res.status(401).json('Unauthorized');
   }
 
+  // Query our mock db to retrieve the stored user access token
   const user = await mockDb.findUser(req.headers.authorization);
 
   if (!user) {
     return res.status(401).json('Unauthorized');
   }
 
+  // Add the user to the response locals
   res.locals.user = user;
 
   next();
