@@ -6,7 +6,6 @@ const mockDb = require('./utils/mock-db');
 const Nylas = require('nylas');
 const { WebhookTriggers } = require('nylas/lib/models/webhook');
 const { Scope } = require('nylas/lib/models/connect');
-const { Routes: NylasRoutes } = require('nylas/lib/services/routes');
 const { default: Draft } = require('nylas/lib/models/draft');
 const { openWebhookTunnel } = require('nylas/lib/services/tunnel');
 
@@ -30,20 +29,15 @@ const nylasClient = new Nylas({
 const CLIENT_URI =
   process.env.CLIENT_URI || `http://localhost:${process.env.PORT || 3000}`;
 
-// Use the routes provided by the Nylas Node SDK to quickly implement
-// the authentication flow
-const { buildAuthUrl, exchangeCodeForToken } = NylasRoutes(nylasClient);
-
 // '/nylas/generate-auth-url': This route builds the URL for
 // authenticating users to your Nylas application via Hosted Authentication
 app.post('/nylas/generate-auth-url', express.json(), async (req, res) => {
   const { body } = req;
 
-  const authUrl = await buildAuthUrl({
-    scopes: [Scope.EmailModify, Scope.EmailSend],
-    emailAddress: body.email_address,
-    successUrl: body.success_url,
-    clientUri: CLIENT_URI,
+  const authUrl = nylasClient.urlForAuthentication({
+    loginHint: body.email_address,
+    redirectURI: (CLIENT_URI || '') + body.success_url,
+    scopes: [Scope.EmailReadOnly],
   });
 
   return res.send(authUrl);
@@ -55,7 +49,9 @@ app.post('/nylas/generate-auth-url', express.json(), async (req, res) => {
 app.post('/nylas/exchange-mailbox-token', express.json(), async (req, res) => {
   const body = req.body;
 
-  const { accessToken, emailAddress } = await exchangeCodeForToken(body.token);
+  const { accessToken, emailAddress } = await nylasClient.exchangeCodeForToken(
+    body.token
+  );
 
   // Normally store the access token in the DB
   console.log('Access Token was generated for: ' + emailAddress);
