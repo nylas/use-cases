@@ -1,0 +1,69 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    concurrent-ruby (1.2.0)
+    domain_name (0.5.20190701)
+      unf (>= 0.0.5, < 1.0.0)
+    dotenv (2.8.1)
+    eventmachine (1.2.7)
+    faye-websocket (0.11.1)
+      eventmachine (>= 0.12.0)
+      websocket-driver (>= 0.5.1)
+    http-accept (1.7.0)
+    http-cookie (1.0.5)
+      domain_name (~> 0.5)
+    json (2.6.3)
+    mime-types (3.4.1)
+      mime-types-data (~> 3.2015)
+    mime-types-data (3.2022.0105)
+    mustermann (3.0.0)
+      ruby2_keywords (~> 0.0.1)
+    netrc (0.11.0)
+    nio4r (2.5.8)
+    nylas (5.15.0)
+      eventmachine (~> 1.2.7)
+      faye-websocket (~> 0.11.1)
+      rest-client (>= 2.0, < 3.0)
+      tzinfo (~> 2.0.5)
+      yajl-ruby (~> 1.2, >= 1.2.1)
+    puma (6.0.2)
+      nio4r (~> 2.0)
+    rack (2.2.6.2)
+    rack-protection (3.0.5)
+      rack
+    rest-client (2.1.0)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
+    ruby2_keywords (0.0.5)
+    sinatra (3.0.5)
+      mustermann (~> 3.0)
+      rack (~> 2.2, >= 2.2.4)
+      rack-protection (= 3.0.5)
+      tilt (~> 2.0)
+    sinatra-cross_origin (0.3.2)
+    tilt (2.0.11)
+    tzinfo (2.0.6)
+      concurrent-ruby (~> 1.0)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.8.2)
+    websocket-driver (0.7.5)
+      websocket-extensions (>= 0.1.0)
+    websocket-extensions (0.1.5)
+    yajl-ruby (1.4.3)
+
+PLATFORMS
+  x86_64-darwin-22
+
+DEPENDENCIES
+  dotenv
+  json
+  nylas (>= 5.15.0)
+  puma
+  sinatra
+  sinatra-cross_origin (~> 0.3.1)
+
+BUNDLED WITH
+   2.4.5
