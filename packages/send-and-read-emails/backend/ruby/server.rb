@@ -55,7 +55,9 @@ config = {
 }
 
 # Create, register, and open the webhook tunnel for testing
-Nylas::Tunnel.open_webhook_tunnel(nylas, config)
+Thread.new do
+  Nylas::Tunnel.open_webhook_tunnel(nylas, config)
+end
 
 post '/nylas/generate-auth-url' do
   request_body = JSON.parse(request.body.read)
