@@ -37,7 +37,7 @@ app.post('/nylas/generate-auth-url', express.json(), async (req, res) => {
   const authUrl = nylasClient.urlForAuthentication({
     loginHint: body.email_address,
     redirectURI: (CLIENT_URI || '') + body.success_url,
-    scopes: [Scope.EmailReadOnly, Scope.EmailModify, Scope.EmailSend],
+    scopes: [Scope.Calendar],
   });
 
   return res.send(authUrl);
@@ -74,15 +74,9 @@ openWebhookTunnel(nylasClient, {
   // Handle when a new message is created (sent)
   onMessage: function handleEvent(delta) {
     switch (delta.type) {
-      case WebhookTriggers.MessageCreated:
+      case WebhookTriggers.EventCreated:
         console.log(
-          'Webhook trigger received, message created. Details: ',
-          JSON.stringify(delta.objectData, undefined, 2)
-        );
-        break;
-      case WebhookTriggers.AccountConnected:
-        console.log(
-          'Webhook trigger received, account connected. Details: ',
+          'Webhook trigger received, event created. Details: ',
           JSON.stringify(delta.objectData, undefined, 2)
         );
         break;
@@ -111,25 +105,23 @@ async function isAuthenticated(req, res, next) {
   next();
 }
 
-// Handle routes
-app.post('/nylas/send-email', isAuthenticated, express.json(), (req, res) =>
-  route.sendEmail(req, res, nylasClient)
+// Add route for getting 20 latest calendar events
+app.get('/nylas/read-events', isAuthenticated, (req, res) =>
+  route.readEvents(req, res, nylasClient)
 );
 
-app.get('/nylas/read-emails', isAuthenticated, (req, res) =>
-  route.readEmails(req, res, nylasClient)
+// Add route for getting 20 latest calendar events
+app.get('/nylas/read-calendars', isAuthenticated, (req, res) =>
+  route.readCalendars(req, res, nylasClient)
 );
 
-app.get('/nylas/message', isAuthenticated, async (req, res) => {
-  route.getMessage(req, res, nylasClient);
-});
+// Add route for creating calendar events
+app.post('/nylas/create-events', isAuthenticated, express.json(), (req, res) =>
+  route.createEvents(req, res, nylasClient)
+);
 
-app.get('/nylas/file', isAuthenticated, async (req, res) => {
-  route.getFile(req, res, nylasClient);
-});
-
-// Before we start our backend, we should whitelist our frontend as a redirect
-// URI to ensure the auth completes
+// Before we start our backend, we should whitelist our frontend as a
+// redirect URI to ensure the auth completes
 nylasClient
   .application({
     redirectUris: [CLIENT_URI],
