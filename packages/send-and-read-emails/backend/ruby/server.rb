@@ -42,7 +42,7 @@ p "Application whitelisted. Application details: #{updated_application_details.t
 
 # Define the callback for the on_message event
 def on_message(delta)
-  if delta.type == Nylas::WebhookTrigger::MESSAGE_CREATED || delta.type == Nylas::WebhookTrigger::ACCOUNT_CONNECTED
+  if delta.type == WebhookTrigger::MESSAGE_CREATED || delta.type == WebhookTrigger::ACCOUNT_CONNECTED
     p [:delta, delta]
   end
 end
@@ -55,7 +55,9 @@ config = {
 }
 
 # Create, register, and open the webhook tunnel for testing
-Nylas::Tunnel.open_webhook_tunnel(nylas, config)
+Thread.new do
+  Nylas::Tunnel.open_webhook_tunnel(nylas, config)
+end
 
 post '/nylas/generate-auth-url' do
   request_body = JSON.parse(request.body.read)
