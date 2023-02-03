@@ -11,3 +11,6 @@ Pipfile
 Pipfile.lock
 env
 venv
+
+#typescript
+dist
