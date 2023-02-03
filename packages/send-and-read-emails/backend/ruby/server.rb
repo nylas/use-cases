@@ -42,7 +42,7 @@ p "Application whitelisted. Application details: #{updated_application_details.t
 
 # Define the callback for the on_message event
 def on_message(delta)
-  if delta.type == Nylas::WebhookTrigger::MESSAGE_CREATED || delta.type == Nylas::WebhookTrigger::ACCOUNT_CONNECTED
+  if delta.type == WebhookTrigger::MESSAGE_CREATED || delta.type == WebhookTrigger::ACCOUNT_CONNECTED
     p [:delta, delta]
   end
 end
