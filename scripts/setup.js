@@ -86,11 +86,13 @@ const INSTALLATION_COMMANDS = {
     node: 'npm install',
     python:
       'python3 -m venv env && source env/bin/activate && pip install -r requirements.txt',
+    ruby: 'bundle install',
   },
   win32: {
     node: 'npm install',
     python:
       'python3 -m venv env && .\\env\\Scripts\\activate.bat && pip install -r requirements.txt',
+    ruby: 'bundle install',
   },
 };
 
