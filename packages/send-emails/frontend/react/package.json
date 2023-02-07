@@ -1,7 +1,7 @@
 {
   "name": "nylas-send-emails-react",
-  "private": true,
   "version": "0.1.0",
+  "private": true,
   "type": "module",
   "scripts": {
     "start": "vite --port 3000 --open",
@@ -11,7 +11,9 @@
   "dependencies": {
     "@nylas/nylas-react": "^0.1.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "sass": "^1.55.0",
+    "dompurify": "^2.3.3"
   },
   "devDependencies": {
     "@types/react": "^18.0.17",

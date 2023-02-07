@@ -37,7 +37,7 @@ app.post('/nylas/generate-auth-url', express.json(), async (req, res) => {
   const authUrl = nylasClient.urlForAuthentication({
     loginHint: body.email_address,
     redirectURI: (CLIENT_URI || '') + body.success_url,
-    scopes: [Scope.EmailReadOnly],
+    scopes: [Scope.EmailModify, Scope.EmailSend],
   });
 
   return res.send(authUrl);
@@ -82,9 +82,9 @@ openWebhookTunnel(nylasClient, {
         break;
     }
   },
-}).then((webhookDetails) => {
-  console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id);
-});
+}).then((webhookDetails) =>
+  console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id)
+);
 
 // Middleware to check if the user is authenticated
 async function isAuthenticated(req, res, next) {
