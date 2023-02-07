@@ -25,9 +25,20 @@ const nylasClient = new Nylas({
   clientSecret: process.env.NYLAS_CLIENT_SECRET,
 });
 
-// The uri for the frontend
+// Before we start our backend, we should whitelist our frontend
+// as a redirect URI to ensure the auth completes
 const CLIENT_URI =
   process.env.CLIENT_URI || `http://localhost:${process.env.PORT || 3000}`;
+nylasClient
+  .application({
+    redirectUris: [CLIENT_URI],
+  })
+  .then((applicationDetails) => {
+    console.log(
+      'Application whitelisted. Application Details: ',
+      JSON.stringify(applicationDetails, undefined, 2)
+    );
+  });
 
 // '/nylas/generate-auth-url': This route builds the URL for
 // authenticating users to your Nylas application via Hosted Authentication
@@ -112,7 +123,7 @@ app.post(
   express.json(),
   async (req, res) => {
     const {
-      body: { to, body },
+      body: { to, body, subject },
     } = req;
 
     const user = res.locals.user;
@@ -121,7 +132,7 @@ app.post(
 
     draft.to = [{ email: to }];
     draft.body = body;
-    draft.subject = 'Hello from Nylas Quickstart! ✨';
+    draft.subject = subject;
     draft.from = [{ email: user.emailAddress }];
 
     const message = await draft.send();
@@ -129,19 +140,6 @@ app.post(
     return res.json({ message });
   }
 );
-
-// Before we start our backend, we should whitelist our frontend
-// as a redirect URI to ensure the auth completes
-nylasClient
-  .application({
-    redirectUris: [CLIENT_URI],
-  })
-  .then((applicationDetails) => {
-    console.log(
-      'Application whitelisted. Application Details: ',
-      JSON.stringify(applicationDetails, undefined, 2)
-    );
-  });
 
 // Start listening on port 9000
 app.listen(port, () => console.log('App listening on port ' + port));

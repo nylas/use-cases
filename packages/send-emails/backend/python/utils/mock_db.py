@@ -17,7 +17,7 @@ class MockDb:
     Methods
     -------
         get_JSON_records()
-            Reads a JSON file from disk and returns its contents as a Python object.
+            Reads a JSON file from disk and returns its contents as a list.
         find_user(id, email_address=None)
             Find a user record in JSON records based on email address or id.
         update_user(id, payload)
@@ -32,7 +32,8 @@ class MockDb:
         """
         The constructor initializes the filename attribute with the value passed as an argument.
         It then checks if the file exists and has the required permissions. If the file doesn't exist, it creates the file.
-        In case the file name is not provided, the file doesn't have the required permissions, or the file could not successfully be created, it raises an exception and exits.
+        In case the file name is not provided, the file doesn't have the required permissions, 
+        or the file could not successfully be created, it raises an exception and exits.
 
         Parmeters
         ---------
@@ -58,10 +59,10 @@ class MockDb:
 
     def get_JSON_records(self):
         """
-        Reads a JSON file from disk and returns its contents as a Python object.
+        Reads a JSON file from disk and returns its contents as a list.
 
             Returns:
-                dict: A dictionary containing the JSON records.
+                list: A list containing the JSON records.
         """
         with io.open(self.filename, 'r', encoding='utf-8') as f:
             json_records = f.read()
