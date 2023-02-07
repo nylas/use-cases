@@ -83,7 +83,7 @@ function SendEmails({
 
   return (
     <form onSubmit={send} className={`email-compose-view ${style}`}>
-      {!style && <h3 className="title">New Message</h3>}
+      {!style && <h3 className="title">New message</h3>}
       <div className="input-container">
         <label className="input-label" htmlFor="To">
           To

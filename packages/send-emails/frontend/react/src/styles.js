@@ -1,5 +1,5 @@
 export const styles = {
-  EmailClient: {
+  EmailList: {
     statusBar: {
       width: '80vw',
       margin: '6em auto 0',
@@ -17,44 +17,28 @@ export const styles = {
       fontWeight: 'bold',
       color: 'white',
     },
-    contentContainer: {
-      width: '80vw',
-      margin: '10vh auto',
-      display: 'flex',
-      flexDirection: 'column',
-    },
+    container: { width: '80vw', margin: '10vh auto' },
+    list: { padding: '0px', margin: 0 },
   },
-  SendEmail: {
-    sendEmailHeader: {
-      width: '100%',
-      padding: '0.5em',
-      background: '#4169e1',
+  Email: {
+    container: {
+      position: 'relative',
+      padding: '20px',
+      backgroundColor: 'white',
+      border: '1px solid black',
+      borderWidth: '1px 2px 1px 2px',
+      cursor: 'pointer',
+      listStyle: 'none',
+    },
+    date: { fontSize: 'smaller', color: 'gray' },
+    snippet: { color: 'gray' },
+    thread: {
+      padding: '40px',
+      backgroundColor: 'darkslategray',
       color: 'white',
-    },
-    sendEmailForm: {
-      display: 'flex',
-      flexDirection: 'column',
-    },
-    sendEmailTo: {
-      border: '1px solid #8d94a5',
-      color: '#000',
-      padding: '0.5em 1.4em',
-    },
-    sendEmailBody: {
-      border: '1px solid #8d94a5',
-      color: '#000',
-      padding: '0.5em 1.4em',
-    },
-    sendEmailAction: {
-      marginTop: '1em',
-      alignSelf: 'end',
-      justifySelf: 'end',
-    },
-    button: {
-      background: '#4169e1',
-      color: '#fff',
-      padding: '0.5em 1.4em',
-      marginBottom: '0.6em',
+      maxHeight: '140px',
+      overflowY: 'scroll',
+      margin: '10px 0px 0px',
     },
   },
 };
