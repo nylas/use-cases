@@ -17,14 +17,11 @@ nylas = APIClient(
     os.environ.get("NYLAS_CLIENT_SECRET"),
 )
 
-# Set the URI for the client
-CLIENT_URI = 'http://localhost:3000'
-
-# Set the default scopes for auth
-DEFAULT_SCOPES = ['email.send', 'email.modify']
-
 # Before we start our backend, we should whitelist our frontend
 # as a redirect URI to ensure the auth completes
+#
+# Set the URI for the client
+CLIENT_URI = 'http://localhost:3000'
 updated_application_details = nylas.update_application_details(redirect_uris=[CLIENT_URI])
 print('Application whitelisted. Application Details: ', updated_application_details)
 
@@ -51,8 +48,7 @@ def run_webhook():
 
     open_webhook_tunnel(
         nylas, {'on_message': on_message, 'on_open': on_open, 'on_error': on_error})
-
-
+    
 # Run the webhook
 run_webhook()
 
@@ -84,7 +80,7 @@ def build_auth_url():
     auth_url = nylas.authentication_url(
         (CLIENT_URI or "") + request_body["success_url"],
         login_hint=request_body["email_address"],
-        scopes=DEFAULT_SCOPES,
+        scopes=['email.send', 'email.modify'],
         state=None,
     )
 
@@ -197,7 +193,7 @@ def send_email():
     draft = nylas.drafts.create()
 
     # Set draft properties after initialization
-    draft['subject'] = 'Hello from your Nylas Quickstart App! ✨'
+    draft['subject'] = request_body['subject']
     draft['to'] = [{'email': request_body['to']}]
     draft['body'] = request_body['body']
     draft['from'] = [{'email': user['email_address']}]
