@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const mockDb = require('./utils/mock-db');
+const route = require('./route');
 
 const Nylas = require('nylas');
 const { WebhookTriggers } = require('nylas/lib/models/webhook');
@@ -9,11 +10,6 @@ const { Scope } = require('nylas/lib/models/connect');
 const { openWebhookTunnel } = require('nylas/lib/services/tunnel');
 
 dotenv.config();
-
-const app = express();
-
-// Enable CORS
-app.use(cors());
 
 // The port the express app will run on
 const port = 9000;
@@ -23,6 +19,11 @@ const nylasClient = new Nylas({
   clientId: process.env.NYLAS_CLIENT_ID,
   clientSecret: process.env.NYLAS_CLIENT_SECRET,
 });
+
+const app = express();
+
+// Enable CORS
+app.use(cors());
 
 // The uri for the frontend
 const CLIENT_URI =
@@ -36,7 +37,7 @@ app.post('/nylas/generate-auth-url', express.json(), async (req, res) => {
   const authUrl = nylasClient.urlForAuthentication({
     loginHint: body.email_address,
     redirectURI: (CLIENT_URI || '') + body.success_url,
-    scopes: [Scope.EmailReadOnly],
+    scopes: [Scope.Calendar],
   });
 
   return res.send(authUrl);
@@ -73,9 +74,9 @@ openWebhookTunnel(nylasClient, {
   // Handle when a new message is created (sent)
   onMessage: function handleEvent(delta) {
     switch (delta.type) {
-      case WebhookTriggers.AccountConnected:
+      case WebhookTriggers.EventCreated:
         console.log(
-          'Webhook trigger received, account connected. Details: ',
+          'Webhook trigger received, event created. Details: ',
           JSON.stringify(delta.objectData, undefined, 2)
         );
         break;
@@ -104,41 +105,23 @@ async function isAuthenticated(req, res, next) {
   next();
 }
 
-// Add route for getting 5 latest emails
-app.get('/nylas/read-emails', isAuthenticated, async (req, res) => {
-  const user = res.locals.user;
+// Add route for getting 20 latest calendar events
+app.get('/nylas/read-events', isAuthenticated, (req, res) =>
+  route.readEvents(req, res, nylasClient)
+);
 
-  const threads = await nylasClient
-    .with(user.accessToken)
-    .threads.list({ limit: 5, expanded: true });
+// Add route for getting 20 latest calendar events
+app.get('/nylas/read-calendars', isAuthenticated, (req, res) =>
+  route.readCalendars(req, res, nylasClient)
+);
 
-  return res.json(threads);
-});
+// Add route for creating calendar events
+app.post('/nylas/create-events', isAuthenticated, express.json(), (req, res) =>
+  route.createEvents(req, res, nylasClient)
+);
 
-// Add route for getting individual message by id
-app.get('/nylas/message', isAuthenticated, async (req, res) => {
-  const user = res.locals.user;
-
-  const { id } = req.query;
-  const message = await nylasClient.with(user.accessToken).messages.find(id);
-
-  return res.json(message);
-});
-
-// Add route for downloading file
-app.get('/nylas/file', isAuthenticated, async (req, res) => {
-  const user = res.locals.user;
-
-  const { id } = req.query;
-  const file = await nylasClient.with(user.accessToken).files.find(id);
-
-  // Files will be returned as a binary object
-  const fileData = await file.download();
-  return res.end(fileData?.body);
-});
-
-// Before we start our backend, we should whitelist our frontend
-// as a redirect URI to ensure the auth completes
+// Before we start our backend, we should whitelist our frontend as a
+// redirect URI to ensure the auth completes
 nylasClient
   .application({
     redirectUris: [CLIENT_URI],

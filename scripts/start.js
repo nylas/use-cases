@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const os = process.platform;
+
 const projectRoot = process.cwd();
 const isSourceRepo = await fs
   .readdirSync(`${projectRoot}`)
@@ -22,6 +24,23 @@ async function startSourceRepo() {
     process.exit(1);
   }
 
+  const SERVER_FRAMEWORK = process.env.SERVER_FRAMEWORK;
+
+  const START_SERVER_COMMANDS = {
+    default: {
+      node: 'npm run start',
+      python:
+        'source env/bin/activate && export FLASK_APP=app.py && python3 -u -m flask run --port=9000',
+      ruby: 'ruby server.rb',
+    },
+    win32: {
+      node: 'npm run start',
+      python:
+        'env\\Scripts\\activate.bat && $env:FLASK_APP=app.py" && python -u -m flask run --port=9000',
+      ruby: 'ruby server.rb',
+    },
+  };
+
   const { result } = concurrently([
     {
       command: 'npm run start',
@@ -29,7 +48,10 @@ async function startSourceRepo() {
       cwd: `${projectRoot}/packages/${process.env.USE_CASE}/frontend/${process.env.CLIENT_FRAMEWORK}`,
     },
     {
-      command: 'npm run start',
+      command:
+        START_SERVER_COMMANDS[os === 'win32' ? os : 'default'][
+          SERVER_FRAMEWORK
+        ],
       name: `start ${process.env.SERVER_FRAMEWORK}`,
       cwd: `${projectRoot}/packages/${process.env.USE_CASE}/backend/${process.env.SERVER_FRAMEWORK}`,
     },
