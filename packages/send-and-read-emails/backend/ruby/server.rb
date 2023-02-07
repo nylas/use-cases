@@ -144,12 +144,11 @@ post '/nylas/send-email' do
 
   request_body = JSON.parse(request.body.read)
 
-  draft = nylas_instance.drafts.create(
+  message = nylas_instance.send!(
     to: [{ email: request_body['to'] }],
     subject: request_body['subject'],
     body: request_body['body']
   )
-  message = draft.send!
 
   content_type 'application/json'
   message.to_json
