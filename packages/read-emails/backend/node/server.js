@@ -18,8 +18,8 @@ app.use(cors());
 // The port the express app will run on
 const port = 9000;
 
-// Initialize an instance of the Nylas SDK using the client credentials
-const nylasClient = new Nylas({
+// Initialize the Nylas SDK using the client credentials
+Nylas.config({
   clientId: process.env.NYLAS_CLIENT_ID,
   clientSecret: process.env.NYLAS_CLIENT_SECRET,
 });
@@ -28,19 +28,17 @@ const nylasClient = new Nylas({
 // as a redirect URI to ensure the auth completes
 const CLIENT_URI =
   process.env.CLIENT_URI || `http://localhost:${process.env.PORT || 3000}`;
-nylasClient
-  .application({
-    redirectUris: [CLIENT_URI],
-  })
-  .then((applicationDetails) => {
-    console.log(
-      'Application whitelisted. Application Details: ',
-      JSON.stringify(applicationDetails)
-    );
-  });
+Nylas.application({
+  redirectUris: [CLIENT_URI],
+}).then((applicationDetails) => {
+  console.log(
+    'Application whitelisted. Application Details: ',
+    JSON.stringify(applicationDetails)
+  );
+});
 
 // Start the Nylas webhook
-openWebhookTunnel(nylasClient, {
+openWebhookTunnel({
   // Handle when a new message is created (sent)
   onMessage: function handleEvent(delta) {
     switch (delta.type) {
@@ -61,7 +59,7 @@ openWebhookTunnel(nylasClient, {
 app.post('/nylas/generate-auth-url', express.json(), async (req, res) => {
   const { body } = req;
 
-  const authUrl = nylasClient.urlForAuthentication({
+  const authUrl = Nylas.urlForAuthentication({
     loginHint: body.email_address,
     redirectURI: (CLIENT_URI || '') + body.success_url,
     scopes: [Scope.EmailReadOnly],
@@ -76,7 +74,7 @@ app.post('/nylas/generate-auth-url', express.json(), async (req, res) => {
 app.post('/nylas/exchange-mailbox-token', express.json(), async (req, res) => {
   const body = req.body;
 
-  const { accessToken, emailAddress } = await nylasClient.exchangeCodeForToken(
+  const { accessToken, emailAddress } = await Nylas.exchangeCodeForToken(
     body.token
   );
 
@@ -119,9 +117,10 @@ async function isAuthenticated(req, res, next) {
 app.get('/nylas/read-emails', isAuthenticated, async (req, res) => {
   const user = res.locals.user;
 
-  const threads = await nylasClient
-    .with(user.accessToken)
-    .threads.list({ limit: 5, expanded: true });
+  const threads = await Nylas.with(user.accessToken).threads.list({
+    limit: 5,
+    expanded: true,
+  });
 
   return res.json(threads);
 });
@@ -131,7 +130,7 @@ app.get('/nylas/message', isAuthenticated, async (req, res) => {
   const user = res.locals.user;
 
   const { id } = req.query;
-  const message = await nylasClient.with(user.accessToken).messages.find(id);
+  const message = await Nylas.with(user.accessToken).messages.find(id);
 
   return res.json(message);
 });
@@ -141,7 +140,7 @@ app.get('/nylas/file', isAuthenticated, async (req, res) => {
   const user = res.locals.user;
 
   const { id } = req.query;
-  const file = await nylasClient.with(user.accessToken).files.find(id);
+  const file = await Nylas.with(user.accessToken).files.find(id);
 
   // Files will be returned as a binary object
   const fileData = await file.download();

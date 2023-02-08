@@ -20,7 +20,7 @@ app.use(cors());
 const port = 9000;
 
 // Initialize an instance of the Nylas SDK using the client credentials
-const nylasClient = new Nylas({
+Nylas.config({
   clientId: process.env.NYLAS_CLIENT_ID,
   clientSecret: process.env.NYLAS_CLIENT_SECRET,
 });
@@ -29,19 +29,17 @@ const nylasClient = new Nylas({
 // as a redirect URI to ensure the auth completes
 const CLIENT_URI =
   process.env.CLIENT_URI || `http://localhost:${process.env.PORT || 3000}`;
-nylasClient
-  .application({
-    redirectUris: [CLIENT_URI],
-  })
-  .then((applicationDetails) => {
-    console.log(
-      'Application whitelisted. Application Details: ',
-      JSON.stringify(applicationDetails, undefined, 2)
-    );
-  });
+Nylas.application({
+  redirectUris: [CLIENT_URI],
+}).then((applicationDetails) => {
+  console.log(
+    'Application whitelisted. Application Details: ',
+    JSON.stringify(applicationDetails, undefined, 2)
+  );
+});
 
 // Start the Nylas webhook
-openWebhookTunnel(nylasClient, {
+openWebhookTunnel({
   // Handle when a new message is created (sent)
   onMessage: function handleEvent(delta) {
     switch (delta.type) {
@@ -62,7 +60,7 @@ openWebhookTunnel(nylasClient, {
 app.post('/nylas/generate-auth-url', express.json(), async (req, res) => {
   const { body } = req;
 
-  const authUrl = nylasClient.urlForAuthentication({
+  const authUrl = Nylas.urlForAuthentication({
     loginHint: body.email_address,
     redirectURI: (CLIENT_URI || '') + body.success_url,
     scopes: [Scope.EmailModify, Scope.EmailSend],
@@ -77,7 +75,7 @@ app.post('/nylas/generate-auth-url', express.json(), async (req, res) => {
 app.post('/nylas/exchange-mailbox-token', express.json(), async (req, res) => {
   const body = req.body;
 
-  const { accessToken, emailAddress } = await nylasClient.exchangeCodeForToken(
+  const { accessToken, emailAddress } = await Nylas.exchangeCodeForToken(
     body.token
   );
 
@@ -128,7 +126,7 @@ app.post(
 
     const user = res.locals.user;
 
-    const draft = new Draft(nylasClient.with(user.accessToken));
+    const draft = new Draft(Nylas.with(user.accessToken));
 
     draft.to = [{ email: to }];
     draft.body = body;
