@@ -16,6 +16,9 @@ public class Server {
 		// Enable CORS
 		enableCORS();
 
+		// The uri for the frontend
+		String clientUri = dotenv.get("CLIENT_URI", "http://localhost:" + dotenv.get("PORT", "3000"));
+
 		// Initialize an instance of the Nylas SDK using the client credentials
 		NylasApplication application = new NylasClient()
 				.application(dotenv.get("NYLAS_CLIENT_ID"), dotenv.get("NYLAS_CLIENT_SECRET"));
