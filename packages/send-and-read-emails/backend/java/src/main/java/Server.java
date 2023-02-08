@@ -1,10 +1,17 @@
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.nylas.NylasApplication;
 import com.nylas.NylasClient;
 import io.github.cdimascio.dotenv.Dotenv;
 
+import java.lang.reflect.Type;
+import java.util.Map;
+
 import static spark.Spark.*;
 
 public class Server {
+	public static final Type JSON_MAP = new TypeToken<Map<String, String>>(){}.getType();
+
 	public static void main(String[] args) {
 		Dotenv dotenv = Dotenv.configure()
 				.directory("../../../../")
