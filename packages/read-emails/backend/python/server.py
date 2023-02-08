@@ -1,6 +1,5 @@
 import os
 from functools import wraps
-import json
 
 from utils.mock_db import db
 
@@ -21,8 +20,6 @@ nylas = APIClient(
 
 # Before we start our backend, we should whitelist our frontend
 # as a redirect URI to ensure the auth completes
-#
-# Set the URI for the client
 CLIENT_URI = 'http://localhost:3000'
 updated_application_details = nylas.update_application_details(redirect_uris=[CLIENT_URI])
 print('Application whitelisted. Application Details: ', updated_application_details)
