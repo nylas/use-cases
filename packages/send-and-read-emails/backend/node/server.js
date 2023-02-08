@@ -11,19 +11,19 @@ const { openWebhookTunnel } = require('nylas/lib/services/tunnel');
 
 dotenv.config();
 
-// The port the express app will run on
-const port = 9000;
-
-// Initialize an instance of the Nylas SDK using the client credentials
-Nylas.config({
-  clientId: process.env.NYLAS_CLIENT_ID,
-  clientSecret: process.env.NYLAS_CLIENT_SECRET,
-});
-
 const app = express();
 
 // Enable CORS
 app.use(cors());
+
+// The port the express app will run on
+const port = 9000;
+
+// Initialize the Nylas SDK using the client credentials
+Nylas.config({
+  clientId: process.env.NYLAS_CLIENT_ID,
+  clientSecret: process.env.NYLAS_CLIENT_SECRET,
+});
 
 // Before we start our backend, we should whitelist our frontend as a redirect
 // URI to ensure the auth completes
