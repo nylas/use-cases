@@ -24,9 +24,37 @@ const nylasClient = new Nylas({
   clientSecret: process.env.NYLAS_CLIENT_SECRET,
 });
 
-// The uri for the frontend
+// Before we start our backend, we should whitelist our frontend
+// as a redirect URI to ensure the auth completes
 const CLIENT_URI =
   process.env.CLIENT_URI || `http://localhost:${process.env.PORT || 3000}`;
+nylasClient
+  .application({
+    redirectUris: [CLIENT_URI],
+  })
+  .then((applicationDetails) => {
+    console.log(
+      'Application whitelisted. Application Details: ',
+      JSON.stringify(applicationDetails)
+    );
+  });
+
+// Start the Nylas webhook
+openWebhookTunnel(nylasClient, {
+  // Handle when a new message is created (sent)
+  onMessage: function handleEvent(delta) {
+    switch (delta.type) {
+      case WebhookTriggers.AccountConnected:
+        console.log(
+          'Webhook trigger received, account connected. Details: ',
+          JSON.stringify(delta.objectData, undefined, 2)
+        );
+        break;
+    }
+  },
+}).then((webhookDetails) => {
+  console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id);
+});
 
 // '/nylas/generate-auth-url': This route builds the URL for
 // authenticating users to your Nylas application via Hosted Authentication
@@ -66,23 +94,6 @@ app.post('/nylas/exchange-mailbox-token', express.json(), async (req, res) => {
     id: user.id,
     emailAddress: user.emailAddress,
   });
-});
-
-// Start the Nylas webhook
-openWebhookTunnel(nylasClient, {
-  // Handle when a new message is created (sent)
-  onMessage: function handleEvent(delta) {
-    switch (delta.type) {
-      case WebhookTriggers.AccountConnected:
-        console.log(
-          'Webhook trigger received, account connected. Details: ',
-          JSON.stringify(delta.objectData, undefined, 2)
-        );
-        break;
-    }
-  },
-}).then((webhookDetails) => {
-  console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id);
 });
 
 // Middleware to check if the user is authenticated
@@ -136,19 +147,6 @@ app.get('/nylas/file', isAuthenticated, async (req, res) => {
   const fileData = await file.download();
   return res.end(fileData?.body);
 });
-
-// Before we start our backend, we should whitelist our frontend
-// as a redirect URI to ensure the auth completes
-nylasClient
-  .application({
-    redirectUris: [CLIENT_URI],
-  })
-  .then((applicationDetails) => {
-    console.log(
-      'Application whitelisted. Application Details: ',
-      JSON.stringify(applicationDetails)
-    );
-  });
 
 // Start listening on port 9000
 app.listen(port, () => console.log('App listening on port ' + port));

@@ -25,9 +25,37 @@ const app = express();
 // Enable CORS
 app.use(cors());
 
-// The uri for the frontend
+// Before we start our backend, we should whitelist our frontend as a
+// redirect URI to ensure the auth completes
 const CLIENT_URI =
   process.env.CLIENT_URI || `http://localhost:${process.env.PORT || 3000}`;
+nylasClient
+  .application({
+    redirectUris: [CLIENT_URI],
+  })
+  .then((applicationDetails) => {
+    console.log(
+      'Application whitelisted. Application Details: ',
+      JSON.stringify(applicationDetails)
+    );
+  });
+
+// Start the Nylas webhook
+openWebhookTunnel(nylasClient, {
+  // Handle when a new message is created (sent)
+  onMessage: function handleEvent(delta) {
+    switch (delta.type) {
+      case WebhookTriggers.EventCreated:
+        console.log(
+          'Webhook trigger received, event created. Details: ',
+          JSON.stringify(delta.objectData, undefined, 2)
+        );
+        break;
+    }
+  },
+}).then((webhookDetails) => {
+  console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id);
+});
 
 // '/nylas/generate-auth-url': This route builds the URL for
 // authenticating users to your Nylas application via Hosted Authentication
@@ -69,23 +97,6 @@ app.post('/nylas/exchange-mailbox-token', express.json(), async (req, res) => {
   });
 });
 
-// Start the Nylas webhook
-openWebhookTunnel(nylasClient, {
-  // Handle when a new message is created (sent)
-  onMessage: function handleEvent(delta) {
-    switch (delta.type) {
-      case WebhookTriggers.EventCreated:
-        console.log(
-          'Webhook trigger received, event created. Details: ',
-          JSON.stringify(delta.objectData, undefined, 2)
-        );
-        break;
-    }
-  },
-}).then((webhookDetails) => {
-  console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id);
-});
-
 // Middleware to check if the user is authenticated
 async function isAuthenticated(req, res, next) {
   if (!req.headers.authorization) {
@@ -119,19 +130,6 @@ app.get('/nylas/read-calendars', isAuthenticated, (req, res) =>
 app.post('/nylas/create-events', isAuthenticated, express.json(), (req, res) =>
   route.createEvents(req, res, nylasClient)
 );
-
-// Before we start our backend, we should whitelist our frontend as a
-// redirect URI to ensure the auth completes
-nylasClient
-  .application({
-    redirectUris: [CLIENT_URI],
-  })
-  .then((applicationDetails) => {
-    console.log(
-      'Application whitelisted. Application Details: ',
-      JSON.stringify(applicationDetails)
-    );
-  });
 
 // Start listening on port 9000
 app.listen(port, () => console.log('App listening on port ' + port));

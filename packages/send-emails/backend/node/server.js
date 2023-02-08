@@ -40,6 +40,23 @@ nylasClient
     );
   });
 
+// Start the Nylas webhook
+openWebhookTunnel(nylasClient, {
+  // Handle when a new message is created (sent)
+  onMessage: function handleEvent(delta) {
+    switch (delta.type) {
+      case WebhookTriggers.MessageCreated:
+        console.log(
+          'Webhook trigger received, message created. Details: ',
+          JSON.stringify(delta.objectData, undefined, 2)
+        );
+        break;
+    }
+  },
+}).then((webhookDetails) =>
+  console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id)
+);
+
 // '/nylas/generate-auth-url': This route builds the URL for
 // authenticating users to your Nylas application via Hosted Authentication
 app.post('/nylas/generate-auth-url', express.json(), async (req, res) => {
@@ -79,23 +96,6 @@ app.post('/nylas/exchange-mailbox-token', express.json(), async (req, res) => {
     emailAddress: user.emailAddress,
   });
 });
-
-// Start the Nylas webhook
-openWebhookTunnel(nylasClient, {
-  // Handle when a new message is created (sent)
-  onMessage: function handleEvent(delta) {
-    switch (delta.type) {
-      case WebhookTriggers.MessageCreated:
-        console.log(
-          'Webhook trigger received, message created. Details: ',
-          JSON.stringify(delta.objectData, undefined, 2)
-        );
-        break;
-    }
-  },
-}).then((webhookDetails) =>
-  console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id)
-);
 
 // Middleware to check if the user is authenticated
 async function isAuthenticated(req, res, next) {
