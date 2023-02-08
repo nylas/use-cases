@@ -2,6 +2,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.nylas.NylasApplication;
 import com.nylas.NylasClient;
+import com.nylas.Scope;
 import io.github.cdimascio.dotenv.Dotenv;
 
 import java.lang.reflect.Type;
@@ -30,6 +31,16 @@ public class Server {
 		NylasApplication application = new NylasClient()
 				.application(dotenv.get("NYLAS_CLIENT_ID"), dotenv.get("NYLAS_CLIENT_SECRET"));
 
+		post("/nylas/generate-auth-url", (request, response) -> {
+			Map<String, String> requestBody = new Gson().fromJson(request.body(), JSON_MAP);
+
+			return application.hostedAuthentication()
+					.urlBuilder()
+					.loginHint(requestBody.get("email_address"))
+					.redirectUri(clientUri + requestBody.get("success_url"))
+					.scopes(Scope.EMAIL_READ_ONLY, Scope.EMAIL_MODIFY, Scope.EMAIL_SEND)
+					.buildUrl();
+		});
 	}
 
 	// Enables CORS on requests. This method is an initialization method and should be called once.
