@@ -1,12 +1,12 @@
 const { default: Event } = require('nylas/lib/models/event');
+const Nylas = require('nylas');
 
-exports.readEvents = async (req, res, nylasClient) => {
+exports.readEvents = async (req, res) => {
   const user = res.locals.user;
 
   const { calendarId, startsAfter, endsBefore, limit } = req.query;
 
-  const events = await nylasClient
-    .with(user.accessToken)
+  const events = await Nylas.with(user.accessToken)
     .events.list({
       calendar_id: calendarId,
       starts_after: startsAfter,
@@ -18,18 +18,17 @@ exports.readEvents = async (req, res, nylasClient) => {
   return res.json(events);
 };
 
-exports.readCalendars = async (req, res, nylasClient) => {
+exports.readCalendars = async (req, res) => {
   const user = res.locals.user;
 
-  const calendars = await nylasClient
-    .with(user.accessToken)
+  const calendars = await Nylas.with(user.accessToken)
     .calendars.list()
     .then((calendars) => calendars);
 
   return res.json(calendars);
 };
 
-exports.createEvents = async (req, res, nylasClient) => {
+exports.createEvents = async (req, res) => {
   const user = res.locals.user;
 
   const { calendarId, title, description, startTime, endTime, participants } =
@@ -42,7 +41,7 @@ exports.createEvents = async (req, res, nylasClient) => {
     });
   }
 
-  const nylas = nylasClient.with(user.accessToken);
+  const nylas = Nylas.with(user.accessToken);
 
   const event = new Event(nylas);
 

@@ -46,7 +46,7 @@ p "Application whitelisted. Application details: #{updated_application_details.t
 # In this example, webhook open and error events and the messages received from the API are printed to the console.
 # First, define the callback for the on_message event
 def on_message(delta)
-  return unless delta.type == WebhookTrigger::MESSAGE_CREATED || delta.type == WebhookTrigger::ACCOUNT_CONNECTED
+  return unless delta.type == WebhookTrigger::EVENT_CREATED || delta.type == WebhookTrigger::ACCOUNT_CONNECTED
 
   # Process the delta however you like
   # Here we just print it to the console
@@ -58,14 +58,14 @@ end
 Thread.new do
   Nylas::Tunnel.open_webhook_tunnel(nylas, {
                                       "region": 'us',
-                                      "triggers": [WebhookTrigger::MESSAGE_CREATED, WebhookTrigger::ACCOUNT_CONNECTED],
+                                      "triggers": [WebhookTrigger::EVENT_CREATED, WebhookTrigger::ACCOUNT_CONNECTED],
                                       "on_message": method(:on_message)
                                     })
 end
 
 ##
 # Generates a Nylas Hosted Authentication URL with the given arguments.
-# The endpoint also uses the app level constants CLIENT_URI and DEFAULT_SCOPES to build the URL.
+# The endpoint also uses the app level constants CLIENT_URI to build the URL.
 #
 # This endpoint is a POST request and accepts the following parameters:
 #

@@ -4,12 +4,14 @@ import json
 
 from utils.mock_db import db
 
-from flask import Flask, request, g
+from io import BytesIO
+from flask import Flask, request, send_file, g
 from flask_cors import CORS
 
 from nylas import APIClient
 from nylas.client.restful_models import Webhook
 from nylas.services.tunnel import open_webhook_tunnel
+
 
 # Initialize the Nylas API client using the client id and secret specified in the .env file
 nylas = APIClient(
@@ -37,10 +39,14 @@ def run_webhook():
 
         # Trigger logic on any webhook trigger Enum
         if delta["type"] == Webhook.Trigger.MESSAGE_CREATED:
+            print("Message created")
+            print(delta)
+        if delta["type"] == Webhook.Trigger.ACCOUNT_CONNECTED:
+            print("Account connected")
             print(delta)
 
     def on_open(ws):
-        print("opened")
+        print("webhook tunnel opened")
 
     def on_error(ws, err):
         print("Error found")
@@ -48,7 +54,8 @@ def run_webhook():
 
     open_webhook_tunnel(
         nylas, {'on_message': on_message, 'on_open': on_open, 'on_error': on_error})
-    
+
+
 # Run the webhook
 run_webhook()
 
@@ -63,11 +70,9 @@ CORS(flask_app, supports_credentials=True)
 def build_auth_url():
     """
     Generates a Nylas Hosted Authentication URL with the given arguments. 
-    The endpoint also uses the app level constants CLIENT_URI and DEFAULT_SCOPES to build the URL.
+    The endpoint also uses the app level constant CLIENT_URI to build the URL.
 
-    This endpoint is a POST request and accepts the following parameters:
-    
-    Request Body:
+    This endpoint is a POST request and accepts the following parameters in the request body:
         success_url: The URL to redirect the user to after successful authorization.
         email_address: The email address of the user who is authorizing the app.
 
@@ -80,7 +85,7 @@ def build_auth_url():
     auth_url = nylas.authentication_url(
         (CLIENT_URI or "") + request_body["success_url"],
         login_hint=request_body["email_address"],
-        scopes=['email.send', 'email.modify'],
+        scopes=['email.send', 'email.modify', 'email.read_only'],
         state=None,
     )
 
@@ -167,6 +172,87 @@ def after_request(response):
     return response
 
 
+@flask_app.route('/nylas/read-emails', methods=['GET'])
+@is_authenticated
+def read_emails():
+    """
+    Retrieve the first 5 threads of the authenticated account from the Nylas API.
+
+    This endpoint is a GET request and accepts no parameters.
+
+    The threads are retrieved using the Nylas API client, with the view set to "expanded".
+
+    The threads are then returned as a JSON object.
+    See our docs for more information about the thread object.
+    https://developer.nylas.com/docs/api/#tag--Threads
+    """
+
+    # where() sets the query parameters for the request
+    # all() executes the request and return the results
+    res = nylas.threads.where(limit=5, view="expanded").all()
+
+    # enforce_read_only=False is used to return the full thread objects
+    res_json = [item.as_json(enforce_read_only=False) for item in res]
+
+    return res_json
+
+
+@flask_app.route('/nylas/message', methods=['GET'])
+@is_authenticated
+def get_message():
+    """
+    Retrieve a message from the Nylas API.
+
+    This endpoint is a GET request and accepts the following:
+    
+    Query Parameters:
+        'id': The identifier of the message to retrieve.
+
+    The message is retrieved using the Nylas API client by id, with the view set to "expanded".
+
+    The message is then returned as a JSON object.
+    See our docs for more information about the message object.
+    https://developer.nylas.com/docs/api/#tag--Messages
+    """
+
+    message_id = request.args.get('id')
+
+    # where() sets the query parameters for the request
+    # get() executes the request and return the results
+    message = nylas.messages.where(view="expanded").get(message_id)
+
+    # enforce_read_only=False is required to return the full message object
+    return message.as_json(enforce_read_only=False)
+
+
+@flask_app.route('/nylas/file', methods=['GET'])
+@is_authenticated
+def download_file():
+    """
+    Retrieve and download a file from the Nylas API.
+
+    This endpoint is a GET request and accepts the following:
+
+    Query Parameters:
+        id: The identifier of the file to download.
+
+    The file metadata is retrieved using the Nylas API client.
+    A second request is sent to the API and the file is downloaded.
+
+    Returns the file with metadata to the client for download.
+
+    See our docs for more information about the file object.
+    https://developer.nylas.com/docs/api/#tag--Files
+    """
+
+    file_id = request.args.get('id')
+    file_metadata = nylas.files.get(file_id)
+
+    file = file_metadata.download()
+
+    return send_file(BytesIO(file), download_name=file_metadata.filename, mimetype=file_metadata.content_type, as_attachment=True)
+
+
 @flask_app.route('/nylas/send-email', methods=['POST'])
 @is_authenticated
 def send_email():
@@ -181,7 +267,6 @@ def send_email():
         body: The body of the email.
 
     Returns the message object from the Nylas API. 
-    
     See our docs for more information about the message object.
     https://developer.nylas.com/docs/api/#tag--Messages
     """
@@ -203,3 +288,4 @@ def send_email():
 
     # Return the sent message object
     return message
+

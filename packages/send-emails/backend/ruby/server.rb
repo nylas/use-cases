@@ -65,7 +65,7 @@ end
 
 ##
 # Generates a Nylas Hosted Authentication URL with the given arguments.
-# The endpoint also uses the app level constants CLIENT_URI and DEFAULT_SCOPES to build the URL.
+# The endpoint also uses the app level constant CLIENT_URI to build the URL.
 #
 # This endpoint is a POST request and accepts the following parameters:
 #
@@ -153,6 +153,7 @@ end
 #
 # Request Body:
 #     to: The email address of the recipient.
+#     subject: The subject of the email.
 #     body: The body of the email.
 #
 # Returns the message object from the Nylas API.
@@ -161,16 +162,21 @@ end
 # https://developer.nylas.com/docs/api/#tag--Messages
 post '/nylas/send-email' do
   user = protected!
+
+  #  create a Nylas API client instance using the user's access token
   nylas_instance = nylas.as(user['access_token'])
 
   request_body = JSON.parse(request.body.read)
 
+  # Use the SDK method to send an email on behalf of the user
+  # capture the message object from the response
   message = nylas_instance.send!(
     to: [{ email: request_body['to'] }],
     subject: request_body['subject'],
     body: request_body['body']
   )
 
+  # return the message object to the client
   content_type 'application/json'
   message.to_json
 end

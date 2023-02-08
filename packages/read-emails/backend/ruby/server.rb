@@ -46,7 +46,7 @@ p "Application whitelisted. Application details: #{updated_application_details.t
 # In this example, webhook open and error events and the messages received from the API are printed to the console.
 # First, define the callback for the on_message event
 def on_message(delta)
-  return unless delta.type == WebhookTrigger::MESSAGE_CREATED || delta.type == WebhookTrigger::ACCOUNT_CONNECTED
+  return unless delta.type == WebhookTrigger::ACCOUNT_CONNECTED
 
   # Process the delta however you like
   # Here we just print it to the console
@@ -65,7 +65,7 @@ end
 
 ##
 # Generates a Nylas Hosted Authentication URL with the given arguments.
-# The endpoint also uses the app level constants CLIENT_URI and DEFAULT_SCOPES to build the URL.
+# The endpoint also uses the app level constant CLIENT_URI to build the URL.
 #
 # This endpoint is a POST request and accepts the following parameters:
 #
@@ -170,6 +170,7 @@ get '/nylas/read-emails' do
   res_json
 end
 
+##
 # Retrieve a message from the Nylas API.
 #
 # This endpoint is a GET request and accepts the following:
@@ -184,6 +185,8 @@ end
 # https://developer.nylas.com/docs/api/#tag--Messages
 get '/nylas/message' do
   user = protected!
+
+  # create a Nylas API client instance using the user's access token
   nylas_instance = nylas.as(user['access_token'])
 
   # chaining expanded gives us the full message object
@@ -193,6 +196,7 @@ get '/nylas/message' do
   message.to_json
 end
 
+##
 # Retrieve and download a file from the Nylas API.
 #
 # This endpoint is a GET request and accepts the following:
@@ -209,6 +213,8 @@ end
 # https://developer.nylas.com/docs/api/#tag--Files
 get '/nylas/file' do
   user = protected!
+
+  # create a Nylas API client instance using the user's access token 
   nylas_instance = nylas.as(user['access_token'])
 
   attachment

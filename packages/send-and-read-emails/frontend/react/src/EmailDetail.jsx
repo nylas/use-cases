@@ -39,7 +39,7 @@ const messageReducer = (messages, { type, payload }) => {
       return messages.map((msg) => {
         if (msg.id === payload.message.id) {
           msg = {
-            ...payload.message,
+            ...msg,
             showParticipants: !msg.showParticipants,
           };
         }

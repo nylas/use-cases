@@ -1,9 +1,11 @@
 import os
 from functools import wraps
+import json
 
 from utils.mock_db import db
 
-from flask import Flask, request, g
+from io import BytesIO
+from flask import Flask, request, send_file, g
 from flask_cors import CORS
 
 from nylas import APIClient
@@ -17,14 +19,11 @@ nylas = APIClient(
     os.environ.get("NYLAS_CLIENT_SECRET"),
 )
 
-# Set the URI for the client
-CLIENT_URI = 'http://localhost:3000'
-
-# Set the default scopes for auth
-DEFAULT_SCOPES = ['calendar']
-
 # Before we start our backend, we should whitelist our frontend
 # as a redirect URI to ensure the auth completes
+#
+# Set the URI for the client
+CLIENT_URI = 'http://localhost:3000'
 updated_application_details = nylas.update_application_details(redirect_uris=[CLIENT_URI])
 print('Application whitelisted. Application Details: ', updated_application_details)
 
@@ -37,13 +36,13 @@ def run_webhook():
         """
         Raw webhook messages are parsed in the Nylas SDK and sent to this function as a delta
         """
-        
+
         # Trigger logic on any webhook trigger Enum
-        if delta["type"] == Webhook.Trigger.EVENT_CREATED:
+        if delta["type"] == Webhook.Trigger.ACCOUNT_CONNECTED:
             print(delta)
 
     def on_open(ws):
-        print("opened")
+        print("webhook tunnel opened")
 
     def on_error(ws, err):
         print("Error found")
@@ -67,7 +66,7 @@ CORS(flask_app, supports_credentials=True)
 def build_auth_url():
     """
     Generates a Nylas Hosted Authentication URL with the given arguments. 
-    The endpoint also uses the app level constants CLIENT_URI and DEFAULT_SCOPES to build the URL.
+    The endpoint also uses the app level constant CLIENT_URI to build the URL.
 
     This endpoint is a POST request and accepts the following parameters in the request body:
         success_url: The URL to redirect the user to after successful authorization.
@@ -82,7 +81,7 @@ def build_auth_url():
     auth_url = nylas.authentication_url(
         (CLIENT_URI or "") + request_body["success_url"],
         login_hint=request_body["email_address"],
-        scopes=DEFAULT_SCOPES,
+        scopes=['email.read_only'],
         state=None,
     )
 
@@ -163,121 +162,89 @@ def after_request(response):
     """
     After request middleware that clear the Nylas access token after each request.
     """
+
     nylas.access_token = None
 
     return response
 
 
-@flask_app.route('/nylas/create-events', methods=['POST'])
+@flask_app.route('/nylas/read-emails', methods=['GET'])
 @is_authenticated
-def create_events():
+def read_emails():
     """
-    
-    Creates an event in the authenticated user's calendar.
-
-    This endpoint is a POST request and accepts the following parameters in the request body:
-
-    Request Body:
-        calendarId: The identifier of the calendar to create the event in.
-        title: The title of the event.
-        description: The description of the event.
-        startTime: The start time of the event.
-        endTime: The end time of the event.
-        participants: A comma separated list of email addresses of the participants of the event.
-
-    Checks if the required parameters are present in the request body.
-    Creates an event object and sets the inputted parameters.
-    Saves the event object to the Nylas API.
-
-    Returns the event object.
-    See our docs for more information on the Event object.
-    https://developer.nylas.com/docs/api/#tag--Events
-    """
-    request_body = request.get_json()
-
-    calendar_id = request_body['calendarId']
-    title = request_body['title']
-    description = request_body['description']
-    start_time = request_body['startTime']
-    end_time = request_body['endTime']
-    participants = request_body['participants']
-
-    if not calendar_id or not title or not start_time or not end_time:
-        return 'Missing required fields: calendarId, title, starTime or endTime', 400
-
-    event = nylas.events.create()
-
-    event.title = title
-    event.description = description
-    event.when = {
-        'start_time': start_time,
-        'end_time': end_time,
-    }
-    event.calendar_id = calendar_id
-    if participants:
-        event.participants = [{"email": email}
-                              for email in participants.split(", ")]
-
-    event.save(notify_participants=True)
-
-    return event.as_json(enforce_read_only=False)
-
-
-@flask_app.route('/nylas/read-events', methods=['GET'])
-@is_authenticated
-def read_events():
-    """
-    Retrieves all events from a calendar.
-
-    This endpoint is a GET request and accepts the following parameters:
-
-    Query Parameters:
-        calendarId: The ID of the calendar to retrieve events from.
-        startsAfter: The start time of the events to retrieve.
-        endsBefore: The end time of the events to retrieve.
-        limit: The maximum number of events to retrieve.
-
-    Returns a JSON array of all events from the given calendar.
-    See our docs for more information on the Event object.
-    https://developer.nylas.com/docs/api/#tag--Events
-    """
-    calendar_id = request.args.get('calendarId')
-    starts_after = request.args.get('startsAfter')
-    ends_before = request.args.get('endsBefore')
-    limit = request.args.get('limit')
-
-    # Use the SDK method chaining to retrieve all events from the given calendar
-    # where() sets the query parameters for the request
-    # all() executes the request and return the results
-    res = nylas.events.where(
-        calendar_id=calendar_id,
-        starts_after=starts_after,
-        ends_before=ends_before,
-        limit=int(limit)
-    ).all()
-
-    # enforce_read_only=False is used to return the full event objects
-    res_json = [item.as_json(enforce_read_only=False) for item in res]
-
-    return res_json
-
-
-
-@flask_app.route('/nylas/read-calendars', methods=['GET'])
-@is_authenticated
-def read_calendars():
-    """
-    Retrieves all calendars for the authenticated user.
+    Retrieve the first 20 threads of the authenticated account from the Nylas API.
 
     This endpoint is a GET request and accepts no parameters.
 
-    Returns a JSON array of all calendars for the authenticated user.
-    See our docs for more information about the calendar object.
-    https://developer.nylas.com/docs/api/#tag--Calendar
-    """
-    res = nylas.calendars.all()
+    The threads are retrieved using the Nylas API client, with the view set to "expanded".
 
-    # enforce_read_only=False is used to return the full calendar objects
+    The threads are then returned as a JSON object.
+    See our docs for more information about the thread object.
+    https://developer.nylas.com/docs/api/#tag--Threads
+    """
+
+    # where() sets the query parameters for the request
+    # all() executes the request and return the results
+    res = nylas.threads.where(limit=5, view="expanded").all()
+
+    # enforce_read_only=False is used to return the full thread objects
     res_json = [item.as_json(enforce_read_only=False) for item in res]
 
     return res_json
+
+
+@flask_app.route('/nylas/message', methods=['GET'])
+@is_authenticated
+def get_message():
+    """
+    Retrieve a message from the Nylas API.
+
+    This endpoint is a GET request and accepts the following:
+    
+    Query Parameters:
+        'id': The identifier of the message to retrieve.
+
+    The message is retrieved using the Nylas API client by id, with the view set to "expanded".
+
+    The message is then returned as a JSON object.
+    See our docs for more information about the message object.
+    https://developer.nylas.com/docs/api/#tag--Messages
+    """
+
+    message_id = request.args.get('id')
+
+    # where() sets the query parameters for the request
+    # get() executes the request and return the results
+    message = nylas.messages.where(view="expanded").get(message_id)
+
+    # enforce_read_only=False is used to return the full message object
+    return message.as_json(enforce_read_only=False)
+
+
+@flask_app.route('/nylas/file', methods=['GET'])
+@is_authenticated
+def download_file():
+    """
+    Retrieve and download a file from the Nylas API.
+
+    This endpoint is a GET request and accepts the following:
+
+    Query Parameters:
+        id: The identifier of the file to download.
+
+    The file metadata is retrieved using the Nylas API client.
+    A second request is sent to the API and the file is downloaded.
+
+    Returns the file with metadata to the client for download.
+
+    See our docs for more information about the file object.
+    https://developer.nylas.com/docs/api/#tag--Files
+    """
+
+    file_id = request.args.get('id')
+    file_metadata = nylas.files.get(file_id)
+
+    file = file_metadata.download()
+
+    return send_file(BytesIO(file), download_name=file_metadata.filename, mimetype=file_metadata.content_type, as_attachment=True)
+
