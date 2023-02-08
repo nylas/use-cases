@@ -19,14 +19,11 @@ nylas = APIClient(
     os.environ.get("NYLAS_CLIENT_SECRET"),
 )
 
-# Set the URI for the client
-CLIENT_URI = 'http://localhost:3000'
-
-# Set the default scopes for auth
-DEFAULT_SCOPES = ['email.send', 'email.modify', 'email.read_only']
-
 # Before we start our backend, we should whitelist our frontend
 # as a redirect URI to ensure the auth completes
+#
+# Set the URI for the client
+CLIENT_URI = 'http://localhost:3000'
 updated_application_details = nylas.update_application_details(redirect_uris=[CLIENT_URI])
 print('Application whitelisted. Application Details: ', updated_application_details)
 
@@ -69,7 +66,7 @@ CORS(flask_app, supports_credentials=True)
 def build_auth_url():
     """
     Generates a Nylas Hosted Authentication URL with the given arguments. 
-    The endpoint also uses the app level constants CLIENT_URI and DEFAULT_SCOPES to build the URL.
+    The endpoint also uses the app level constant CLIENT_URI to build the URL.
 
     This endpoint is a POST request and accepts the following parameters in the request body:
         success_url: The URL to redirect the user to after successful authorization.
@@ -84,7 +81,7 @@ def build_auth_url():
     auth_url = nylas.authentication_url(
         (CLIENT_URI or "") + request_body["success_url"],
         login_hint=request_body["email_address"],
-        scopes=DEFAULT_SCOPES,
+        scopes=['email.send', 'email.modify', 'email.read_only'],
         state=None,
     )
 
