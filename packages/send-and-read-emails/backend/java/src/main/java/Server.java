@@ -2,9 +2,11 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.nylas.NylasApplication;
 import com.nylas.NylasClient;
+import com.nylas.RequestFailedException;
 import com.nylas.Scope;
 import io.github.cdimascio.dotenv.Dotenv;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Map;
 
@@ -13,7 +15,7 @@ import static spark.Spark.*;
 public class Server {
 	public static final Type JSON_MAP = new TypeToken<Map<String, String>>(){}.getType();
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws RequestFailedException, IOException {
 		Dotenv dotenv = Dotenv.configure()
 				.directory("../../../../")
 				.load();
@@ -41,6 +43,13 @@ public class Server {
 					.scopes(Scope.EMAIL_READ_ONLY, Scope.EMAIL_MODIFY, Scope.EMAIL_SEND)
 					.buildUrl();
 		});
+
+		/*
+		 * Before we start our backend, we should whitelist our frontend as a redirect
+		 * URI to ensure the auth completes
+		 */
+		application.addRedirectUri(clientUri);
+		System.out.println("Application whitelisted.");
 	}
 
 	// Enables CORS on requests. This method is an initialization method and should be called once.
