@@ -23,7 +23,6 @@ public class Server {
 		NylasApplication application = new NylasClient()
 				.application(dotenv.get("NYLAS_CLIENT_ID"), dotenv.get("NYLAS_CLIENT_SECRET"));
 
-		get("/hello", (request, response) -> "Hello World!");
 	}
 
 	// Enables CORS on requests. This method is an initialization method and should be called once.
