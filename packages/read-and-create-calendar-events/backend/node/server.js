@@ -11,6 +11,11 @@ const { Scope } = require('nylas/lib/models/connect');
 
 dotenv.config();
 
+const app = express();
+
+// Enable CORS
+app.use(cors());
+
 // The port the express app will run on
 const port = 9000;
 
@@ -19,11 +24,6 @@ Nylas.config({
   clientId: process.env.NYLAS_CLIENT_ID,
   clientSecret: process.env.NYLAS_CLIENT_SECRET,
 });
-
-const app = express();
-
-// Enable CORS
-app.use(cors());
 
 // Before we start our backend, we should whitelist our frontend as a
 // redirect URI to ensure the auth completes
