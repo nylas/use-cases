@@ -65,7 +65,7 @@ end
 
 ##
 # Generates a Nylas Hosted Authentication URL with the given arguments.
-# The endpoint also uses the app level constants CLIENT_URI and DEFAULT_SCOPES to build the URL.
+# The endpoint also uses the app level constant CLIENT_URI to build the URL.
 #
 # This endpoint is a POST request and accepts the following parameters:
 #
