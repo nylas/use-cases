@@ -1,0 +1,16 @@
+plugins {
+    id 'java'
+}
+
+group 'com.nylas'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation('com.nylas.sdk:nylas-java-sdk:1.20.0')
+    implementation('com.sparkjava:spark-core:2.9.4')
+    implementation('io.github.cdimascio:dotenv-java:2.3.2')
+}
