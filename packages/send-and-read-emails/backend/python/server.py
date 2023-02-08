@@ -39,10 +39,14 @@ def run_webhook():
 
         # Trigger logic on any webhook trigger Enum
         if delta["type"] == Webhook.Trigger.MESSAGE_CREATED:
+            print("Message created")
+            print(delta)
+        if delta["type"] == Webhook.Trigger.ACCOUNT_CONNECTED:
+            print("Account connected")
             print(delta)
 
     def on_open(ws):
-        print("opened")
+        print("webhook tunnel opened")
 
     def on_error(ws, err):
         print("Error found")

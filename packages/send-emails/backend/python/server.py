@@ -40,7 +40,7 @@ def run_webhook():
             print(delta)
 
     def on_open(ws):
-        print("opened")
+        print("webhook tunnel opened")
 
     def on_error(ws, err):
         print("Error found")
