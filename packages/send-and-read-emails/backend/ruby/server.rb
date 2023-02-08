@@ -170,6 +170,7 @@ get '/nylas/read-emails' do
   res_json
 end
 
+##
 # Retrieve a message from the Nylas API.
 #
 # This endpoint is a GET request and accepts the following:
@@ -195,6 +196,7 @@ get '/nylas/message' do
   message.to_json
 end
 
+##
 # Retrieve and download a file from the Nylas API.
 #
 # This endpoint is a GET request and accepts the following:

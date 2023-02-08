@@ -46,7 +46,7 @@ p "Application whitelisted. Application details: #{updated_application_details.t
 # In this example, webhook open and error events and the messages received from the API are printed to the console.
 # First, define the callback for the on_message event
 def on_message(delta)
-  return unless delta.type == WebhookTrigger::MESSAGE_CREATED || delta.type == WebhookTrigger::ACCOUNT_CONNECTED
+  return unless delta.type == WebhookTrigger::ACCOUNT_CONNECTED
 
   # Process the delta however you like
   # Here we just print it to the console
