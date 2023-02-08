@@ -1,0 +1,8 @@
+source 'https://rubygems.org'
+
+gem 'dotenv'
+gem 'json'
+gem 'nylas', '>=5.15.0'
+gem 'puma'
+gem 'sinatra'
+gem 'sinatra-cross_origin', '~> 0.3.1'
