@@ -184,6 +184,8 @@ end
 # https://developer.nylas.com/docs/api/#tag--Messages
 get '/nylas/message' do
   user = protected!
+
+  # create a Nylas API client instance using the user's access token
   nylas_instance = nylas.as(user['access_token'])
 
   # chaining expanded gives us the full message object
@@ -209,6 +211,8 @@ end
 # https://developer.nylas.com/docs/api/#tag--Files
 get '/nylas/file' do
   user = protected!
+  
+  # create a Nylas API client instance using the user's access token
   nylas_instance = nylas.as(user['access_token'])
 
   attachment

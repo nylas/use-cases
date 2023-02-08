@@ -170,6 +170,7 @@ get '/nylas/read-emails' do
   res_json
 end
 
+##
 # Retrieve a message from the Nylas API.
 #
 # This endpoint is a GET request and accepts the following:
@@ -184,6 +185,8 @@ end
 # https://developer.nylas.com/docs/api/#tag--Messages
 get '/nylas/message' do
   user = protected!
+
+  # create a Nylas API client instance using the user's access token
   nylas_instance = nylas.as(user['access_token'])
 
   # chaining expanded gives us the full message object
@@ -193,6 +196,7 @@ get '/nylas/message' do
   message.to_json
 end
 
+##
 # Retrieve and download a file from the Nylas API.
 #
 # This endpoint is a GET request and accepts the following:
@@ -209,6 +213,8 @@ end
 # https://developer.nylas.com/docs/api/#tag--Files
 get '/nylas/file' do
   user = protected!
+
+  # create a Nylas API client instance using the user's access token 
   nylas_instance = nylas.as(user['access_token'])
 
   attachment

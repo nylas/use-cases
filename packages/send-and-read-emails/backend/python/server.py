@@ -185,6 +185,9 @@ def read_emails():
     See our docs for more information about the thread object.
     https://developer.nylas.com/docs/api/#tag--Threads
     """
+
+    # where() sets the query parameters for the request
+    # all() executes the request and return the results
     res = nylas.threads.where(limit=5, view="expanded").all()
 
     # enforce_read_only=False is used to return the full thread objects
@@ -212,6 +215,9 @@ def get_message():
     """
 
     message_id = request.args.get('id')
+
+    # where() sets the query parameters for the request
+    # get() executes the request and return the results
     message = nylas.messages.where(view="expanded").get(message_id)
 
     # enforce_read_only=False is required to return the full message object
