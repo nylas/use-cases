@@ -9,6 +9,7 @@ import utils.MockDB;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,6 +71,29 @@ public class Server {
 			responsePayload.put("id", user.getId());
 			responsePayload.put("emailAddress", user.getEmailAddress());
 			return GSON.toJson(responsePayload);
+		});
+
+		post("/nylas/send-email", (request, response) -> {
+			User user = isAuthenticated(request);
+			Map<String, String> requestBody = new Gson().fromJson(request.body(), JSON_MAP);
+
+			// Create a Nylas API client instance using the user's access token
+			NylasAccount nylas = new NylasClient().account(user.getAccessToken());
+
+			// Create a new draft object
+			Draft draft = new Draft();
+
+			// Fill draft with the contents from the payload
+			draft.setFrom(new NameEmail(null, user.getEmailAddress()));
+			draft.setTo(Collections.singletonList(new NameEmail(null, requestBody.get("to"))));
+			draft.setSubject(requestBody.get("subject"));
+			draft.setBody(requestBody.get("body"));
+
+			// Send the draft
+			Message message = nylas.drafts().send(draft);
+
+			// Return the sent message object
+			return GSON.toJson(message);
 		});
 
 		/*
