@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useNylas } from '@nylas/nylas-react';
-import EmailClient from './EmailClient';
+import NylasLogin from './NylasLogin';
+import Layout from './components/Layout';
+import EmailApp from './EmailApp';
 
 function App() {
   const nylas = useNylas();
   const [userId, setUserId] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [toastNotification, setToastNotification] = useState('');
+  const SERVER_URI = import.meta.env.VITE_SERVER_URI || 'http://localhost:9000';
 
   useEffect(() => {
     if (!nylas) {
       return;
     }
 
+    // Handle the code that is passed in the query params from Nylas after a successful login
     const params = new URLSearchParams(window.location.search);
     if (params.has('code')) {
       nylas
@@ -18,58 +24,61 @@ function App() {
         .then((user) => {
           const { id } = JSON.parse(user);
           setUserId(id);
+          sessionStorage.setItem('userId', id);
         })
-        .catch((err) => {
-          console.error('An error occurred parsing the response:', err);
+        .catch((error) => {
+          console.error('An error occurred parsing the response:', error);
         });
-    }
-    if (params.has('userId')) {
-      setUserId(params.get('userId'));
     }
   }, [nylas]);
 
   useEffect(() => {
-    if (userId.length) {
+    const userIdString = sessionStorage.getItem('userId');
+    const userEmail = sessionStorage.getItem('userEmail');
+    if (userIdString) {
+      setUserId(userIdString);
+    }
+    if (userEmail) {
+      setUserEmail(userEmail);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (userId?.length) {
       window.history.replaceState({}, '', `/?userId=${userId}`);
     } else {
       window.history.replaceState({}, '', '/');
     }
   }, [userId]);
 
-  return userId ? <EmailClient userId={userId} /> : <NylasLogin />;
-}
-
-function NylasLogin() {
-  const nylas = useNylas();
-
-  const [email, setEmail] = useState('');
+  const disconnectUser = () => {
+    sessionStorage.removeItem('userId');
+    sessionStorage.removeItem('userEmail');
+    setUserId('');
+    setUserEmail('');
+  };
 
   return (
-    <section style={{ width: '80vw', margin: '0 auto' }}>
-      <h1>Send emails sample app</h1>
-      <p>Authenticate your email to send</p>
-      <div style={{ marginTop: '30px' }}>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            nylas.authWithRedirect({
-              emailAddress: email,
-              successRedirectUrl: '',
-            });
-          }}
-        >
-          <input
-            required
-            aria-label="Email address"
-            type="email"
-            placeholder="Email Address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+    <Layout
+      showMenu={!!userId}
+      disconnectUser={disconnectUser}
+      title="Send email sample app"
+      toastNotification={toastNotification}
+      setToastNotification={setToastNotification}
+    >
+      {!userId ? (
+        <NylasLogin email={userEmail} setEmail={setUserEmail} />
+      ) : (
+        <div className="app-card">
+          <EmailApp
+            userEmail={userEmail}
+            serverBaseUrl={SERVER_URI}
+            userId={userId}
+            setToastNotification={setToastNotification}
           />
-          <button type="submit">Connect</button>
-        </form>
-      </div>
-    </section>
+        </div>
+      )}
+    </Layout>
   );
 }
 

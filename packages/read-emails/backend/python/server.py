@@ -1,6 +1,5 @@
 import os
 from functools import wraps
-import json
 
 from utils.mock_db import db
 
@@ -19,14 +18,9 @@ nylas = APIClient(
     os.environ.get("NYLAS_CLIENT_SECRET"),
 )
 
-# Set the URI for the client
-CLIENT_URI = 'http://localhost:3000'
-
-# Set the default scopes for auth
-DEFAULT_SCOPES = ['email.read_only']
-
 # Before we start our backend, we should whitelist our frontend
 # as a redirect URI to ensure the auth completes
+CLIENT_URI = 'http://localhost:3000'
 updated_application_details = nylas.update_application_details(redirect_uris=[CLIENT_URI])
 print('Application whitelisted. Application Details: ', updated_application_details)
 
@@ -45,7 +39,7 @@ def run_webhook():
             print(delta)
 
     def on_open(ws):
-        print("opened")
+        print("webhook tunnel opened")
 
     def on_error(ws, err):
         print("Error found")
@@ -69,7 +63,7 @@ CORS(flask_app, supports_credentials=True)
 def build_auth_url():
     """
     Generates a Nylas Hosted Authentication URL with the given arguments. 
-    The endpoint also uses the app level constants CLIENT_URI and DEFAULT_SCOPES to build the URL.
+    The endpoint also uses the app level constant CLIENT_URI to build the URL.
 
     This endpoint is a POST request and accepts the following parameters in the request body:
         success_url: The URL to redirect the user to after successful authorization.
@@ -84,7 +78,7 @@ def build_auth_url():
     auth_url = nylas.authentication_url(
         (CLIENT_URI or "") + request_body["success_url"],
         login_hint=request_body["email_address"],
-        scopes=DEFAULT_SCOPES,
+        scopes=['email.read_only'],
         state=None,
     )
 
@@ -185,7 +179,10 @@ def read_emails():
     See our docs for more information about the thread object.
     https://developer.nylas.com/docs/api/#tag--Threads
     """
-    res = nylas.threads.where(limit=20, view="expanded").all()
+
+    # where() sets the query parameters for the request
+    # all() executes the request and return the results
+    res = nylas.threads.where(limit=5, view="expanded").all()
 
     # enforce_read_only=False is used to return the full thread objects
     res_json = [item.as_json(enforce_read_only=False) for item in res]
@@ -212,6 +209,9 @@ def get_message():
     """
 
     message_id = request.args.get('id')
+
+    # where() sets the query parameters for the request
+    # get() executes the request and return the results
     message = nylas.messages.where(view="expanded").get(message_id)
 
     # enforce_read_only=False is used to return the full message object

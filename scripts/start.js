@@ -30,14 +30,14 @@ async function startSourceRepo() {
     default: {
       node: 'npm run start',
       python:
-        'source env/bin/activate && export FLASK_APP=app.py && python3 -u -m flask run --port=9000',
+        'source env/bin/activate && export FLASK_APP=server.py && python3 -u -m flask run --port=9000',
       ruby: 'ruby server.rb',
       java: './gradlew run',
     },
     win32: {
       node: 'npm run start',
       python:
-        'env\\Scripts\\activate.bat && $env:FLASK_APP=app.py" && python -u -m flask run --port=9000',
+        'env\\Scripts\\activate.bat && $env:FLASK_APP=server.py" && python -u -m flask run --port=9000',
       ruby: 'ruby server.rb',
       java: 'gradlew.bat run',
     },
