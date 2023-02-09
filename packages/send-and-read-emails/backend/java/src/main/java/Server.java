@@ -172,6 +172,9 @@ public class Server {
 		}
 	}
 
+	/**
+	 * Enables CORS on requests. This method is an initialization method and should be called once.
+	 */
 	private static void enableCORS() {
 
 		options("/*", (request, response) -> {
@@ -197,6 +200,9 @@ public class Server {
 		});
 	}
 
+	/**
+	 * Class that handles webhook notifications
+	 */
 	static class HandleNotifications implements Tunnel.WebhookHandler {
 		@Override
 		public void onMessage(Delta delta) {
