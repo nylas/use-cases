@@ -9,6 +9,7 @@ import utils.MockDB;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Map;
 
 import static spark.Spark.*;
@@ -44,6 +45,31 @@ public class Server {
 					.redirectUri(clientUri + requestBody.get("success_url"))
 					.scopes(Scope.EMAIL_READ_ONLY, Scope.EMAIL_MODIFY, Scope.EMAIL_SEND)
 					.buildUrl();
+		});
+
+		/*
+		 * '/nylas/exchange-mailbox-token': This route exchanges an authorization
+		 * code for an access token
+		 * and sends the details of the authenticated user to the client
+		 */
+		post("/nylas/exchange-mailbox-token", (request, response) -> {
+			Map<String, String> requestBody = new Gson().fromJson(request.body(), JSON_MAP);
+			AccessToken accessToken = application.hostedAuthentication()
+					.fetchToken(requestBody.get("token"));
+
+			// Normally store the access token in the DB
+			System.out.println("Access Token was generated for: " + accessToken.getEmailAddress());
+
+			// Replace this mock code with your actual database operations
+			System.out.println(requestBody);
+			User user = MockDB.createOrUpdateUser(accessToken.getEmailAddress(), accessToken.getAccessToken());
+			System.out.println(user);
+
+			// Return an authorization object to the user
+			Map<String, String> responsePayload = new HashMap<>();
+			responsePayload.put("id", user.getId());
+			responsePayload.put("emailAddress", user.getEmailAddress());
+			return GSON.toJson(responsePayload);
 		});
 
 		/*
