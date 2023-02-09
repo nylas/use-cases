@@ -1,9 +1,7 @@
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.nylas.NylasApplication;
-import com.nylas.NylasClient;
-import com.nylas.RequestFailedException;
-import com.nylas.Scope;
+import com.nylas.*;
+import com.nylas.Thread;
 import io.github.cdimascio.dotenv.Dotenv;
 
 import java.io.IOException;
