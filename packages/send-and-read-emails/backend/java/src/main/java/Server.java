@@ -77,6 +77,43 @@ public class Server {
 			return GSON.toJson(responsePayload);
 		});
 
+		/*
+		 * Before we start our backend, we should whitelist our frontend as a redirect
+		 * URI to ensure the auth completes
+		 */
+		application.addRedirectUri(clientUri);
+		System.out.println("Application whitelisted.");
+
+		// Load additional routes
+		routes();
+	}
+
+	/**
+	 * Helper function that checks if the user is authenticated.
+	 * If the user is authenticated, the user object will be returned.
+	 * If the user is not authenticated, the server will return a 401 error.
+	 * @param request The incoming request
+	 * @return The user, if the user is authenticated
+	 */
+	private static User isAuthenticated(spark.Request request) {
+		String auth = request.headers("authorization");
+		if(StringUtils.isEmpty(auth)) {
+			halt(401, "Unauthorized");
+			return null;
+		}
+
+		User user = MockDB.findUser(auth);
+		if(user == null) {
+			halt(401, "Unauthorized");
+		}
+
+		return user;
+	}
+
+	/**
+	 * Additional routes for the use case example
+	 */
+	private static void routes() {
 		post("/nylas/send-email", (request, response) -> {
 			User user = isAuthenticated(request);
 			Map<String, String> requestBody = new Gson().fromJson(request.body(), JSON_MAP);
@@ -127,35 +164,6 @@ public class Server {
 
 			return GSON.toJson(nylas.messages().get(messageId));
 		});
-
-		/*
-		 * Before we start our backend, we should whitelist our frontend as a redirect
-		 * URI to ensure the auth completes
-		 */
-		application.addRedirectUri(clientUri);
-		System.out.println("Application whitelisted.");
-	}
-
-	/**
-	 * Helper function that checks if the user is authenticated.
-	 * If the user is authenticated, the user object will be returned.
-	 * If the user is not authenticated, the server will return a 401 error.
-	 * @param request The incoming request
-	 * @return The user, if the user is authenticated
-	 */
-	private static User isAuthenticated(spark.Request request) {
-		String auth = request.headers("authorization");
-		if(StringUtils.isEmpty(auth)) {
-			halt(401, "Unauthorized");
-			return null;
-		}
-
-		User user = MockDB.findUser(auth);
-		if(user == null) {
-			halt(401, "Unauthorized");
-		}
-
-		return user;
 	}
 
 	/**
