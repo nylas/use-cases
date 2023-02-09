@@ -63,9 +63,7 @@ public class Server {
 			System.out.println("Access Token was generated for: " + accessToken.getEmailAddress());
 
 			// Replace this mock code with your actual database operations
-			System.out.println(requestBody);
 			User user = MockDB.createOrUpdateUser(accessToken.getEmailAddress(), accessToken.getAccessToken());
-			System.out.println(user);
 
 			// Return an authorization object to the user
 			Map<String, String> responsePayload = new HashMap<>();
