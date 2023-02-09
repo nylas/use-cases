@@ -114,6 +114,17 @@ public class Server {
 			return threadList;
 		});
 
+		get("/nylas/message", (request, response) -> {
+			User user = isAuthenticated(request);
+
+			// Create a Nylas API client instance using the user's access token
+			NylasAccount nylas = new NylasClient().account(user.getAccessToken());
+
+			String messageId = request.queryParams("id");
+
+			return GSON.toJson(nylas.messages().get(messageId));
+		});
+
 		/*
 		 * Before we start our backend, we should whitelist our frontend as a redirect
 		 * URI to ensure the auth completes
