@@ -1,9 +1,13 @@
 plugins {
-    id 'java'
+    id 'application'
 }
 
 group 'com.nylas'
 version '1.0-SNAPSHOT'
+
+application {
+    mainClassName = 'Server'
+}
 
 repositories {
     mavenCentral()
