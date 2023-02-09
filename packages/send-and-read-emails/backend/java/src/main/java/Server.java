@@ -12,6 +12,7 @@ import static spark.Spark.*;
 
 public class Server {
 	public static final Type JSON_MAP = new TypeToken<Map<String, String>>(){}.getType();
+	private static final Gson GSON = new Gson();
 
 	public static void main(String[] args) throws RequestFailedException, IOException {
 		Dotenv dotenv = Dotenv.configure()
@@ -32,7 +33,7 @@ public class Server {
 				.application(dotenv.get("NYLAS_CLIENT_ID"), dotenv.get("NYLAS_CLIENT_SECRET"));
 
 		post("/nylas/generate-auth-url", (request, response) -> {
-			Map<String, String> requestBody = new Gson().fromJson(request.body(), JSON_MAP);
+			Map<String, String> requestBody = GSON.fromJson(request.body(), JSON_MAP);
 
 			return application.hostedAuthentication()
 					.urlBuilder()
