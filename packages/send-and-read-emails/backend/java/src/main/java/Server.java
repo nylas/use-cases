@@ -2,6 +2,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.nylas.*;
 import com.nylas.Thread;
+import com.nylas.services.Tunnel;
+import com.nylas.Notification.Delta;
 import io.github.cdimascio.dotenv.Dotenv;
 import spark.utils.StringUtils;
 import utils.User;
@@ -9,6 +11,7 @@ import utils.MockDB;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,7 +23,7 @@ public class Server {
 	public static final Type JSON_MAP = new TypeToken<Map<String, String>>(){}.getType();
 	private static final Gson GSON = new Gson();
 
-	public static void main(String[] args) throws RequestFailedException, IOException {
+	public static void main(String[] args) throws RequestFailedException, IOException, URISyntaxException {
 		Dotenv dotenv = Dotenv.configure()
 				.directory("../../../../")
 				.load();
@@ -37,6 +40,9 @@ public class Server {
 		// Initialize an instance of the Nylas SDK using the client credentials
 		NylasApplication application = new NylasClient()
 				.application(dotenv.get("NYLAS_CLIENT_ID"), dotenv.get("NYLAS_CLIENT_SECRET"));
+
+		Tunnel webhookTunnel = new Tunnel.Builder(application, new HandleNotifications()).build();
+		webhookTunnel.connect();
 
 		post("/nylas/generate-auth-url", (request, response) -> {
 			Map<String, String> requestBody = GSON.fromJson(request.body(), JSON_MAP);
@@ -177,5 +183,17 @@ public class Server {
 			response.header("Access-Control-Allow-Headers", "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept, Authorization");
 			response.type("application/json");
 		});
+	}
+
+	static class HandleNotifications implements Tunnel.WebhookHandler {
+		@Override
+		public void onMessage(Delta delta) {
+			// Handle when a new message is created (sent)
+			if(delta.getTrigger().equals(Webhook.Trigger.MessageCreated.getName())) {
+				System.out.println("Webhook trigger received, message created. Details: " + delta);
+			} else if(delta.getTrigger().equals(Webhook.Trigger.AccountConnected.getName())) {
+				System.out.println("Webhook trigger received, account connected. Details: " + delta);
+			}
+		}
 	}
 }
