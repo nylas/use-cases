@@ -164,6 +164,23 @@ public class Server {
 
 			return GSON.toJson(nylas.messages().get(messageId));
 		});
+
+		get("/nylas/file", (request, response) -> {
+			User user = isAuthenticated(request);
+
+			// Create a Nylas API client instance using the user's access token
+			NylasAccount nylas = new NylasClient().account(user.getAccessToken());
+
+			// Fetch the file from the Nylas API
+			String fileId = request.queryParams("id");
+			File file = nylas.files().get(fileId);
+
+			// Set the file's content type as the response type
+			response.type(file.getContentType());
+
+			// Download the file
+			return nylas.files().downloadBytes(fileId);
+		});
 	}
 
 	/**
