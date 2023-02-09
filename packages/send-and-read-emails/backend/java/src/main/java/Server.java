@@ -5,6 +5,7 @@ import com.nylas.Thread;
 import com.nylas.services.Tunnel;
 import com.nylas.Notification.Delta;
 import io.github.cdimascio.dotenv.Dotenv;
+import io.github.cdimascio.dotenv.DotenvException;
 import spark.utils.StringUtils;
 import utils.User;
 import utils.MockDB;
@@ -24,9 +25,7 @@ public class Server {
 	private static final Gson GSON = new Gson();
 
 	public static void main(String[] args) throws RequestFailedException, IOException, URISyntaxException {
-		Dotenv dotenv = Dotenv.configure()
-				.directory("../../../../")
-				.load();
+		Dotenv dotenv = loadEnv();
 
 		// The port the Spark app will run on
 		port(9000);
@@ -159,7 +158,20 @@ public class Server {
 		return user;
 	}
 
-	// Enables CORS on requests. This method is an initialization method and should be called once.
+	/**
+	 * Loads .env file. Tries local directory first then a few directories up.
+	 * @return The .env file contents
+	 */
+	private static Dotenv loadEnv() {
+		try {
+			return Dotenv.configure().load();
+		} catch (DotenvException e) {
+			return Dotenv.configure()
+					.directory("../../../../")
+					.load();
+		}
+	}
+
 	private static void enableCORS() {
 
 		options("/*", (request, response) -> {
