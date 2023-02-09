@@ -9,6 +9,7 @@ import utils.MockDB;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -94,6 +95,23 @@ public class Server {
 
 			// Return the sent message object
 			return GSON.toJson(message);
+		});
+
+		get("/nylas/read-emails", (request, response) -> {
+			User user = isAuthenticated(request);
+
+			// Create a Nylas API client instance using the user's access token
+			NylasAccount nylas = new NylasClient().account(user.getAccessToken());
+
+			/*
+			 * Retrieve the first 5 threads from the Nylas API
+			 * chaining expanded gives us the full thread object
+			 */
+			RemoteCollection<Thread> threads = nylas.threads().expanded(new ThreadQuery().limit(5));
+			ArrayList<String> threadList = new ArrayList<>();
+
+			threads.forEach(thread -> threadList.add(GSON.toJson(thread)));
+			return threadList;
 		});
 
 		/*
