@@ -45,6 +45,7 @@ public class Server {
 		application.addRedirectUri(clientUri);
 		System.out.println("Application whitelisted.");
 
+		// Start the Nylas webhook
 		Tunnel webhookTunnel = new Tunnel.Builder(application, new HandleNotifications()).build();
 		webhookTunnel.connect();
 
