@@ -113,6 +113,32 @@ public class Server {
 	 * Additional routes for the use case example
 	 */
 	private static void routes() {
+		get("/nylas/read-events", (request, response) -> {
+			User user = isAuthenticated(request);
+
+			String calendarId = request.queryParams("calendarId");
+			String startsAfter = request.queryParams("startsAfter");
+			String endsBefore = request.queryParams("endsBefore");
+			String limit = request.queryParams("limit");
+
+			// Create a Nylas API client instance using the user's access token
+			NylasAccount nylas = new NylasClient().account(user.getAccessToken());
+
+			// Set the constraints
+			EventQuery eventQuery = new EventQuery()
+					.calendarId(calendarId)
+					.startsAfter(Instant.ofEpochSecond(Long.parseLong(startsAfter)))
+					.endsBefore(Instant.ofEpochSecond(Long.parseLong(endsBefore)))
+					.limit(Integer.parseInt(limit));
+
+			// Fetch the events with the constraints
+			RemoteCollection<Event> events = nylas.events().list(eventQuery);
+			ArrayList<String> eventList = new ArrayList<>();
+
+			// Return the events
+			events.forEach(event -> eventList.add(GSON.toJson(event)));
+			return eventList;
+		});
 	}
 
 	/**
