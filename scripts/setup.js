@@ -87,12 +87,14 @@ const INSTALLATION_COMMANDS = {
     python:
       'python3 -m venv env && source env/bin/activate && pip install -r requirements.txt',
     ruby: 'bundle install',
+    java: './gradlew build',
   },
   win32: {
     node: 'npm install',
     python:
       'python3 -m venv env && .\\env\\Scripts\\activate.bat && pip install -r requirements.txt',
     ruby: 'bundle install',
+    java: 'gradlew.bat build',
   },
 };
 
