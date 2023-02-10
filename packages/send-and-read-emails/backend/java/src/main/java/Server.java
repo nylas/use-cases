@@ -124,7 +124,6 @@ public class Server {
 			Draft draft = new Draft();
 
 			// Fill draft with the contents from the payload
-			draft.setFrom(new NameEmail(null, user.getEmailAddress()));
 			draft.setTo(Collections.singletonList(new NameEmail(null, requestBody.get("to"))));
 			draft.setSubject(requestBody.get("subject"));
 			draft.setBody(requestBody.get("body"));
@@ -238,4 +237,56 @@ public class Server {
 			}
 		}
 	}
+
+//	private static void ayo() {
+//		post("/nylas/read-events", (request, response) -> {
+//			User user = isAuthenticated(request);
+//
+//			String calendarId = request.queryParams("calendar_id");
+//			String startsAfter = request.queryParams("starts_after");
+//			String endsBefore = request.queryParams("ends_before");
+//			String limit = request.queryParams("limit");
+//
+//			// Create a Nylas API client instance using the user's access token
+//			NylasAccount nylas = new NylasClient().account(user.getAccessToken());
+//
+//			// Set the constraints
+//			EventQuery eventQuery = new EventQuery()
+//					.calendarId(calendarId)
+//					.startsAfter(Instant.ofEpochSecond(Long.parseLong(startsAfter)))
+//					.endsBefore(Instant.ofEpochSecond(Long.parseLong(endsBefore)))
+//					.limit(Integer.parseInt(limit));
+//
+//			// Fetch and return the events
+//			return nylas.events().list(eventQuery).fetchAll();
+//		});
+//
+//		get("/nylas/read-calendars", (request, response) -> {
+//			User user = isAuthenticated(request);
+//
+//			// Create a Nylas API client instance using the user's access token
+//			NylasAccount nylas = new NylasClient().account(user.getAccessToken());
+//
+//			/*
+//			 * Retrieve the first 5 threads from the Nylas API
+//			 * chaining expanded gives us the full thread object
+//			 */
+//			RemoteCollection<Thread> threads = nylas.threads().expanded(new ThreadQuery().limit(5));
+//			ArrayList<String> threadList = new ArrayList<>();
+//
+//			threads.forEach(thread -> threadList.add(GSON.toJson(thread)));
+//			return threadList;
+//		});
+//
+//		get("/nylas/create-events", (request, response) -> {
+//			User user = isAuthenticated(request);
+//
+//			// Create a Nylas API client instance using the user's access token
+//			NylasAccount nylas = new NylasClient().account(user.getAccessToken());
+//
+//			String messageId = request.queryParams("id");
+//
+//			return GSON.toJson(nylas.messages().get(messageId));
+//		});
+//	}
 }
