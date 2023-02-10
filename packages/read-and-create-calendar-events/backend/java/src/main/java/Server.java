@@ -154,6 +154,44 @@ public class Server {
 			calendars.forEach(thread -> calendarList.add(GSON.toJson(thread)));
 			return calendarList;
 		});
+
+		post("/nylas/create-events", (request, response) -> {
+			User user = isAuthenticated(request);
+			Map<String, String> requestBody = new Gson().fromJson(request.body(), JSON_MAP);
+
+			String calendarId = requestBody.get("calendarId");
+			String title = requestBody.get("title");
+			String description = requestBody.get("description");
+			String startTime = requestBody.get("startTime");
+			String endTime = requestBody.get("endTime");
+			String participants = requestBody.get("participants");
+
+			// Create a Nylas API client instance using the user's access token
+			NylasAccount nylas = new NylasClient().account(user.getAccessToken());
+
+			// Set the timing of the event
+			Event.Timespan timespan = new Event.Timespan(
+				Instant.ofEpochSecond(Long.parseLong(startTime)),
+				Instant.ofEpochSecond(Long.parseLong(endTime))
+			);
+
+			// Create the event and fill it with the contents received
+			Event event = new Event(calendarId, timespan);
+			event.setDescription(description);
+			event.setTitle(title);
+
+			if(StringUtils.isNotEmpty(participants)) {
+				String[] emailList = participants.split("\\s*,\\s*");
+				List<Participant> participantList = new ArrayList<>();
+				for(String email : emailList) {
+					participantList.add(new Participant(email));
+				}
+				event.setParticipants(participantList);
+			}
+
+			// Save the event
+			return GSON.toJson(nylas.events().save(event, true));
+		});
 	}
 
 	/**
