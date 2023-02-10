@@ -177,61 +177,6 @@ public class Server {
 			response.type("application/json");
 		});
 	}
-//	private static void ayo() {
-//		post("/nylas/read-events", (request, response) -> {
-//			User user = isAuthenticated(request);
-//
-//			String calendarId = request.queryParams("calendar_id");
-//			String startsAfter = request.queryParams("starts_after");
-//			String endsBefore = request.queryParams("ends_before");
-//			String limit = request.queryParams("limit");
-//
-//			// Create a Nylas API client instance using the user's access token
-//			NylasAccount nylas = new NylasClient().account(user.getAccessToken());
-//
-//			// Set the constraints
-//			EventQuery eventQuery = new EventQuery()
-//					.calendarId(calendarId)
-//					.startsAfter(Instant.ofEpochSecond(Long.parseLong(startsAfter)))
-//					.endsBefore(Instant.ofEpochSecond(Long.parseLong(endsBefore)))
-//					.limit(Integer.parseInt(limit));
-//
-//			// Fetch the events with the constraints
-//			RemoteCollection<Event> events = nylas.events().list(eventQuery);
-//			ArrayList<String> eventList = new ArrayList<>();
-//
-//			events.forEach(event -> eventList.add(GSON.toJson(event)));
-//			return eventList;
-//		});
-//
-//		get("/nylas/read-calendars", (request, response) -> {
-//			User user = isAuthenticated(request);
-//
-//			// Create a Nylas API client instance using the user's access token
-//			NylasAccount nylas = new NylasClient().account(user.getAccessToken());
-//
-//			/*
-//			 * Retrieve the first 5 threads from the Nylas API
-//			 * chaining expanded gives us the full thread object
-//			 */
-//			RemoteCollection<Calendar> calendars = nylas.calendars().list();
-//			ArrayList<String> calendarList = new ArrayList<>();
-//
-//			calendars.forEach(thread -> calendarList.add(GSON.toJson(thread)));
-//			return threadList;
-//		});
-//
-//		get("/nylas/create-events", (request, response) -> {
-//			User user = isAuthenticated(request);
-//
-//			// Create a Nylas API client instance using the user's access token
-//			NylasAccount nylas = new NylasClient().account(user.getAccessToken());
-//
-//			String messageId = request.queryParams("id");
-//
-//			return GSON.toJson(nylas.messages().get(messageId));
-//		});
-//	}
 
 	/**
 	 * Class that handles webhook notifications
