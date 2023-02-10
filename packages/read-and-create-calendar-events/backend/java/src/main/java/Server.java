@@ -139,6 +139,21 @@ public class Server {
 			events.forEach(event -> eventList.add(GSON.toJson(event)));
 			return eventList;
 		});
+
+		get("/nylas/read-calendars", (request, response) -> {
+			User user = isAuthenticated(request);
+
+			// Create a Nylas API client instance using the user's access token
+			NylasAccount nylas = new NylasClient().account(user.getAccessToken());
+
+			// Retrieve all the calendars
+			RemoteCollection<Calendar> calendars = nylas.calendars().list();
+			ArrayList<String> calendarList = new ArrayList<>();
+
+			// Return the calendars
+			calendars.forEach(thread -> calendarList.add(GSON.toJson(thread)));
+			return calendarList;
+		});
 	}
 
 	/**
