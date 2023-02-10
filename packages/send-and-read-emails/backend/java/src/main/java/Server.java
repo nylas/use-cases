@@ -124,7 +124,6 @@ public class Server {
 			Draft draft = new Draft();
 
 			// Fill draft with the contents from the payload
-			draft.setFrom(new NameEmail(null, user.getEmailAddress()));
 			draft.setTo(Collections.singletonList(new NameEmail(null, requestBody.get("to"))));
 			draft.setSubject(requestBody.get("subject"));
 			draft.setBody(requestBody.get("body"));
