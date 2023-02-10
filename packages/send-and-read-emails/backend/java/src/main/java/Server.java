@@ -33,12 +33,17 @@ public class Server {
 		// Enable CORS
 		enableCORS();
 
-		// The uri for the frontend
-		String clientUri = dotenv.get("CLIENT_URI", "http://localhost:" + dotenv.get("PORT", "3000"));
-
 		// Initialize an instance of the Nylas SDK using the client credentials
 		NylasApplication application = new NylasClient()
 				.application(dotenv.get("NYLAS_CLIENT_ID"), dotenv.get("NYLAS_CLIENT_SECRET"));
+
+		/*
+		 * Before we start our backend, we should whitelist our frontend as a redirect
+		 * URI to ensure the auth completes
+		 */
+		String clientUri = dotenv.get("CLIENT_URI", "http://localhost:" + dotenv.get("PORT", "3000"));
+		application.addRedirectUri(clientUri);
+		System.out.println("Application whitelisted.");
 
 		Tunnel webhookTunnel = new Tunnel.Builder(application, new HandleNotifications()).build();
 		webhookTunnel.connect();
@@ -76,13 +81,6 @@ public class Server {
 			responsePayload.put("emailAddress", user.getEmailAddress());
 			return GSON.toJson(responsePayload);
 		});
-
-		/*
-		 * Before we start our backend, we should whitelist our frontend as a redirect
-		 * URI to ensure the auth completes
-		 */
-		application.addRedirectUri(clientUri);
-		System.out.println("Application whitelisted.");
 
 		// Load additional routes
 		routes();
