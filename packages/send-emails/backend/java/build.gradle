@@ -1,0 +1,21 @@
+plugins {
+    id 'application'
+}
+
+group 'com.nylas'
+version '1.0-SNAPSHOT'
+
+application {
+    mainClassName = 'Server'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation('com.nylas.sdk:nylas-java-sdk:1.20.1')
+    implementation('com.sparkjava:spark-core:2.9.4')
+    implementation('io.github.cdimascio:dotenv-java:2.3.2')
+    implementation('com.google.code.gson:gson:2.10.1')
+}
