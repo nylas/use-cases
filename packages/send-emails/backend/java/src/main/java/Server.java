@@ -1,7 +1,6 @@
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.nylas.*;
-import com.nylas.Thread;
 import com.nylas.services.Tunnel;
 import com.nylas.Notification.Delta;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -13,7 +12,6 @@ import utils.MockDB;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,10 +43,29 @@ public class Server {
 		application.addRedirectUri(clientUri);
 		System.out.println("Application whitelisted.");
 
+		/*
+		 * Class that handles webhook notifications
+		 */
+		class HandleNotifications implements Tunnel.WebhookHandler {
+			// Handle when a new message is created (sent)
+			@Override
+			public void onMessage(Delta delta) {
+				if(delta.getTrigger().equals(Webhook.Trigger.MessageCreated.getName())) {
+					System.out.println("Webhook trigger received, message created. Details: " + delta);
+				} else if(delta.getTrigger().equals(Webhook.Trigger.AccountConnected.getName())) {
+					System.out.println("Webhook trigger received, account connected. Details: " + delta);
+				}
+			}
+		}
+
 		// Start the Nylas webhook
 		Tunnel webhookTunnel = new Tunnel.Builder(application, new HandleNotifications()).build();
 		webhookTunnel.connect();
 
+		/*
+		 * '/nylas/generate-auth-url': This route builds the URL for
+		 * authenticating users to your Nylas application via Hosted Authentication
+		 */
 		post("/nylas/generate-auth-url", (request, response) -> {
 			Map<String, String> requestBody = GSON.fromJson(request.body(), JSON_MAP);
 
@@ -132,7 +149,7 @@ public class Server {
 			Message message = nylas.drafts().send(draft);
 
 			// Return the sent message object
-			return GSON.toJson(message);
+			return message.toJSON();
 		});
 	}
 
@@ -176,20 +193,5 @@ public class Server {
 			response.header("Access-Control-Allow-Headers", "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept, Authorization");
 			response.type("application/json");
 		});
-	}
-
-	/**
-	 * Class that handles webhook notifications
-	 */
-	static class HandleNotifications implements Tunnel.WebhookHandler {
-		@Override
-		public void onMessage(Delta delta) {
-			// Handle when a new message is created (sent)
-			if(delta.getTrigger().equals(Webhook.Trigger.MessageCreated.getName())) {
-				System.out.println("Webhook trigger received, message created. Details: " + delta);
-			} else if(delta.getTrigger().equals(Webhook.Trigger.AccountConnected.getName())) {
-				System.out.println("Webhook trigger received, account connected. Details: " + delta);
-			}
-		}
 	}
 }

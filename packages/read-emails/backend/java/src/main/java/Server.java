@@ -44,10 +44,29 @@ public class Server {
 		application.addRedirectUri(clientUri);
 		System.out.println("Application whitelisted.");
 
+		/*
+		 * Class that handles webhook notifications
+		 */
+		class HandleNotifications implements Tunnel.WebhookHandler {
+			// Handle when a new message is created (sent)
+			@Override
+			public void onMessage(Delta delta) {
+				if(delta.getTrigger().equals(Webhook.Trigger.MessageCreated.getName())) {
+					System.out.println("Webhook trigger received, message created. Details: " + delta);
+				} else if(delta.getTrigger().equals(Webhook.Trigger.AccountConnected.getName())) {
+					System.out.println("Webhook trigger received, account connected. Details: " + delta);
+				}
+			}
+		}
+
 		// Start the Nylas webhook
 		Tunnel webhookTunnel = new Tunnel.Builder(application, new HandleNotifications()).build();
 		webhookTunnel.connect();
 
+		/*
+		 * '/nylas/generate-auth-url': This route builds the URL for
+		 * authenticating users to your Nylas application via Hosted Authentication
+		 */
 		post("/nylas/generate-auth-url", (request, response) -> {
 			Map<String, String> requestBody = GSON.fromJson(request.body(), JSON_MAP);
 
@@ -125,7 +144,7 @@ public class Server {
 			RemoteCollection<Thread> threads = nylas.threads().expanded(new ThreadQuery().limit(5));
 			ArrayList<String> threadList = new ArrayList<>();
 
-			threads.forEach(thread -> threadList.add(GSON.toJson(thread)));
+			threads.forEach(thread -> threadList.add(thread.toJSON()));
 			return threadList;
 		});
 
@@ -137,7 +156,7 @@ public class Server {
 
 			String messageId = request.queryParams("id");
 
-			return GSON.toJson(nylas.messages().get(messageId));
+			return nylas.messages().get(messageId).toJSON();
 		});
 
 		get("/nylas/file", (request, response) -> {
@@ -198,20 +217,5 @@ public class Server {
 			response.header("Access-Control-Allow-Headers", "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept, Authorization");
 			response.type("application/json");
 		});
-	}
-
-	/**
-	 * Class that handles webhook notifications
-	 */
-	static class HandleNotifications implements Tunnel.WebhookHandler {
-		@Override
-		public void onMessage(Delta delta) {
-			// Handle when a new message is created (sent)
-			if(delta.getTrigger().equals(Webhook.Trigger.MessageCreated.getName())) {
-				System.out.println("Webhook trigger received, message created. Details: " + delta);
-			} else if(delta.getTrigger().equals(Webhook.Trigger.AccountConnected.getName())) {
-				System.out.println("Webhook trigger received, account connected. Details: " + delta);
-			}
-		}
 	}
 }
