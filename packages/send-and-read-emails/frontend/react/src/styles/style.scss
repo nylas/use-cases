@@ -116,7 +116,7 @@ button {
   display: flex;
   align-items: center;
   gap: $spacing-16;
-  animation: fadeIn 0.5s, fadeOut 5s 2.5s;
+  animation: fadeIn 0.5s, fadeOut 2.8s;
 
   &.success {
     background-color: $color-green-50;
