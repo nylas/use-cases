@@ -42,10 +42,17 @@ export const displayMeetingTime = (timeframe) => {
   } - ${endTime}`;
 };
 
-export const getLocalDateString = (date) => {
-  const localDate = date.toLocaleDateString('en-CA', { hourCycle: 'h23' });
-  const localTime = date.toLocaleTimeString('en-CA', { hourCycle: 'h23' });
-  return localDate + 'T' + localTime.split(':').slice(0, 2).join(':');
+export const convertUTCDate = (date) => {
+  const utcDate = new Date(
+    date.getTime() + date.getTimezoneOffset() * 60 * 1000
+  );
+
+  const offset = date.getTimezoneOffset() / 60;
+  const hours = date.getHours();
+
+  utcDate.setHours(hours - offset);
+
+  return utcDate;
 };
 
 export const applyTimezone = (date) => {
@@ -56,13 +63,13 @@ export const applyTimezone = (date) => {
 
 export const getTodaysDateTimestamp = () => {
   const date = new Date();
-  return applyTimezone(getLocalDateString(date));
+  return applyTimezone(convertUTCDate(date));
 };
 
 export const getSevenDaysFromTodayDateTimestamp = () => {
   const date = new Date();
   date.setDate(date.getDate() + 7);
-  return applyTimezone(getLocalDateString(new Date(date)));
+  return applyTimezone(convertUTCDate(new Date(date)));
 };
 
 export const getEventDate = (calendarEvent) => {
@@ -86,17 +93,17 @@ export const getTimezoneCode = () => {
 
 export const getDefaultEventStartTime = () => {
   const startDate = getNextHalfHour();
-  return getLocalDateString(startDate);
+  return convertUTCDate(startDate);
 };
 
 export const getDefaultEventEndTime = () => {
   const startDate = getNextHalfHour();
   const endDate = getOneHourFromPassedTimestamp(startDate);
-  return getLocalDateString(endDate);
+  return convertUTCDate(endDate);
 };
 
-export const getMinimumEventEndTime = (dateString) => {
-  const date = new Date(dateString);
+export const getMinimumEventEndTime = (inputDate) => {
+  const date = new Date(inputDate);
   date.setMinutes(date.getMinutes() + 1);
   return date;
 };
