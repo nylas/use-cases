@@ -45,10 +45,27 @@ public class Server {
 		application.addRedirectUri(clientUri);
 		System.out.println("Application whitelisted.");
 
+		/*
+		 * Class that handles webhook notifications
+		 */
+		class HandleNotifications implements Tunnel.WebhookHandler {
+			// Handle when an event is created
+			@Override
+			public void onMessage(Delta delta) {
+				if(delta.getTrigger().equals(Webhook.Trigger.EventCreated.getName())) {
+					System.out.println("Webhook trigger received, event created. Details: " + delta);
+				}
+			}
+		}
+
 		// Start the Nylas webhook
 		Tunnel webhookTunnel = new Tunnel.Builder(application, new HandleNotifications()).build();
 		webhookTunnel.connect();
 
+		/*
+		 * '/nylas/generate-auth-url': This route builds the URL for
+		 * authenticating users to your Nylas application via Hosted Authentication
+		 */
 		post("/nylas/generate-auth-url", (request, response) -> {
 			Map<String, String> requestBody = GSON.fromJson(request.body(), JSON_MAP);
 
@@ -234,18 +251,5 @@ public class Server {
 			response.header("Access-Control-Allow-Headers", "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept, Authorization");
 			response.type("application/json");
 		});
-	}
-
-	/**
-	 * Class that handles webhook notifications
-	 */
-	static class HandleNotifications implements Tunnel.WebhookHandler {
-		@Override
-		public void onMessage(Delta delta) {
-			// Handle when an event is created
-			if(delta.getTrigger().equals(Webhook.Trigger.EventCreated.getName())) {
-				System.out.println("Webhook trigger received, event created. Details: " + delta);
-			}
-		}
 	}
 }
