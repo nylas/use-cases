@@ -1,7 +1,6 @@
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.nylas.*;
-import com.nylas.Thread;
 import com.nylas.services.Tunnel;
 import com.nylas.Notification.Delta;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -13,7 +12,6 @@ import utils.MockDB;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -132,7 +130,7 @@ public class Server {
 			Message message = nylas.drafts().send(draft);
 
 			// Return the sent message object
-			return GSON.toJson(message);
+			return message.toJSON();
 		});
 	}
 

@@ -136,7 +136,7 @@ public class Server {
 			ArrayList<String> eventList = new ArrayList<>();
 
 			// Return the events
-			events.forEach(event -> eventList.add(GSON.toJson(event)));
+			events.forEach(event -> eventList.add(event.toJSON()));
 			return eventList;
 		});
 
@@ -151,7 +151,7 @@ public class Server {
 			ArrayList<String> calendarList = new ArrayList<>();
 
 			// Return the calendars
-			calendars.forEach(thread -> calendarList.add(GSON.toJson(thread)));
+			calendars.forEach(thread -> calendarList.add(thread.toJSON()));
 			return calendarList;
 		});
 
@@ -190,7 +190,7 @@ public class Server {
 			}
 
 			// Save the event
-			return GSON.toJson(nylas.events().save(event, true));
+			return nylas.events().save(event, true).toJSON();
 		});
 	}
 

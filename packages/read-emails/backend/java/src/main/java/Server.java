@@ -125,7 +125,7 @@ public class Server {
 			RemoteCollection<Thread> threads = nylas.threads().expanded(new ThreadQuery().limit(5));
 			ArrayList<String> threadList = new ArrayList<>();
 
-			threads.forEach(thread -> threadList.add(GSON.toJson(thread)));
+			threads.forEach(thread -> threadList.add(thread.toJSON()));
 			return threadList;
 		});
 
@@ -137,7 +137,7 @@ public class Server {
 
 			String messageId = request.queryParams("id");
 
-			return GSON.toJson(nylas.messages().get(messageId));
+			return nylas.messages().get(messageId).toJSON();
 		});
 
 		get("/nylas/file", (request, response) -> {

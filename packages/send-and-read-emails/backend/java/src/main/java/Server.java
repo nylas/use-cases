@@ -128,11 +128,8 @@ public class Server {
 			draft.setSubject(requestBody.get("subject"));
 			draft.setBody(requestBody.get("body"));
 
-			// Send the draft
-			Message message = nylas.drafts().send(draft);
-
-			// Return the sent message object
-			return GSON.toJson(message);
+			// Send the draft and return the message
+			return nylas.drafts().send(draft).toJSON();
 		});
 
 		get("/nylas/read-emails", (request, response) -> {
@@ -160,7 +157,7 @@ public class Server {
 
 			String messageId = request.queryParams("id");
 
-			return GSON.toJson(nylas.messages().get(messageId));
+			return nylas.messages().get(messageId).toJSON();
 		});
 
 		get("/nylas/file", (request, response) -> {
