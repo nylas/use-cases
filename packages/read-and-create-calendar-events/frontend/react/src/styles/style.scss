@@ -69,8 +69,7 @@ button {
   display: flex;
   align-items: center;
   gap: calc(#{$spacing-16} + #{$spacing-4}/ 2);
-  -webkit-animation: fadeIn 0.5s, fadeOut 0.5s 2.5s;
-  animation: fadeIn 0.5s, fadeOut 0.5s 2.5s;
+  animation: fadeIn 0.5s, fadeOut 2.8s;
 
   &.success {
     background-color: $color-green-50;
