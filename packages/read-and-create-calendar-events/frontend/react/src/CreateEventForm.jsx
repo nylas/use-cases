@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   applyTimezone,
-  getLocalDateString,
+  convertUTCDate,
   getDefaultEventStartTime,
   getDefaultEventEndTime,
   getMinimumEventEndTime,
@@ -58,8 +58,8 @@ function CreateEventForm({
       console.log('Event created:', data);
 
       // reset form fields
-      setStartTime(getLocalDateString(new Date()));
-      setEndTime(getLocalDateString(new Date()));
+      setStartTime(convertUTCDate(new Date()));
+      setEndTime(convertUTCDate(new Date()));
       setTitle('');
       setDescription('');
       setShowCreateEventForm(false);
@@ -112,7 +112,7 @@ function CreateEventForm({
                 setStartTime(event.target.value);
               }}
               value={startTime}
-              min={getLocalDateString(now)}
+              min={convertUTCDate(now)}
             />
           </div>
           <div className="field-container">
@@ -124,7 +124,7 @@ function CreateEventForm({
                 setEndTime(event.target.value);
               }}
               value={endTime}
-              min={getLocalDateString(getMinimumEventEndTime(startTime))}
+              min={convertUTCDate(getMinimumEventEndTime(startTime))}
             />
           </div>
         </div>
