@@ -118,6 +118,7 @@ button {
   gap: $spacing-16;
   animation: fadeIn 0.5s, fadeOut 5.6s cubic-bezier(0.76, 0, 0.24, 1);
   min-width: calc(#{$spacing-24} * 14);
+  z-index: 1;
 
   &.success {
     background-color: $color-green-50;
