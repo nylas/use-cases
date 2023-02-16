@@ -116,7 +116,9 @@ button {
   display: flex;
   align-items: center;
   gap: $spacing-16;
-  animation: fadeIn 0.5s, fadeOut 2.8s;
+  animation: fadeIn 0.5s, fadeOut 5.6s cubic-bezier(0.76, 0, 0.24, 1);
+  min-width: calc(#{$spacing-24} * 14);
+  z-index: 1;
 
   &.success {
     background-color: $color-green-50;
@@ -126,9 +128,14 @@ button {
     background-color: $color-red-50;
   }
 
-  img.close {
-    margin-left: $spacing-48;
-    cursor: pointer;
+  .dismiss-container {
+    display: flex;
+    flex: 1;
+    justify-content: flex-end;
+
+    img.close {
+      cursor: pointer;
+    }
   }
 }
 
@@ -282,6 +289,7 @@ section.login {
     }
   }
 }
+
 .app-card {
   width: 100%;
   height: 100%;

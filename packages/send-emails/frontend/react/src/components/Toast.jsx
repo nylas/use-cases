@@ -7,11 +7,12 @@ import { useEffect } from 'react';
 
 function Toast({ toastNotification, setToastNotification }) {
   useEffect(() => {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       if (toastNotification) {
         setToastNotification('');
       }
-    }, 3000);
+    }, 5500);
+    return () => clearTimeout(timer);
   }, [toastNotification]);
 
   const icons = { success: SuccessIcon, error: ErrorIcon, close: CloseIcon };
@@ -25,12 +26,14 @@ function Toast({ toastNotification, setToastNotification }) {
       <div className={`toast ${toastNotification}`}>
         <img src={icons[toastNotification]} alt={toastNotification} />
         {message[toastNotification]}
-        <img
-          src={icons.close}
-          alt="Close"
-          className="close"
-          onClick={() => setToastNotification('')}
-        />
+        <div className="dismiss-container">
+          <img
+            src={icons.close}
+            alt="Close"
+            className="close"
+            onClick={() => setToastNotification('')}
+          />
+        </div>
       </div>
     )
   );
