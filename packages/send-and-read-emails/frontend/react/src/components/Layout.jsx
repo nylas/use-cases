@@ -40,11 +40,12 @@ const Layout = ({
           toastNotification={toastNotification}
           setToastNotification={setToastNotification}
         />
-        {showMenu && !toastNotification && (
+        {showMenu && (
           <div className="menu">
             <button
               onClick={handleRefresh}
-              disabled={isLoading || isDisconnecting}
+              disabled={isLoading || isDisconnecting || toastNotification}
+              className={toastNotification ? 'hidden' : ''}
             >
               <div className={`menu-icon ${isLoading ? 'syncing' : ''}`}>
                 <IconSync />
@@ -56,7 +57,7 @@ const Layout = ({
             <div className="hidden-mobile">·</div>
             <button
               onClick={handleDisconnect}
-              disabled={isLoading || isDisconnecting}
+              disabled={isLoading || isDisconnecting || toastNotification}
             >
               <div className="menu-icon">
                 <IconLogout />
