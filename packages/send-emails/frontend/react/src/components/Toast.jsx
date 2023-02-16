@@ -26,12 +26,14 @@ function Toast({ toastNotification, setToastNotification }) {
       <div className={`toast ${toastNotification}`}>
         <img src={icons[toastNotification]} alt={toastNotification} />
         {message[toastNotification]}
-        <img
-          src={icons.close}
-          alt="Close"
-          className="close"
-          onClick={() => setToastNotification('')}
-        />
+        <div className="dismiss-container">
+          <img
+            src={icons.close}
+            alt="Close"
+            className="close"
+            onClick={() => setToastNotification('')}
+          />
+        </div>
       </div>
     )
   );

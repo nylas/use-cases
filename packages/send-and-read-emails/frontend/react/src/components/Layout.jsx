@@ -45,7 +45,6 @@ const Layout = ({
             <button
               onClick={handleRefresh}
               disabled={isLoading || isDisconnecting || toastNotification}
-              className={toastNotification ? 'hidden' : ''}
             >
               <div className={`menu-icon ${isLoading ? 'syncing' : ''}`}>
                 <IconSync />

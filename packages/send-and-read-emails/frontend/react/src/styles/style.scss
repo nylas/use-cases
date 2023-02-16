@@ -117,7 +117,7 @@ button {
   align-items: center;
   gap: $spacing-16;
   animation: fadeIn 0.5s, fadeOut 5.6s cubic-bezier(0.76, 0, 0.24, 1);
-  min-width: calc($spacing-24 * 13);
+  min-width: calc(#{$spacing-24} * 14);
 
   &.success {
     background-color: $color-green-50;
