@@ -11,7 +11,7 @@ function Toast({ toastNotification, setToastNotification }) {
       if (toastNotification) {
         setToastNotification('');
       }
-    }, 3000);
+    }, 5500);
   }, [toastNotification]);
 
   const icons = { success: SuccessIcon, error: ErrorIcon, close: CloseIcon };
