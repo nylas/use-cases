@@ -7,11 +7,12 @@ import { useEffect } from 'react';
 
 function Toast({ toastNotification, setToastNotification }) {
   useEffect(() => {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       if (toastNotification) {
         setToastNotification('');
       }
-    }, 3000);
+    }, 5500);
+    return () => clearTimeout(timer);
   }, [toastNotification]);
 
   const icons = { success: SuccessIcon, error: ErrorIcon, close: CloseIcon };
