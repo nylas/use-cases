@@ -73,7 +73,7 @@ public class Server {
 					.urlBuilder()
 					.loginHint(requestBody.get("email_address"))
 					.redirectUri(clientUri + requestBody.get("success_url"))
-					.scopes(Scope.EMAIL_READ_ONLY, Scope.EMAIL_MODIFY, Scope.EMAIL_SEND)
+					.scopes(Scope.EMAIL_MODIFY, Scope.EMAIL_SEND)
 					.buildUrl();
 		});
 
