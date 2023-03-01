@@ -30,7 +30,7 @@ The minimum required Node version is `v18.0.0`. As a quick check, try running `n
 
 ### Python
 
-If choosing a `python` backend for your demo application, please make sure you have `python 3.7` or higher installed. Check your installation with:
+If choosing a `python` backend for your demo application, please make sure you have `python 3.7` or later installed. Check your installation with:
 
 ```
 python3 --version

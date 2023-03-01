@@ -18,6 +18,7 @@ node -v
 If the command doesn't return a version, you probably don't have Node installed.  You can either visit [nodejs.org](https://nodejs.org/en/) to download and set up Node v18 or later on your machine, or if you use a version manager for Node, use it to install Node 18.
 
 The minimum required Node version is `v18.0.0`. As a quick check, try running `node -v` again to confirm the version. You may need to restart your terminal for the changes to take effect.
+
 ## Running this app independently
 
 1. Confirm `.env` configuration
@@ -43,4 +44,5 @@ The minimum required Node version is `v18.0.0`. As a quick check, try running `n
     ```
     npm start
     ```
+
 4. Confirm the server is running on [http://localhost:9000](http://localhost:9000).

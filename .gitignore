@@ -4,6 +4,7 @@ node_modules/
 datastore.json
 .idea
 .husky/_
+.vscode
 
 # python
 __pycache__/
