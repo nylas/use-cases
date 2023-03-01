@@ -36,12 +36,12 @@ public class Server {
 				.application(dotenv.get("NYLAS_CLIENT_ID"), dotenv.get("NYLAS_CLIENT_SECRET"));
 
 		/*
-		 * Before we start our backend, we should whitelist our frontend as a redirect
+		 * Before we start our backend, we should register our frontend as a redirect
 		 * URI to ensure the auth completes
 		 */
 		String clientUri = dotenv.get("CLIENT_URI", "http://localhost:" + dotenv.get("PORT", "3000"));
 		application.addRedirectUri(clientUri);
-		System.out.println("Application whitelisted.");
+		System.out.println("Application registered.");
 
 		/*
 		 * Class that handles webhook notifications
