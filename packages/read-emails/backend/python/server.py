@@ -78,7 +78,7 @@ def build_auth_url():
     auth_url = nylas.authentication_url(
         (CLIENT_URI or "") + request_body["success_url"],
         login_hint=request_body["email_address"],
-        scopes=['email.read_only'],
+        scopes=['email.modify'],
         state=None,
     )
 

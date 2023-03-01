@@ -80,7 +80,7 @@ post '/nylas/generate-auth-url' do
   # Use the SDK method to generate a Nylas Hosted Authentication URL
   auth_url = nylas.authentication_url(
     redirect_uri: CLIENT_URI + request_body['success_url'],
-    scopes: ['email.send', 'email.modify', 'email.read_only'],
+    scopes: ['email.send', 'email.modify'],
     login_hint: request_body['email_address'],
     state: nil
   )
