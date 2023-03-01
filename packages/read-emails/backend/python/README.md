@@ -4,7 +4,7 @@ An implementation with Flask.
 
 ## Requirements
 
-- Python 3.7 or greater
+- Python 3.7 or later
 - [Configured .env file](../../../../README.md)
 
 ### Python set up

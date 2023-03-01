@@ -4,7 +4,7 @@ An implementation with Node Express.
 
 ## Requirements
 
-- Node 18.0.0 or greater
+- Node 18.0.0 or later
 - Configured .env file
 
 ### Checking the Node.js version

@@ -4,7 +4,7 @@ An implementation with React.
 
 ## Requirements
 
-- Node 18.0.0 or greater
+- Node 18.0.0 or later
 
 ## Running this app independently
 
