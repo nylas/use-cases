@@ -7,6 +7,14 @@ An implementation with Flask.
 - Python 3.7 or greater
 - [Configured .env file](../../../../README.md)
 
+### Python set up
+
+If you use a `python` backend for your demo application, make sure you have `python 3.7` or later installed. You can check what version you have by running:
+
+```
+python3 --version
+```
+
 ## Running this app independently
 
 1. Confirm `.env` configuration
