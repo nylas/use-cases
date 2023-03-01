@@ -73,7 +73,7 @@ expressBinding.startDevelopmentWebsocket().then((webhookDetails) => {
   console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id);
 });
 
-// Before we start our backend, we should whitelist our frontend
+// Before we start our backend, we should register our frontend
 // as a redirect URI to ensure the auth completes
 nylasClient
   .application({
@@ -81,7 +81,7 @@ nylasClient
   })
   .then((applicationDetails) => {
     console.log(
-      'Application whitelisted. Application Details: ',
+      'Application registered. Application Details: ',
       JSON.stringify(applicationDetails)
     );
   });

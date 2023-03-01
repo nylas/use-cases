@@ -34,13 +34,13 @@ nylas = Nylas::API.new(
   app_secret: ENV['NYLAS_CLIENT_SECRET']
 )
 
-# Before we start our backend, we should whitelist our frontend
+# Before we start our backend, we should register our frontend
 # as a redirect URI to ensure the auth completes
 CLIENT_URI = ENV.fetch('CLIENT_URI') { "http://localhost:#{ENV.fetch('PORT', 3000)}" }
 updated_application_details = nylas.update_application_details({
                                                                  redirect_uris: [CLIENT_URI]
                                                                })
-p "Application whitelisted. Application details: #{updated_application_details.to_h}"
+p "Application registered. Application details: #{updated_application_details.to_h}"
 
 # Run a webhook to receive real-time updates from the Nylas API.
 # In this example, webhook open and error events and the messages received from the API are printed to the console.

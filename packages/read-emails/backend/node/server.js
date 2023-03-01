@@ -24,7 +24,7 @@ Nylas.config({
   clientSecret: process.env.NYLAS_CLIENT_SECRET,
 });
 
-// Before we start our backend, we should whitelist our frontend
+// Before we start our backend, we should register our frontend
 // as a redirect URI to ensure the auth completes
 const CLIENT_URI =
   process.env.CLIENT_URI || `http://localhost:${process.env.PORT || 3000}`;
@@ -32,7 +32,7 @@ Nylas.application({
   redirectUris: [CLIENT_URI],
 }).then((applicationDetails) => {
   console.log(
-    'Application whitelisted. Application Details: ',
+    'Application registered. Application Details: ',
     JSON.stringify(applicationDetails)
   );
 });

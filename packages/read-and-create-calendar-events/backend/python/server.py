@@ -17,11 +17,11 @@ nylas = APIClient(
     os.environ.get("NYLAS_CLIENT_SECRET"),
 )
 
-# Before we start our backend, we should whitelist our frontend
+# Before we start our backend, we should register our frontend
 # as a redirect URI to ensure the auth completes
 CLIENT_URI = 'http://localhost:3000'
 updated_application_details = nylas.update_application_details(redirect_uris=[CLIENT_URI])
-print('Application whitelisted. Application Details: ', updated_application_details)
+print('Application registered. Application Details: ', updated_application_details)
 
 def run_webhook():
     """
