@@ -62,7 +62,7 @@ app.post('/nylas/generate-auth-url', express.json(), async (req, res) => {
   const authUrl = Nylas.urlForAuthentication({
     loginHint: body.email_address,
     redirectURI: (CLIENT_URI || '') + body.success_url,
-    scopes: [Scope.EmailReadOnly],
+    scopes: [Scope.EmailModify],
   });
 
   return res.send(authUrl);
