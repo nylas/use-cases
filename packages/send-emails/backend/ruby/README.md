@@ -1,36 +1,54 @@
-# Send emails
+# Send emails Nylas sample app
 
-An implementation with [Sinatra](http://sinatrarb.com/).
+A Ruby implementation with [Sinatra](http://sinatrarb.com/).
 
 ## Requirements
 
-- Ruby
-- [Configured .env file](../../../../README.md)
+- Ruby 3.0 or later (Mac users [see here for more info](#troubleshooting-for-mac-users))
+- [a .env file with your Quickstart app secrets](#set-up-your-env-file)
 
 ## Running this app independently
 
-1. Confirm `.env` configuration
+### Set up your `.env` file
 
-Head over to your Quickstart Application on the Nylas Dashboard for a copy of your `client_id` and `client_secret`.
+Go to the Nylas Dashboard, and choose the Quickstart Application.
 
-Ensure the client_id and client_secret variables are configured in `.env` in this directory.
+Click **App Settings** to see the `client_id` and `client_secret` for the Quickstart app.
+
+Add these to a `.env` in this directory as in the example below.
 
 ```yaml
-# Nylas application keys - see https://developer.nylas.com/docs/the-basics/authentication/authorizing-api-requests/#sdk-authentication
+# Nylas application keys - see https://developer.nylas.com/docs/developer-guide/authentication/authorizing-api-requests/#sdk-authentication
 CLIENT_ID=client_id...
 CLIENT_SECRET=client_secret...
 ```
 
-2. Install required dependencies
+### Install Ruby dependencies
 
-```
+Run the following command to install the Ruby dependencies for this sample app.
+
+```bash
 bundle install
 ```
 
-3. Run the server locally
+The `Gemfile` in this sample already includes the Nylas package. If you were installing this on your own app, you would add the package as a dependency by running:
 
-```
+`gem install nylas`
+
+### Run the backend server locally
+
+Start the backend server before you start the frontend. You will need two terminal sessions so you can run both at the same time.
+
+```bash
 ruby server.rb
 ```
 
-4. Your server is now running on `localhost:9000`! Make API calls from the front end demo application.
+Your backend server is now running on `localhost:9000` and you can now make API calls, or start a frontend for this sample application to run on top of it.
+(See the README file in the `frontend` folder for more information.)
+
+## Troubleshooting for Mac users
+
+Apple's macOS includes an older version (2.6x) of Ruby that's used for system operations, and which can't be easily modified. If you're using a Mac, you should install a Ruby Version Manager such as [RVM](https://rvm.io/) or [Frum](https://github.com/TaKO8Ki/frum) so you can install a separate Ruby version, and switch between versions easily.
+
+To check which version of Ruby you have installed, run `ruby -v`.
+If the output is a version of 2.6, you should install a separate Ruby version later than 3.0.
