@@ -28,7 +28,7 @@ GEM
       yajl-ruby (~> 1.2, >= 1.2.1)
     puma (6.0.2)
       nio4r (~> 2.0)
-    rack (2.2.6.2)
+    rack (2.2.6.3)
     rack-protection (3.0.5)
       rack
     rest-client (2.1.0)
@@ -56,6 +56,7 @@ GEM
 
 PLATFORMS
   x86_64-darwin-22
+  x86_64-linux
 
 DEPENDENCIES
   dotenv
