@@ -25,6 +25,11 @@ Nylas.config({
   clientSecret: process.env.NYLAS_CLIENT_SECRET,
 });
 
+// Configure with the API for your region
+Nylas.config({
+  apiServer: process.env.NYLAS_API_SERVER,
+});
+
 // Before we start our backend, we should register our frontend as a redirect
 // URI to ensure the auth completes
 const CLIENT_URI =
