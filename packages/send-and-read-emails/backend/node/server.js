@@ -23,10 +23,6 @@ const port = 9000;
 Nylas.config({
   clientId: process.env.NYLAS_CLIENT_ID,
   clientSecret: process.env.NYLAS_CLIENT_SECRET,
-});
-
-// Configure with the API for your region
-Nylas.config({
   apiServer: process.env.NYLAS_API_SERVER,
 });
 
