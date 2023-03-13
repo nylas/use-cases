@@ -22,6 +22,7 @@ public class Server {
 	public static final Type JSON_MAP = new TypeToken<Map<String, String>>(){}.getType();
 	private static final Gson GSON = new Gson();
 	private static final Dotenv dotenv = loadEnv();
+	private static final String NYLAS_API_SERVER = dotenv.get("NYLAS_API_SERVER", "https://api.nylas.com");
 
 	public static void main(String[] args) throws RequestFailedException, IOException, URISyntaxException {
 
@@ -32,7 +33,7 @@ public class Server {
 		enableCORS();
 
 		// Initialize an instance of the Nylas SDK using the client credentials
-		NylasApplication application = new NylasClient(dotenv.get("NYLAS_API_SERVER", "https://api.nylas.com"))
+		NylasApplication application = new NylasClient(NYLAS_API_SERVER)
 				.application(dotenv.get("NYLAS_CLIENT_ID"), dotenv.get("NYLAS_CLIENT_SECRET"));
 
 		/*
@@ -135,7 +136,7 @@ public class Server {
 			Map<String, String> requestBody = new Gson().fromJson(request.body(), JSON_MAP);
 
 			// Create a Nylas API client instance using the user's access token
-			NylasAccount nylas = new NylasClient(dotenv.get("NYLAS_API_SERVER", "https://api.nylas.com"))
+			NylasAccount nylas = new NylasClient(NYLAS_API_SERVER)
 				.account(user.getAccessToken());
 
 			// Create a new draft object

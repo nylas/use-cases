@@ -23,9 +23,10 @@ import static spark.Spark.*;
 public class Server {
 	public static final Type JSON_MAP = new TypeToken<Map<String, String>>(){}.getType();
 	private static final Gson GSON = new Gson();
+	private static Dotenv dotenv = loadEnv();
+	private static String NYLAS_API_SERVER = dotenv.get("NYLAS_API_SERVER", "https://api.nylas.com");
 
 	public static void main(String[] args) throws RequestFailedException, IOException, URISyntaxException {
-		Dotenv dotenv = loadEnv();
 
 		// The port the Spark app will run on
 		port(9000);
@@ -34,7 +35,7 @@ public class Server {
 		enableCORS();
 
 		// Initialize an instance of the Nylas SDK using the client credentials
-		NylasApplication application = new NylasClient(dotenv.get("NYLAS_API_SERVER", "https://api.nylas.com"))
+		NylasApplication application = new NylasClient(NYLAS_API_SERVER)
 				.application(dotenv.get("NYLAS_CLIENT_ID"), dotenv.get("NYLAS_CLIENT_SECRET"));
 
 		/*
@@ -137,7 +138,8 @@ public class Server {
 			Map<String, String> requestBody = new Gson().fromJson(request.body(), JSON_MAP);
 
 			// Create a Nylas API client instance using the user's access token
-			NylasAccount nylas = new NylasClient().account(user.getAccessToken());
+			NylasAccount nylas = new NylasClient(NYLAS_API_SERVER)
+				.account(user.getAccessToken());
 
 			// Create a new draft object
 			Draft draft = new Draft();
@@ -155,7 +157,7 @@ public class Server {
 			User user = isAuthenticated(request);
 
 			// Create a Nylas API client instance using the user's access token
-			NylasAccount nylas = new NylasClient().account(user.getAccessToken());
+			NylasAccount nylas = new NylasClient(NYLAS_API_SERVER).account(user.getAccessToken());
 
 			/*
 			 * Retrieve the first 5 threads from the Nylas API
@@ -172,7 +174,7 @@ public class Server {
 			User user = isAuthenticated(request);
 
 			// Create a Nylas API client instance using the user's access token
-			NylasAccount nylas = new NylasClient().account(user.getAccessToken());
+			NylasAccount nylas = new NylasClient(NYLAS_API_SERVER).account(user.getAccessToken());
 
 			String messageId = request.queryParams("id");
 
@@ -183,7 +185,7 @@ public class Server {
 			User user = isAuthenticated(request);
 
 			// Create a Nylas API client instance using the user's access token
-			NylasAccount nylas = new NylasClient().account(user.getAccessToken());
+			NylasAccount nylas = new NylasClient(NYLAS_API_SERVER).account(user.getAccessToken());
 
 			// Fetch the file from the Nylas API
 			String fileId = request.queryParams("id");
