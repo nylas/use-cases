@@ -21,9 +21,9 @@ import static spark.Spark.*;
 public class Server {
 	public static final Type JSON_MAP = new TypeToken<Map<String, String>>(){}.getType();
 	private static final Gson GSON = new Gson();
+	private static final Dotenv dotenv = loadEnv();
 
 	public static void main(String[] args) throws RequestFailedException, IOException, URISyntaxException {
-		Dotenv dotenv = loadEnv();
 
 		// The port the Spark app will run on
 		port(9000);
@@ -135,7 +135,8 @@ public class Server {
 			Map<String, String> requestBody = new Gson().fromJson(request.body(), JSON_MAP);
 
 			// Create a Nylas API client instance using the user's access token
-			NylasAccount nylas = new NylasClient().account(user.getAccessToken());
+			NylasAccount nylas = new NylasClient(dotenv.get("NYLAS_API_SERVER", "https://api.nylas.com"))
+				.account(user.getAccessToken());
 
 			// Create a new draft object
 			Draft draft = new Draft();
