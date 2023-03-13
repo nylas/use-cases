@@ -32,7 +32,7 @@ public class Server {
 		enableCORS();
 
 		// Initialize an instance of the Nylas SDK using the client credentials
-		NylasApplication application = new NylasClient()
+		NylasApplication application = new NylasClient(dotenv.get("NYLAS_API_SERVER", "https://api.nylas.com"))
 				.application(dotenv.get("NYLAS_CLIENT_ID"), dotenv.get("NYLAS_CLIENT_SECRET"));
 
 		/*

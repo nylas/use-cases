@@ -14,6 +14,7 @@ from nylas.services.tunnel import open_webhook_tunnel
 nylas = APIClient(
     os.environ.get("NYLAS_CLIENT_ID"),
     os.environ.get("NYLAS_CLIENT_SECRET"),
+    api_server = os.environ.get("NYLAS_API_SERVER") or "https://api.nylas.com"
 )
 
 # Before we start our backend, we should register our frontend
