@@ -1,7 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    concurrent-ruby (1.2.2)
+    concurrent-ruby (1.2.0)
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
     dotenv (2.8.1)
@@ -15,7 +15,7 @@ GEM
     json (2.6.3)
     mime-types (3.4.1)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2023.0218.1)
+    mime-types-data (3.2022.0105)
     mustermann (3.0.0)
       ruby2_keywords (~> 0.0.1)
     netrc (0.11.0)
@@ -26,9 +26,9 @@ GEM
       rest-client (>= 2.0, < 3.0)
       tzinfo (~> 2.0.5)
       yajl-ruby (~> 1.2, >= 1.2.1)
-    puma (6.1.1)
+    puma (6.0.2)
       nio4r (~> 2.0)
-    rack (2.2.6.3)
+    rack (2.2.6.2)
     rack-protection (3.0.5)
       rack
     rest-client (2.1.0)
@@ -43,7 +43,7 @@ GEM
       rack-protection (= 3.0.5)
       tilt (~> 2.0)
     sinatra-cross_origin (0.3.2)
-    tilt (2.1.0)
+    tilt (2.0.11)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unf (0.1.4)
