@@ -23,6 +23,7 @@ const port = 9000;
 Nylas.config({
   clientId: process.env.NYLAS_CLIENT_ID,
   clientSecret: process.env.NYLAS_CLIENT_SECRET,
+  apiServer: process.env.NYLAS_API_SERVER,
 });
 
 // Before we start our backend, we should register our frontend as a redirect

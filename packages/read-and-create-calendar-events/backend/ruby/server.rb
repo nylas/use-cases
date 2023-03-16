@@ -31,7 +31,8 @@ set :port, 9000
 # Initialize the Nylas API client using the client id and secret specified in the .env file
 nylas = Nylas::API.new(
   app_id: ENV['NYLAS_CLIENT_ID'],
-  app_secret: ENV['NYLAS_CLIENT_SECRET']
+  app_secret: ENV['NYLAS_CLIENT_SECRET'],
+  api_server: ENV['NYLAS_API_SERVER'] || 'https://api.nylas.com',
 )
 
 # Before we start our backend, we should register our frontend

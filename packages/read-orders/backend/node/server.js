@@ -28,6 +28,7 @@ const port = 9000;
 const nylasClient = new Nylas({
   clientId: process.env.NYLAS_CLIENT_ID,
   clientSecret: process.env.NYLAS_CLIENT_SECRET,
+  apiServer: process.env.NYLAS_API_SERVER,
 });
 
 // The uri for the frontend

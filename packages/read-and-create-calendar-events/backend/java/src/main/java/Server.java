@@ -23,10 +23,11 @@ import static spark.Spark.*;
 public class Server {
 	public static final Type JSON_MAP = new TypeToken<Map<String, String>>(){}.getType();
 	private static final Gson GSON = new Gson();
+	private static final Dotenv dotenv = loadEnv();
+	private static final String NYLAS_API_SERVER = dotenv.get("NYLAS_API_SERVER", "https://api.nylas.com");
 
 	public static void main(String[] args) throws RequestFailedException, IOException, URISyntaxException {
-		Dotenv dotenv = loadEnv();
-
+		
 		// The port the Spark app will run on
 		port(9000);
 
@@ -34,7 +35,7 @@ public class Server {
 		enableCORS();
 
 		// Initialize an instance of the Nylas SDK using the client credentials
-		NylasApplication application = new NylasClient()
+		NylasApplication application = new NylasClient(NYLAS_API_SERVER)
 				.application(dotenv.get("NYLAS_CLIENT_ID"), dotenv.get("NYLAS_CLIENT_SECRET"));
 
 		/*
@@ -139,7 +140,7 @@ public class Server {
 			String limit = request.queryParams("limit");
 
 			// Create a Nylas API client instance using the user's access token
-			NylasAccount nylas = new NylasClient().account(user.getAccessToken());
+			NylasAccount nylas = new NylasClient(NYLAS_API_SERVER).account(user.getAccessToken());
 
 			// Set the constraints
 			EventQuery eventQuery = new EventQuery()
@@ -161,7 +162,8 @@ public class Server {
 			User user = isAuthenticated(request);
 
 			// Create a Nylas API client instance using the user's access token
-			NylasAccount nylas = new NylasClient().account(user.getAccessToken());
+			NylasAccount nylas = new NylasClient(NYLAS_API_SERVER)
+				.account(user.getAccessToken());
 
 			// Retrieve all the calendars
 			RemoteCollection<Calendar> calendars = nylas.calendars().list();
@@ -184,7 +186,7 @@ public class Server {
 			String participants = requestBody.get("participants");
 
 			// Create a Nylas API client instance using the user's access token
-			NylasAccount nylas = new NylasClient().account(user.getAccessToken());
+			NylasAccount nylas = new NylasClient(NYLAS_API_SERVER).account(user.getAccessToken());
 
 			// Set the timing of the event
 			Event.Timespan timespan = new Event.Timespan(
