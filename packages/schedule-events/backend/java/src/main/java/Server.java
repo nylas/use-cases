@@ -1,0 +1,148 @@
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.nylas.*;
+import com.nylas.Thread;
+import com.nylas.services.Tunnel;
+import com.nylas.Notification.Delta;
+import io.github.cdimascio.dotenv.Dotenv;
+import io.github.cdimascio.dotenv.DotenvException;
+import spark.utils.StringUtils;
+import utils.User;
+import utils.MockDB;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import static spark.Spark.*;
+
+public class Server {
+	public static final Type JSON_MAP = new TypeToken<Map<String, String>>(){}.getType();
+	private static final Gson GSON = new Gson();
+	private static final Dotenv dotenv = loadEnv();
+	private static final String NYLAS_API_SERVER = dotenv.get("NYLAS_API_SERVER", "https://api.nylas.com");
+
+	public static void main(String[] args) throws RequestFailedException, IOException, URISyntaxException {
+
+		// The port the Spark app will run on
+		port(9000);
+
+		// Enable CORS
+		enableCORS();
+
+		// Initialize an instance of the Nylas SDK using the client credentials
+		NylasApplication application = new NylasClient(NYLAS_API_SERVER)
+				.application(dotenv.get("NYLAS_CLIENT_ID"), dotenv.get("NYLAS_CLIENT_SECRET"));
+
+		/*
+		 * Before we start our backend, we should register our frontend as a redirect
+		 * URI to ensure the auth completes
+		 */
+		String clientUri = dotenv.get("CLIENT_URI", "http://localhost:" + dotenv.get("PORT", "3000"));
+		application.addRedirectUri(clientUri);
+		System.out.println("Application registered.");
+
+		/*
+		 * Class that handles webhook notifications
+		 */
+		class HandleNotifications implements Tunnel.WebhookHandler {
+			// Handle when a new message is created (sent)
+			@Override
+			public void onMessage(Delta delta) {
+				if(delta.getTrigger().equals(Webhook.Trigger.MessageCreated.getName())) {
+					System.out.println("Webhook trigger received, message created. Details: " + delta);
+				} else if(delta.getTrigger().equals(Webhook.Trigger.AccountConnected.getName())) {
+					System.out.println("Webhook trigger received, account connected. Details: " + delta);
+				}
+			}
+		}
+
+		// Start the Nylas webhook
+		Tunnel webhookTunnel = new Tunnel.Builder(application, new HandleNotifications()).build();
+		webhookTunnel.connect();
+
+		/*
+		 * '/nylas/generate-auth-url': This route builds the URL for
+		 * authenticating users to your Nylas application via Hosted Authentication
+		 */
+		post("/nylas/generate-auth-url", (request, response) -> {
+			Map<String, String> requestBody = GSON.fromJson(request.body(), JSON_MAP);
+
+			return application.hostedAuthentication()
+					.urlBuilder()
+					.loginHint(requestBody.get("email_address"))
+					.redirectUri(clientUri + requestBody.get("success_url"))
+					.scopes(Scope.CALENDAR)
+					.buildUrl();
+		});
+
+		/*
+		 * '/nylas/exchange-mailbox-token': This route exchanges an authorization
+		 * code for an access token
+		 * and sends the details of the authenticated user to the client
+		 */
+		post("/nylas/exchange-mailbox-token", (request, response) -> {
+			Map<String, String> requestBody = new Gson().fromJson(request.body(), JSON_MAP);
+			AccessToken accessToken = application.hostedAuthentication()
+					.fetchToken(requestBody.get("token"));
+
+			// Normally store the access token in the DB
+			System.out.println("Access Token was generated for: " + accessToken.getEmailAddress());
+
+			// Replace this mock code with your actual database operations
+			User user = MockDB.createOrUpdateUser(accessToken.getEmailAddress(), accessToken.getAccessToken());
+
+			// Return an authorization object to the user
+			Map<String, String> responsePayload = new HashMap<>();
+			responsePayload.put("id", user.getId());
+			responsePayload.put("emailAddress", user.getEmailAddress());
+			responsePayload.put("accessToken", user.getAccessToken());
+			return GSON.toJson(responsePayload);
+		});
+	}
+
+	/**
+	 * Loads .env file. Tries local directory first then a few directories up.
+	 * @return The .env file contents
+	 */
+	private static Dotenv loadEnv() {
+		try {
+			return Dotenv.configure().load();
+		} catch (DotenvException e) {
+			return Dotenv.configure()
+					.directory("../../../../")
+					.load();
+		}
+	}
+
+	/**
+	 * Enables CORS on requests. This method is an initialization method and should be called once.
+	 */
+	private static void enableCORS() {
+
+		options("/*", (request, response) -> {
+
+			String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
+			if (accessControlRequestHeaders != null) {
+				response.header("Access-Control-Allow-Headers", accessControlRequestHeaders);
+			}
+
+			String accessControlRequestMethod = request.headers("Access-Control-Request-Method");
+			if (accessControlRequestMethod != null) {
+				response.header("Access-Control-Allow-Methods", accessControlRequestMethod);
+			}
+
+			return "OK";
+		});
+
+		before((request, response) -> {
+			response.header("Access-Control-Allow-Origin", "*");
+			response.header("Access-Control-Request-Method", "HEAD,GET,PUT,POST,DELETE,OPTIONS");
+			response.header("Access-Control-Allow-Headers", "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept, Authorization");
+			response.type("application/json");
+		});
+	}
+}

@@ -6,7 +6,7 @@ const mockDb = require('./utils/mock-db');
 const Nylas = require('nylas');
 const { WebhookTriggers } = require('nylas/lib/models/webhook');
 const { Scope } = require('nylas/lib/models/connect');
-const { ServerBindings } = require('nylas/lib/config');
+const { openWebhookTunnel } = require('nylas/lib/services/tunnel');
 
 dotenv.config();
 
@@ -18,74 +18,82 @@ app.use(cors());
 // The port the express app will run on
 const port = 9000;
 
-// Initialize an instance of the Nylas SDK using the client credentials
-const nylasClient = new Nylas({
+// Initialize the Nylas SDK using the client credentials
+Nylas.config({
   clientId: process.env.NYLAS_CLIENT_ID,
   clientSecret: process.env.NYLAS_CLIENT_SECRET,
   apiServer: process.env.NYLAS_API_SERVER,
 });
 
-// The uri for the frontend
+// Before we start our backend, we should register our frontend
+// as a redirect URI to ensure the auth completes
 const CLIENT_URI =
   process.env.CLIENT_URI || `http://localhost:${process.env.PORT || 3000}`;
-
-// Use the express bindings provided by the SDK and pass in
-// additional configuration such as auth scopes
-const expressBinding = new ServerBindings.express(nylasClient, {
-  defaultScopes: [Scope.Calendar],
-  exchangeMailboxTokenCallback: async function exchangeTokenCallback(
-    accessTokenObj,
-    res
-  ) {
-    // Normally store the access token in the DB
-    const { accessToken, emailAddress } = accessTokenObj;
-    console.log('Access Token was generated for: ' + emailAddress);
-
-    // Replace this mock code with your actual database operations
-    const user = await mockDb.createOrUpdateUser(emailAddress, {
-      accessToken,
-      emailAddress,
-    });
-
-    // Return an authorization object to the user
-    res.json({
-      id: user.id,
-      emailAddress: user.emailAddress,
-      accessToken: user.accessToken,
-    });
-  },
-  clientUri: CLIENT_URI,
-});
-
-// Mount the express middleware to your express app
-const nylasMiddleware = expressBinding.buildMiddleware();
-app.use(nylasMiddleware);
-
-// Handle when an account gets connected
-expressBinding.on(WebhookTriggers.AccountConnected, (payload) => {
+Nylas.application({
+  redirectUris: [CLIENT_URI],
+}).then((applicationDetails) => {
   console.log(
-    'Webhook trigger received, account connected. Details: ',
-    JSON.stringify(payload.objectData)
+    'Application registered. Application Details: ',
+    JSON.stringify(applicationDetails)
   );
 });
 
 // Start the Nylas webhook
-expressBinding.startDevelopmentWebsocket().then((webhookDetails) => {
+openWebhookTunnel({
+  // Handle when a new message is created (sent)
+  onMessage: function handleEvent(delta) {
+    switch (delta.type) {
+      case WebhookTriggers.AccountConnected:
+        console.log(
+          'Webhook trigger received, account connected. Details: ',
+          JSON.stringify(delta.objectData, undefined, 2)
+        );
+        break;
+    }
+  },
+}).then((webhookDetails) => {
   console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id);
 });
 
-// Before we start our backend, we should register our frontend
-// as a redirect URI to ensure the auth completes
-nylasClient
-  .application({
-    redirectUris: [CLIENT_URI],
-  })
-  .then((applicationDetails) => {
-    console.log(
-      'Application registered. Application Details: ',
-      JSON.stringify(applicationDetails)
-    );
+// '/nylas/generate-auth-url': This route builds the URL for
+// authenticating users to your Nylas application via Hosted Authentication
+app.post('/nylas/generate-auth-url', express.json(), async (req, res) => {
+  const { body } = req;
+
+  const authUrl = Nylas.urlForAuthentication({
+    loginHint: body.email_address,
+    redirectURI: (CLIENT_URI || '') + body.success_url,
+    scopes: [Scope.Calendar],
   });
 
+  return res.send(authUrl);
+});
+
+// '/nylas/exchange-mailbox-token': This route exchanges an authorization
+// code for an access token
+// and sends the details of the authenticated user to the client
+app.post('/nylas/exchange-mailbox-token', express.json(), async (req, res) => {
+  const body = req.body;
+
+  const { accessToken, emailAddress } = await Nylas.exchangeCodeForToken(
+    body.token
+  );
+
+  // Normally store the access token in the DB
+  console.log('Access Token was generated for: ' + emailAddress);
+
+  // Replace this mock code with your actual database operations
+  const user = await mockDb.createOrUpdateUser(emailAddress, {
+    accessToken,
+    emailAddress,
+  });
+
+  // Return an authorization object to the user
+  return res.json({
+    id: user.id,
+    emailAddress: user.emailAddress,
+    accessToken: user.accessToken, // This is only for demo purposes - do not send access tokens to the client in production
+  });
+});
 // Start listening on port 9000
 app.listen(port, () => console.log('App listening on port ' + port));

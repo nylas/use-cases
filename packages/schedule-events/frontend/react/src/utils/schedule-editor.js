@@ -1,5 +1,6 @@
 // Variables injected from the Flask app serving this script
-const ENV_SCHEDULING_WEB_BASE_URL = 'https://schedule.nylas.com';
+const ENV_SCHEDULING_WEB_BASE_URL =
+  import.meta.env.VITE_SCHEDULER_URL || 'https://scheduler.nylas.com';
 
 export default (function () {
   const spinnerEl = document.createElement('div');
