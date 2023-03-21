@@ -4,7 +4,7 @@
 
 Explore working front-end and back-end sample code in our sample Nylas integrations.
 
-The sample applications redirect to Nylas' hosted authentication page. Once a user authenticates, it allows them to interact with Nylas' APIs from a web client.
+The sample applications redirect to the Nylas hosted authentication page. Once a user authenticates, it allows them to interact with the Nylas APIs from a web client.
 
 ## ⚡️ App Set up
 
