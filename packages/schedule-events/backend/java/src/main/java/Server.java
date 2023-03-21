@@ -105,28 +105,6 @@ public class Server {
 	}
 
 	/**
-	 * Helper function that checks if the user is authenticated.
-	 * If the user is authenticated, the user object will be returned.
-	 * If the user is not authenticated, the server will return a 401 error.
-	 * @param request The incoming request
-	 * @return The user, if the user is authenticated
-	 */
-	private static User isAuthenticated(spark.Request request) {
-		String auth = request.headers("authorization");
-		if(StringUtils.isEmpty(auth)) {
-			halt(401, "Unauthorized");
-			return null;
-		}
-
-		User user = MockDB.findUser(auth);
-		if(user == null) {
-			halt(401, "Unauthorized");
-		}
-
-		return user;
-	}
-
-	/**
 	 * Loads .env file. Tries local directory first then a few directories up.
 	 * @return The .env file contents
 	 */
