@@ -36,6 +36,10 @@ If choosing a `python` backend for your demo application, please make sure you h
 python3 --version
 ```
 
+### Java
+
+On MacOS, if you experience this error `./gradlew build  # fails due to permission error`, run this command: `chmod 755 gradlew`
+
 ## ⚡️ App Set up
 
 View the `README.md` files in the `backend` and `frontend` directories for instructions on how to set up the server and client. These README files include set up instructions for each language.
