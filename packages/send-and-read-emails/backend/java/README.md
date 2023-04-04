@@ -33,6 +33,8 @@ Run one of the following commands to install the Java dependencies for this samp
 ./gradlew build
 ```
 
+On MacOS, if you experience this error `./gradlew build  # fails due to permission error`, run this command first: `chmod 755 gradlew`
+
 **Windows (Powershell)**
 
 ```bash
