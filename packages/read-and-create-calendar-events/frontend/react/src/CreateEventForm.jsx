@@ -90,7 +90,7 @@ function CreateEventForm({
       <form id="event-form" className="scrollbar" onSubmit={createEvent}>
         <div className="row">
           <div className="field-container">
-            <label htmlFor="event-title">Event title</label>
+            <label htmlFor="event-title">Event title*</label>
             <input
               type="text"
               name="event-title"
@@ -104,33 +104,33 @@ function CreateEventForm({
         </div>
         <div className="row">
           <div className="field-container">
-            <label htmlFor="event-start-time">Start time</label>
+            <label htmlFor="event-start-time">Start time*</label>
             <input
               type="datetime-local"
               name="event-start-time"
               onChange={(event) => {
                 setStartTime(event.target.value);
               }}
-              value={startTime}
+              value={startTime.toISOString().substring(0, 16)}
               min={convertUTCDate(now)}
             />
           </div>
           <div className="field-container">
-            <label htmlFor="event-end-time">End time</label>
+            <label htmlFor="event-end-time">End time*</label>
             <input
               type="datetime-local"
               name="event-end-time"
               onChange={(event) => {
                 setEndTime(event.target.value);
               }}
-              value={endTime}
+              value={endTime.toISOString().substring(0, 16)}
               min={convertUTCDate(getMinimumEventEndTime(startTime))}
             />
           </div>
         </div>
         <div className="row">
           <div className="field-container">
-            <label htmlFor="participants">Participants</label>
+            <label htmlFor="participants">Participants*</label>
             <textarea
               type="text"
               name="participants"
