@@ -8,7 +8,7 @@
 
 Explore working front-end and back-end sample code using an integration with Nylas.
 
-The sample application redirects to a prebuilt authentication page hosted on Nylas, then allows that authenticated user to interact with Nylas API from a web client.
+The sample applications redirect to the Nylas hosted authentication page. Once a user authenticates, it allows them to interact with the Nylas APIs from a web client.
 
 Before you get started, head over to your Quickstart Application on the Nylas Dashboard for a copy of your `client id` and `client secret`. You'll need those later in the demo.
 
@@ -36,36 +36,13 @@ If choosing a `python` backend for your demo application, please make sure you h
 python3 --version
 ```
 
-## ⚡️ App Setup
+## ⚡️ App Set up
 
-1. Installation
+View the `README.md` files in the `backend` and `frontend` directories for instructions on how to set up the server and client. These README files include set up instructions for each language.
 
-   ```bash
-   git clone nylas-samples@use-cases
+Start the backend server first, then in a new terminal, start the frontend server.
 
-   cd use-cases
-
-   npm install
-
-   npm run prep:husky // only needed if contributing to the repo
-   ```
-
-2. Copy `.env.sample` to `.env` on the root level of the project.
-3. Fill in the `NYLAS_CLIENT_ID` and `NYLAS_CLIENT_SECRET` in `.env` file
-
-   ```js
-   // Nylas application credentials
-   NYLAS_CLIENT_ID = '<NYLAS_CLIENT_ID> from the Nylas Dashboard';
-   NYLAS_CLIENT_SECRET = '<NYLAS_CLIENT_SECRET> from the Nylas Dashboard';
-   ```
-
-4. Run code
-
-   ```bash
-   # in one terminal
-   npm start # starts server + opens browser for localhost:3000
-             # terminal shows webhook output here
-   ```
+Once the servers are running, visit the app at [http://localhost:3000](http://localhost:3000). You can also visit the backend server at [http://localhost:9000](http://localhost:9000).
 
 ## 💙 Contributing
 

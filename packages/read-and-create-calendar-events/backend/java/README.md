@@ -55,6 +55,8 @@ Start the backend server before you start the frontend. You will need two termin
 ./gradlew run
 ```
 
+On MacOS, if you experience this error `./gradlew build  # fails due to permission error`, run this command first: `chmod 755 gradlew`
+
 **Windows (PowerShell)**
 
 ```bash
