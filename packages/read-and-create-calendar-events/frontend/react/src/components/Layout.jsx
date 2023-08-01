@@ -18,13 +18,11 @@ const Layout = ({
     refresh();
   };
 
-  const handleDisconnect = (e) => {
+  const handleDisconnect = async (e) => {
     e.preventDefault();
     setIsDisconnecting(true);
-    setTimeout(() => {
-      disconnectUser();
-      setIsDisconnecting(false);
-    }, 1500);
+    await disconnectUser();
+    setIsDisconnecting(false);
   };
 
   return (

@@ -2,32 +2,22 @@ package utils;
 
 public class User {
 	private final String id;
-	private String emailAddress;
-	private String accessToken;
+	private String grantId;
 
-	public User(String id, String emailAddress, String accessToken) {
+	public User(String id, String grantId) {
 		this.id = id;
-		this.emailAddress = emailAddress;
-		this.accessToken = accessToken;
+		this.grantId = grantId;
 	}
 
 	public String getId() {
 		return id;
 	}
 
-	public String getEmailAddress() {
-		return emailAddress;
+	public String getGrantId() {
+		return grantId;
 	}
 
-	public String getAccessToken() {
-		return accessToken;
-	}
-
-	public void setEmailAddress(String emailAddress) {
-		this.emailAddress = emailAddress;
-	}
-
-	public void setAccessToken(String accessToken) {
-		this.accessToken = accessToken;
+	public void setGrantId(String grantId) {
+		this.grantId = grantId;
 	}
 }

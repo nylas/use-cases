@@ -1,21 +1,22 @@
-import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import AppContext from './contexts/AppContext';
 import {
   applyTimezone,
   convertUTCDate,
-  getDefaultEventStartTime,
   getDefaultEventEndTime,
+  getDefaultEventStartTime,
   getMinimumEventEndTime,
+  utcStringToDateObject,
 } from './utils/date';
 
 function CreateEventForm({
-  userId,
   calendarId,
-  serverBaseUrl,
   setShowCreateEventForm,
   setToastNotification,
   refresh,
 }) {
+  const app = React.useContext(AppContext);
   const [startTime, setStartTime] = useState(getDefaultEventStartTime());
   const [endTime, setEndTime] = useState(getDefaultEventEndTime());
   const [title, setTitle] = useState('');
@@ -30,30 +31,16 @@ function CreateEventForm({
     e.preventDefault();
 
     try {
-      const url = serverBaseUrl + '/nylas/create-events';
-
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: {
-          Authorization: userId,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          startTime: applyTimezone(startTime),
-          endTime: applyTimezone(endTime),
-          title,
-          description,
-          calendarId,
-          participants,
-        }),
+      const data = await app.api.createEvent({
+        grantId: app.grantId,
+        calendarId,
+        startTime: applyTimezone(startTime),
+        endTime: applyTimezone(endTime),
+        title,
+        description,
+        calendarId,
+        participants
       });
-
-      if (!res.ok) {
-        setToastNotification('error');
-        throw new Error(res.statusText);
-      }
-
-      const data = await res.json();
 
       console.log('Event created:', data);
 
@@ -66,6 +53,7 @@ function CreateEventForm({
       setToastNotification('success');
       refresh();
     } catch (err) {
+      setToastNotification('error');
       console.warn(`Error creating event:`, err);
     }
   };
@@ -109,7 +97,7 @@ function CreateEventForm({
               type="datetime-local"
               name="event-start-time"
               onChange={(event) => {
-                setStartTime(event.target.value);
+                setStartTime(utcStringToDateObject(event.target.value));
               }}
               value={startTime.toISOString().substring(0, 16)}
               min={convertUTCDate(now)}
@@ -121,7 +109,7 @@ function CreateEventForm({
               type="datetime-local"
               name="event-end-time"
               onChange={(event) => {
-                setEndTime(event.target.value);
+                setEndTime(utcStringToDateObject(event.target.value));
               }}
               value={endTime.toISOString().substring(0, 16)}
               min={convertUTCDate(getMinimumEventEndTime(startTime))}
@@ -167,9 +155,6 @@ function CreateEventForm({
 }
 
 CreateEventForm.propTypes = {
-  userId: PropTypes.string.isRequired,
-  calendarId: PropTypes.string,
-  serverBaseUrl: PropTypes.string.isRequired,
   setShowCreateEventForm: PropTypes.func,
   toastNotification: PropTypes.string,
   setToastNotification: PropTypes.func,

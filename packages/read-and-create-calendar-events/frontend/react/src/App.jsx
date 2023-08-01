@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useNylas } from '@nylas/nylas-react';
+import React, { useEffect, useState } from 'react';
 import CalendarApp from './CalendarApp';
 import NylasLogin from './NylasLogin';
 import Layout from './components/Layout';
@@ -8,83 +7,55 @@ import {
   getSevenDaysFromTodayDateTimestamp,
   getTodaysDateTimestamp,
 } from './utils/date';
+import AppContext from './contexts/AppContext';
 
 function App() {
-  const nylas = useNylas();
+  const app = React.useContext(AppContext);
   const [primaryCalendar, setPrimaryCalendar] = useState(null);
-  const [userId, setUserId] = useState('');
   const [userEmail, setUserEmail] = useState('');
+  const [isExchangingCode, setIsExchangingCode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [events, setEvents] = useState([]);
-  const serverBaseUrl =
-    import.meta.env.VITE_SERVER_URI || 'http://localhost:9000';
 
   useEffect(() => {
-    if (!nylas) {
-      return;
-    }
-
     // Handle the code that is passed in the query params from Nylas after a successful login
     const params = new URLSearchParams(window.location.search);
-    if (params.has('code')) {
-      nylas
-        .exchangeCodeFromUrlForToken()
-        .then((user) => {
-          const { id } = JSON.parse(user);
-          setUserId(id);
-          sessionStorage.setItem('userId', id);
+    if (params.has('code') && !isExchangingCode) {
+      setIsExchangingCode(true);
+      app.api
+        .exchangeCodeForGrantId(params.get('code'))
+        .then((grantId) => {
+          app.setGrantId(grantId);
+          window.history.replaceState({}, '', `/?grantId=${grantId}`);
         })
         .catch((error) => {
           console.error('An error occurred parsing the response:', error);
+        })
+        .finally(() => {
+          setIsExchangingCode(false);
         });
     }
-  }, [nylas]);
+
+    // If we have a grantId in the query params, set it in the app context
+    if (params.has('grantId')) {
+      app.setGrantId(params.get('grantId'));
+    }
+  }, [isExchangingCode, app]);
 
   useEffect(() => {
-    const userIdString = sessionStorage.getItem('userId');
-    const userEmail = sessionStorage.getItem('userEmail');
-    if (userIdString) {
-      setUserId(userIdString);
-    }
-    if (userEmail) {
-      setUserEmail(userEmail);
-    }
-    if (userIdString) {
-      setUserId(userIdString);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (userId?.length) {
-      window.history.replaceState({}, '', `/?userId=${userId}`);
+    if (app.grantId) {
       getPrimaryCalendarEvents();
-    } else {
-      window.history.replaceState({}, '', '/');
     }
-  }, [userId]);
+  }, [app.grantId]);
 
   const getPrimaryCalendar = async () => {
     try {
-      const url = serverBaseUrl + '/nylas/read-calendars';
+      const calendars = await app.api.getCalendars(app.grantId);
 
-      const res = await fetch(url, {
-        method: 'GET',
-        headers: {
-          Authorization: userId,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!res.ok) {
-        throw new Error(res.statusText);
-      }
-
-      const data = await res.json();
-
-      let [calendar] = data.filter((calendar) => calendar.is_primary);
+      let [calendar] = calendars.filter((calendar) => calendar.is_primary);
       // if no primary calendar, use the first one
-      if (!calendar && data.length) {
-        calendar = data[0];
+      if (!calendar && calendars.length) {
+        calendar = calendars[0];
       }
 
       setPrimaryCalendar(calendar);
@@ -100,35 +71,18 @@ function App() {
         const startsAfter = getTodaysDateTimestamp(); // today
         const endsBefore = getSevenDaysFromTodayDateTimestamp(); // 7 days from today
 
-        const queryParams = new URLSearchParams({
-          limit: 50,
+        const events = await app.api.getEvents({
+          grantId: app.grantId,
+          calendarId,
           startsAfter,
           endsBefore,
-          calendarId,
         });
 
-        const url = `${serverBaseUrl}/nylas/read-events?${queryParams.toString()}`;
-
-        const res = await fetch(url, {
-          method: 'GET',
-          headers: {
-            Authorization: userId,
-            'Content-Type': 'application/json',
-          },
-          params: {
-            calendarId,
-          },
-        });
-
-        if (!res.ok) {
-          throw new Error(res.statusText);
-        }
-
-        const data = (await res.json()).filter(
+        const filteredEvents = events.filter(
           (event) => event.status !== 'cancelled'
         );
 
-        setEvents(data);
+        setEvents(filteredEvents);
         setIsLoading(false);
       } catch (err) {
         console.warn(`Error reading calendar events:`, err);
@@ -143,11 +97,10 @@ function App() {
     setIsLoading(false);
   };
 
-  const disconnectUser = () => {
-    sessionStorage.removeItem('userId');
-    sessionStorage.removeItem('userEmail');
-    setUserId('');
-    setUserEmail('');
+  const disconnectUser = async () => {
+    await app.api.deleteGrant(app.grantId);
+    app.setGrantId(null);
+    window.history.replaceState({}, '', `/`);
   };
 
   const refresh = () => {
@@ -156,19 +109,25 @@ function App() {
 
   return (
     <Layout
-      showMenu={!!userId}
+      showMenu={!!app.grantId}
       disconnectUser={disconnectUser}
       isLoading={isLoading}
       refresh={refresh}
     >
-      {!userId ? (
+      {isExchangingCode && (
+        <div className="app-card">
+          <p>Exchanging authentication code, please wait...</p>
+        </div>
+      )}
+
+      {!app.grantId && !isExchangingCode && (
         <NylasLogin email={userEmail} setEmail={setUserEmail} />
-      ) : (
+      )}
+
+      {app.grantId && !isExchangingCode && (
         <div className="app-card">
           <CalendarApp
-            userId={userId}
             calendarId={primaryCalendar?.id}
-            serverBaseUrl={serverBaseUrl}
             isLoading={isLoading}
             setIsLoading={setIsLoading}
             events={events}

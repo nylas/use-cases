@@ -7,9 +7,7 @@ import CreateEventForm from './CreateEventForm';
 import './styles/calendar.scss';
 
 function CalendarApp({
-  userId,
   calendarId,
-  serverBaseUrl,
   isLoading,
   setIsLoading,
   events,
@@ -40,7 +38,6 @@ function CalendarApp({
             </section>
             <EventList
               events={events}
-              userId={userId}
               setSelectedEvent={setSelectedEvent}
               selectedEvent={selectedEvent}
               setIsLoading={setIsLoading}
@@ -49,9 +46,7 @@ function CalendarApp({
           </div>
           {showCreateEventForm ? (
             <CreateEventForm
-              userId={userId}
               calendarId={calendarId}
-              serverBaseUrl={serverBaseUrl}
               setShowCreateEventForm={setShowCreateEventForm}
               toastNotification={toastNotification}
               setToastNotification={setToastNotification}
@@ -75,9 +70,7 @@ function CalendarApp({
 }
 
 CalendarApp.propTypes = {
-  userId: PropTypes.string.isRequired,
   calendarId: PropTypes.string,
-  serverBaseUrl: PropTypes.string.isRequired,
   isLoading: PropTypes.bool.isRequired,
   setIsLoading: PropTypes.func.isRequired,
   events: PropTypes.array.isRequired,

@@ -1,22 +1,23 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useNylas } from '@nylas/nylas-react';
+import AppContext from './contexts/AppContext';
 
 const NylasLogin = ({ email, setEmail }) => {
-  const nylas = useNylas();
-
+  const nylas = useContext(AppContext);
   const [isLoading, setIsLoading] = useState(false);
 
-  const loginUser = (e) => {
+  const loginUser = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    sessionStorage.setItem('userEmail', email);
-
-    nylas.authWithRedirect({
-      emailAddress: email,
-      successRedirectUrl: '',
-    });
+    try {
+      nylas.setEmailAddress(email);
+      const authUrl = await nylas.api.getAuthorizationUrl(email);
+      window.location.href = authUrl;
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false);
+    }
   };
 
   return (

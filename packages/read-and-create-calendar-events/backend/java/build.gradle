@@ -10,11 +10,14 @@ application {
 }
 
 repositories {
+    flatDir {
+       dirs("libs")
+    }
     mavenCentral()
 }
 
 dependencies {
-    implementation('com.nylas.sdk:nylas-java-sdk:1.21.0')
+    implementation('com.nylas.sdk:nylas-java-sdk:2.0.0-SNAPSHOT-uber')
     implementation('com.sparkjava:spark-core:2.9.4')
     implementation('io.github.cdimascio:dotenv-java:2.3.2')
     implementation('com.google.code.gson:gson:2.10.1')

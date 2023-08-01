@@ -29,23 +29,22 @@ public class MockDB {
 		List<User> jsonRecords = getJSONRecords();
 
 		return jsonRecords.stream()
-				.filter(user -> user.getId().equals(query) || user.getEmailAddress().equals(query))
+				.filter(user -> user.getId().equals(query) || user.getGrantId().equals(query))
 				.findFirst()
 				.orElse(null);
 	}
 
 	/**
 	 * Determines to create or update a user
-	 * @param emailAddress The email address to update
-	 * @param accessToken The access token to update
+	 * @param grantId The grant id to update
 	 * @return The modified user
 	 */
-	public static User createOrUpdateUser(String emailAddress, String accessToken) {
-		User user = findUser(emailAddress);
+	public static User createOrUpdateUser(String grantId) {
+		User user = findUser(grantId);
 		if(user != null) {
-			return updateUser(user, emailAddress, accessToken);
+			return updateUser(user, grantId);
 		} else {
-			return createUser(emailAddress, accessToken);
+			return createUser(grantId);
 		}
 	}
 
@@ -94,20 +93,15 @@ public class MockDB {
 	/**
 	 * Update the user with provided values
 	 * @param user The user object to update
-	 * @param emailAddress The email address to update
-	 * @param accessToken The access token to update
+	 * @param grantId The grant id to update
 	 * @return The updated user
 	 */
-	private static User updateUser(User user, String emailAddress, String accessToken) {
+	private static User updateUser(User user, String grantId) {
 		if(user == null) {
 			throw new IllegalArgumentException("No user provided to update.");
 		}
-
-		if(StringUtils.isNotEmpty(emailAddress)) {
-			user.setEmailAddress(emailAddress);
-		}
-		if(StringUtils.isNotEmpty(accessToken)) {
-			user.setAccessToken(accessToken);
+		if(StringUtils.isNotEmpty(grantId)) {
+			user.setGrantId(grantId);
 		}
 		List<User> jsonRecords = getJSONRecords().stream()
 				.map(record -> record.getId().equals(user.getId()) ? user : record)
@@ -120,19 +114,15 @@ public class MockDB {
 	/**
 	 * Create a user with provided values
 	 * @param emailAddress The email address to create the user with
-	 * @param accessToken The access token to create the user with
 	 * @return The created user
 	 */
-	private static User createUser(String emailAddress, String accessToken) {
-		if(StringUtils.isEmpty(emailAddress)) {
-			throw new IllegalArgumentException("Must provide an email address to create a user.");
-		}
-		if(StringUtils.isEmpty(accessToken)) {
-			throw new IllegalArgumentException("Must provide an access token to create a user.");
+	private static User createUser(String grantId) {
+		if(StringUtils.isEmpty(grantId)) {
+			throw new IllegalArgumentException("Must provide an grant id to create a user.");
 		}
 		List<User> jsonRecords = getJSONRecords();
 		String userId = UUID.randomUUID().toString();
-		User user = new User(userId, emailAddress, accessToken);
+		User user = new User(userId, grantId);
 		// Adding new user
 		jsonRecords.add(user);
 

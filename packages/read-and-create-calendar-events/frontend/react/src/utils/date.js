@@ -56,9 +56,7 @@ export const convertUTCDate = (date) => {
 };
 
 export const applyTimezone = (date) => {
-  const localizedDate = new Date(date);
-
-  return getUnixTimestamp(localizedDate);
+  return getUnixTimestamp(date);
 };
 
 export const getTodaysDateTimestamp = () => {
@@ -107,3 +105,7 @@ export const getMinimumEventEndTime = (inputDate) => {
   date.setMinutes(date.getMinutes() + 1);
   return date;
 };
+
+export const utcStringToDateObject = (utcString) => {
+  return new Date(utcString);
+}

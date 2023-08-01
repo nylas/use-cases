@@ -1,33 +1,57 @@
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.nylas.*;
-import com.nylas.services.Tunnel;
-import com.nylas.Notification.Delta;
-import io.github.cdimascio.dotenv.Dotenv;
-import io.github.cdimascio.dotenv.DotenvException;
-import spark.utils.StringUtils;
-import utils.User;
-import utils.MockDB;
+import static spark.Spark.before;
+import static spark.Spark.exception;
+import static spark.Spark.get;
+import static spark.Spark.halt;
+import static spark.Spark.options;
+import static spark.Spark.port;
+import static spark.Spark.post;
+import static spark.Spark.delete;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URISyntaxException;
-import java.time.Instant;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import static spark.Spark.*;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.nylas.NylasClient;
+import com.nylas.models.Calendar;
+import com.nylas.models.CodeExchangeRequest;
+import com.nylas.models.CodeExchangeResponse;
+import com.nylas.models.CreateEventQueryParams;
+import com.nylas.models.CreateEventRequest;
+import com.nylas.models.CreateEventRequest.When.Timespan;
+import com.nylas.models.CreateRedirectUriRequest;
+import com.nylas.models.Event;
+import com.nylas.models.ListEventQueryParams;
+import com.nylas.models.NylasApiError;
+import com.nylas.models.NylasOAuthError;
+import com.nylas.models.NylasSdkTimeoutError;
+import com.nylas.models.Platform;
+import com.nylas.models.RedirectUri;
+import com.nylas.models.UrlForAuthenticationConfig;
+import com.nylas.util.JsonHelper;
+
+import io.github.cdimascio.dotenv.Dotenv;
+import io.github.cdimascio.dotenv.DotenvException;
 
 public class Server {
-	public static final Type JSON_MAP = new TypeToken<Map<String, String>>(){}.getType();
+	public static final Type JSON_MAP = new TypeToken<Map<String, String>>() {
+	}.getType();
 	private static final Gson GSON = new Gson();
 	private static final Dotenv dotenv = loadEnv();
-	private static final String NYLAS_API_SERVER = dotenv.get("NYLAS_API_SERVER", "https://api.nylas.com");
+	private static String PORT = dotenv.get("PORT", "3000");
+	private static String NYLAS_API_SERVER = dotenv.get("NYLAS_API_SERVER", "https://api.nylas.com");
+	private static String NYLAS_API_KEY = dotenv.get("NYLAS_API_KEY", "");
+	private static String NYLAS_CLIENT_ID = dotenv.get("NYLAS_CLIENT_ID", "");
+	private static String NYLAS_CLIENT_SECRET = dotenv.get("NYLAS_CLIENT_SECRET", "");
 
-	public static void main(String[] args) throws RequestFailedException, IOException, URISyntaxException {
-		
+	public static void main(String[] args) throws NylasApiError, NylasSdkTimeoutError, IOException, URISyntaxException {
+
 		// The port the Spark app will run on
 		port(9000);
 
@@ -35,33 +59,23 @@ public class Server {
 		enableCORS();
 
 		// Initialize an instance of the Nylas SDK using the client credentials
-		NylasApplication application = new NylasClient(NYLAS_API_SERVER)
-				.application(dotenv.get("NYLAS_CLIENT_ID"), dotenv.get("NYLAS_CLIENT_SECRET"));
+		NylasClient nylasClient = new NylasClient.Builder(NYLAS_API_KEY).baseUrl(NYLAS_API_SERVER).build();
 
 		/*
 		 * Before we start our backend, we should register our frontend as a redirect
-		 * URI to ensure the auth completes
+		 * URI. This is required for OAuth 2.0 Authentication with Nylas to work.
 		 */
-		String clientUri = dotenv.get("CLIENT_URI", "http://localhost:" + dotenv.get("PORT", "3000"));
-		application.addRedirectUri(clientUri);
-		System.out.println("Application registered.");
-
-		/*
-		 * Class that handles webhook notifications
-		 */
-		class HandleNotifications implements Tunnel.WebhookHandler {
-			// Handle when an event is created
-			@Override
-			public void onMessage(Delta delta) {
-				if(delta.getTrigger().equals(Webhook.Trigger.EventCreated.getName())) {
-					System.out.println("Webhook trigger received, event created. Details: " + delta);
-				}
-			}
+		String clientUri = dotenv.get("CLIENT_URI", "http://localhost:" + PORT);
+		
+		List<RedirectUri> redirectUris = nylasClient.applications().redirectUris().list().getData();
+		if (redirectUris.stream().anyMatch(redirectUri -> redirectUri.getUrl().equals(clientUri))) {
+			System.out.println("Redirect URI already registered.");
+		} else {
+			CreateRedirectUriRequest createRedirectUriRequest = new CreateRedirectUriRequest(clientUri, Platform.WEB, null);
+			RedirectUri redirectUri =
+			nylasClient.applications().redirectUris().create(createRedirectUriRequest).getData();
+			System.out.println("Redirect URI registered: " + redirectUri.getId());
 		}
-
-		// Start the Nylas webhook
-		Tunnel webhookTunnel = new Tunnel.Builder(application, new HandleNotifications()).build();
-		webhookTunnel.connect();
 
 		/*
 		 * '/nylas/generate-auth-url': This route builds the URL for
@@ -70,151 +84,162 @@ public class Server {
 		post("/nylas/generate-auth-url", (request, response) -> {
 			Map<String, String> requestBody = GSON.fromJson(request.body(), JSON_MAP);
 
-			return application.hostedAuthentication()
-					.urlBuilder()
-					.loginHint(requestBody.get("email_address"))
-					.redirectUri(clientUri + requestBody.get("success_url"))
-					.scopes(Scope.CALENDAR)
-					.buildUrl();
+			String authURL = nylasClient.auth().urlForOAuth2(
+					new UrlForAuthenticationConfig.Builder(NYLAS_CLIENT_ID, clientUri)
+							.loginHint(requestBody.get("emailAddress"))
+							.build());
+
+			return "{ \"auth_url\": \"" + authURL + "\" }"; 
 		});
 
-		/*
-		 * '/nylas/exchange-mailbox-token': This route exchanges an authorization
-		 * code for an access token
-		 * and sends the details of the authenticated user to the client
-		 */
-		post("/nylas/exchange-mailbox-token", (request, response) -> {
-			Map<String, String> requestBody = new Gson().fromJson(request.body(), JSON_MAP);
-			AccessToken accessToken = application.hostedAuthentication()
-					.fetchToken(requestBody.get("token"));
+		get("/nylas/exchange-auth-code", (request, response) -> {
+			String code = request.queryParams("code");
+			String error = request.queryParams("error");
+			String errorDescription = request.queryParams("error_description");
 
-			// Normally store the access token in the DB
-			System.out.println("Access Token was generated for: " + accessToken.getEmailAddress());
+			if (error != null) {
+				System.out.println("Error: " + error);
+				System.out.println("Error Description: " + errorDescription);
+				return null;
+			}
 
-			// Replace this mock code with your actual database operations
-			User user = MockDB.createOrUpdateUser(accessToken.getEmailAddress(), accessToken.getAccessToken());
+			CodeExchangeResponse codeExchangeResponse = nylasClient.auth().exchangeCodeForToken(
+					new CodeExchangeRequest.Builder(clientUri, code, NYLAS_CLIENT_ID, NYLAS_CLIENT_SECRET).build());
 
-			// Return an authorization object to the user
-			Map<String, String> responsePayload = new HashMap<>();
-			responsePayload.put("id", user.getId());
-			responsePayload.put("emailAddress", user.getEmailAddress());
-			return GSON.toJson(responsePayload);
+			return "{ \"grant_id\": \"" + codeExchangeResponse.getGrantId() + "\" }";
 		});
 
 		// Load additional routes
 		routes();
-	}
 
-	/**
-	 * Helper function that checks if the user is authenticated.
-	 * If the user is authenticated, the user object will be returned.
-	 * If the user is not authenticated, the server will return a 401 error.
-	 * @param request The incoming request
-	 * @return The user, if the user is authenticated
-	 */
-	private static User isAuthenticated(spark.Request request) {
-		String auth = request.headers("authorization");
-		if(StringUtils.isEmpty(auth)) {
-			halt(401, "Unauthorized");
-			return null;
-		}
+		// Handle Nylas OAuth exception
+		exception(NylasOAuthError.class, (e, request, response) -> {
+			e.printStackTrace();
+			response.status(e.getStatusCode());
 
-		User user = MockDB.findUser(auth);
-		if(user == null) {
-			halt(401, "Unauthorized");
-		}
+			Map<String, String> error = new HashMap<String,String>();
+			error.put("message", e.getErrorDescription());
 
-		return user;
+			response.body(GSON.toJson(error));
+		});
+
+		// Handle Nylas API exception
+		exception(NylasApiError.class, (e, request, response) -> {
+			e.printStackTrace();
+			response.status(e.getStatusCode());
+
+			Map<String, String> error = new HashMap<String,String>();
+			error.put("message", e.getMessage());
+			error.put("type", e.getType());
+
+			response.body(GSON.toJson(error));
+		});
+
+		// Handle all other exceptions
+		exception(Exception.class, (e, request, response) -> {
+			e.printStackTrace();
+			response.status(500);
+
+			Map<String, String> error = new HashMap<String,String>();
+			error.put("message", "Unexpected error");;
+
+			response.body(GSON.toJson(error));
+		});
 	}
 
 	/**
 	 * Additional routes for the use case example
 	 */
 	private static void routes() {
-		get("/nylas/read-events", (request, response) -> {
-			User user = isAuthenticated(request);
+		get("/nylas/:grant_id/read-events", (request, response) -> {
+			String grantId = request.params("grant_id");
 
 			String calendarId = request.queryParams("calendarId");
+			if (calendarId == null) {
+				halt(400, "{ \"message\": \"Calendar ID is required\" }");
+				return null;
+			}
+
 			String startsAfter = request.queryParams("startsAfter");
 			String endsBefore = request.queryParams("endsBefore");
-			String limit = request.queryParams("limit");
+			Integer limit = Integer.parseInt(request.queryParamOrDefault("limit", "100"));
 
-			// Create a Nylas API client instance using the user's access token
-			NylasAccount nylas = new NylasClient(NYLAS_API_SERVER).account(user.getAccessToken());
+			// Initialize an instance of the Nylas SDK using the client credentials
+			NylasClient nylasClient = new NylasClient.Builder(NYLAS_API_KEY).baseUrl(NYLAS_API_SERVER).build();
 
-			// Set the constraints
-			EventQuery eventQuery = new EventQuery()
-					.calendarId(calendarId)
-					.startsAfter(Instant.ofEpochSecond(Long.parseLong(startsAfter)))
-					.endsBefore(Instant.ofEpochSecond(Long.parseLong(endsBefore)))
-					.limit(Integer.parseInt(limit));
+			ListEventQueryParams listEventQueryParams = new ListEventQueryParams.Builder(calendarId)
+					.limit(limit)
+					.start(startsAfter)
+					.end(endsBefore)
+					.build();
 
-			// Fetch the events with the constraints
-			RemoteCollection<Event> events = nylas.events().list(eventQuery);
-			ArrayList<String> eventList = new ArrayList<>();
+			List<Event> events = nylasClient.events().list(grantId, listEventQueryParams).getData();
 
-			// Return the events
-			events.forEach(event -> eventList.add(event.toJSON()));
-			return eventList;
+			return JsonHelper.listToJson(events);
 		});
 
-		get("/nylas/read-calendars", (request, response) -> {
-			User user = isAuthenticated(request);
+		get("/nylas/:grant_id/read-calendars", (request, response) -> {
+			String grantId = request.params("grant_id");
 
-			// Create a Nylas API client instance using the user's access token
-			NylasAccount nylas = new NylasClient(NYLAS_API_SERVER)
-				.account(user.getAccessToken());
+			NylasClient nylasClient = new NylasClient.Builder(NYLAS_API_KEY).baseUrl(NYLAS_API_SERVER).build();
 
-			// Retrieve all the calendars
-			RemoteCollection<Calendar> calendars = nylas.calendars().list();
-			ArrayList<String> calendarList = new ArrayList<>();
+			List<Calendar> calendars = nylasClient.calendars().list(grantId).getData();
 
-			// Return the calendars
-			calendars.forEach(thread -> calendarList.add(thread.toJSON()));
-			return calendarList;
+			return JsonHelper.listToJson(calendars);
 		});
 
-		post("/nylas/create-events", (request, response) -> {
-			User user = isAuthenticated(request);
-			Map<String, String> requestBody = new Gson().fromJson(request.body(), JSON_MAP);
+		post("/nylas/:grant_id/create-event", (request, response) -> {
+			String grantId = request.params("grant_id");
+			
+			Map<String, String> requestBody = new Gson().fromJson(request.body(),
+					JSON_MAP);
 
 			String calendarId = requestBody.get("calendarId");
 			String title = requestBody.get("title");
 			String description = requestBody.get("description");
-			String startTime = requestBody.get("startTime");
-			String endTime = requestBody.get("endTime");
-			String participants = requestBody.get("participants");
+			Integer startTime = Integer.parseInt(requestBody.get("startTime"), 10);
+			Integer endTime = Integer.parseInt(requestBody.get("endTime"), 10);
+			List<String> participantEmails = Arrays.asList(requestBody.get("participants").split(",", 0));
 
-			// Create a Nylas API client instance using the user's access token
-			NylasAccount nylas = new NylasClient(NYLAS_API_SERVER).account(user.getAccessToken());
+			NylasClient nylasClient = new NylasClient.Builder(NYLAS_API_KEY).baseUrl(NYLAS_API_SERVER).build();
 
-			// Set the timing of the event
-			Event.Timespan timespan = new Event.Timespan(
-				Instant.ofEpochSecond(Long.parseLong(startTime)),
-				Instant.ofEpochSecond(Long.parseLong(endTime))
-			);
+			Timespan timespan = new Timespan.Builder(startTime, endTime).build();
 
-			// Create the event and fill it with the contents received
-			Event event = new Event(calendarId, timespan);
-			event.setDescription(description);
-			event.setTitle(title);
+			List<CreateEventRequest.Participant> participants = participantEmails.stream()
+					.map(email -> new CreateEventRequest.Participant.Builder(email).build())
+					.collect(Collectors.toList());
 
-			if(StringUtils.isNotEmpty(participants)) {
-				String[] emailList = participants.split("\\s*,\\s*");
-				List<Participant> participantList = new ArrayList<>();
-				for(String email : emailList) {
-					participantList.add(new Participant(email));
-				}
-				event.setParticipants(participantList);
+			CreateEventRequest createEventRequest = new CreateEventRequest.Builder(timespan)
+					.participants(participants)
+					.title(title)
+					.description(description)
+					.build();
+
+			CreateEventQueryParams createEventQueryParams = new CreateEventQueryParams.Builder(calendarId).build();
+
+			Event event = nylasClient.events().create(grantId, createEventRequest, createEventQueryParams).getData();
+
+			return JsonHelper.objectToJson(event);
+		});
+
+		delete("/nylas/:grant_id/delete-grant", (request, response) -> {
+			String grantId = request.params("grant_id");
+			if (grantId == null) {
+				halt(401, "{ \"message\": \"Unauthorized\" }");
+				return null;
 			}
 
-			// Save the event
-			return nylas.events().save(event, true).toJSON();
+			NylasClient nylasClient = new NylasClient.Builder(NYLAS_API_KEY).baseUrl(NYLAS_API_SERVER).build();
+			
+			nylasClient.auth().grants().destroy(grantId);
+
+			return "{ \"success\": true }";
 		});
 	}
 
 	/**
 	 * Loads .env file. Tries local directory first then a few directories up.
+	 * 
 	 * @return The .env file contents
 	 */
 	private static Dotenv loadEnv() {
@@ -228,7 +253,8 @@ public class Server {
 	}
 
 	/**
-	 * Enables CORS on requests. This method is an initialization method and should be called once.
+	 * Enables CORS on requests. This method is an initialization method and should
+	 * be called once.
 	 */
 	private static void enableCORS() {
 
@@ -250,7 +276,8 @@ public class Server {
 		before((request, response) -> {
 			response.header("Access-Control-Allow-Origin", "*");
 			response.header("Access-Control-Request-Method", "HEAD,GET,PUT,POST,DELETE,OPTIONS");
-			response.header("Access-Control-Allow-Headers", "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept, Authorization");
+			response.header("Access-Control-Allow-Headers",
+					"X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept, Authorization");
 			response.type("application/json");
 		});
 	}
