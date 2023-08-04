@@ -106,7 +106,7 @@ public class Server {
 			CodeExchangeResponse codeExchangeResponse = nylasClient.auth().exchangeCodeForToken(
 					new CodeExchangeRequest.Builder(clientUri, code, NYLAS_CLIENT_ID, NYLAS_CLIENT_SECRET).build());
 
-			return "{ \"grant_id\": \"" + codeExchangeResponse.getGrantId() + "\" }";
+			return "{ \"grantId\": \"" + codeExchangeResponse.getGrantId() + "\" }";
 		});
 
 		// Load additional routes
@@ -151,8 +151,8 @@ public class Server {
 	 * Additional routes for the use case example
 	 */
 	private static void routes() {
-		get("/nylas/:grant_id/read-events", (request, response) -> {
-			String grantId = request.params("grant_id");
+		get("/nylas/:grantId/read-events", (request, response) -> {
+			String grantId = request.params("grantId");
 
 			String calendarId = request.queryParams("calendarId");
 			if (calendarId == null) {
@@ -162,7 +162,7 @@ public class Server {
 
 			String startsAfter = request.queryParams("startsAfter");
 			String endsBefore = request.queryParams("endsBefore");
-			Integer limit = Integer.parseInt(request.queryParamOrDefault("limit", "100"));
+			Integer limit = Integer.parseInt(request.queryParamOrDefault("limit", "20"));
 
 			// Initialize an instance of the Nylas SDK using the client credentials
 			NylasClient nylasClient = new NylasClient.Builder(NYLAS_API_KEY).baseUrl(NYLAS_API_SERVER).build();
@@ -178,8 +178,8 @@ public class Server {
 			return JsonHelper.listToJson(events);
 		});
 
-		get("/nylas/:grant_id/read-calendars", (request, response) -> {
-			String grantId = request.params("grant_id");
+		get("/nylas/:grantId/read-calendars", (request, response) -> {
+			String grantId = request.params("grantId");
 
 			NylasClient nylasClient = new NylasClient.Builder(NYLAS_API_KEY).baseUrl(NYLAS_API_SERVER).build();
 
@@ -188,8 +188,8 @@ public class Server {
 			return JsonHelper.listToJson(calendars);
 		});
 
-		post("/nylas/:grant_id/create-event", (request, response) -> {
-			String grantId = request.params("grant_id");
+		post("/nylas/:grantId/create-event", (request, response) -> {
+			String grantId = request.params("grantId");
 			
 			Map<String, String> requestBody = new Gson().fromJson(request.body(),
 					JSON_MAP);
@@ -222,8 +222,8 @@ public class Server {
 			return JsonHelper.objectToJson(event);
 		});
 
-		delete("/nylas/:grant_id/delete-grant", (request, response) -> {
-			String grantId = request.params("grant_id");
+		delete("/nylas/:grantId/delete-grant", (request, response) -> {
+			String grantId = request.params("grantId");
 			if (grantId == null) {
 				halt(401, "{ \"message\": \"Unauthorized\" }");
 				return null;

@@ -39,12 +39,17 @@ async function getClientCredentials() {
     {
       type: 'input',
       name: 'id',
-      message: 'Nylas dashboard application client id [enter to skip]:',
+      message: 'Nylas application client id [enter to skip]:',
     },
     {
       type: 'input',
       name: 'secret',
-      message: 'Nylas dashboard application client secret [enter to skip]:',
+      message: 'Nylas application client secret [enter to skip]:',
+    },
+    {
+      type: 'input',
+      name: 'apiKey',
+      message: 'Nylas API key [enter to skip]:',
     },
   ]);
 
@@ -119,7 +124,7 @@ function installDependencies({ usecase, client = null, server = null }) {
   return result;
 }
 
-async function updateEnvironmentVars({ id, secret, usecase, server, client }) {
+async function updateEnvironmentVars({ id, secret, apiKey, usecase, server, client }) {
   if (!fs.existsSync(`${projectRoot}/.env`))
     fs.copyFileSync(`${projectRoot}/.env.sample`, `${projectRoot}/.env`);
 
@@ -133,6 +138,9 @@ async function updateEnvironmentVars({ id, secret, usecase, server, client }) {
 
     if (envVar.includes('NYLAS_CLIENT_SECRET=') && secret.length > 0)
       envVar = envVar.split('=')[0] + `="${secret}"`;
+
+    if (envVar.includes('NYLAS_API_KEY=') && apiKey.length > 0)
+      envVar = envVar.split('=')[0] + `="${apiKey}"`;
 
     if (envVar.includes('CLIENT_FRAMEWORK='))
       envVar = envVar.split('=')[0] + `="${client}"`;
@@ -160,7 +168,7 @@ async function updateEnvironmentVars({ id, secret, usecase, server, client }) {
 }
 
 async function setupSourceRepo() {
-  const { id, secret } = await getClientCredentials();
+  const { id, secret, apiKey } = await getClientCredentials();
   const { usecase } = await getUseCases();
   const { server, client } = await getFrameworkOptions(usecase);
 
@@ -195,7 +203,7 @@ async function setupSourceRepo() {
     );
   });
 
-  await updateEnvironmentVars({ id, secret, usecase, ...selectedFrameworks });
+  await updateEnvironmentVars({ id, secret, apiKey, usecase, ...selectedFrameworks });
 }
 
 async function setupDownloadedRepo() {

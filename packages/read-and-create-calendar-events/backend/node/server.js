@@ -1,13 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const mockDb = require('./utils/mock-db');
-const route = require('./route');
-
 const Nylas = require('nylas');
-const { WebhookTriggers } = require('nylas/lib/models/webhook');
-const { openWebhookTunnel } = require('nylas/lib/services/tunnel');
-const { Scope } = require('nylas/lib/models/connect');
+require('express-async-errors');
 
 dotenv.config();
 
@@ -16,119 +11,161 @@ const app = express();
 // Enable CORS
 app.use(cors());
 
-// The port the express app will run on
-const port = 9000;
+// Few environment variables
+const PORT = process.env.PORT || 3000;
+const NYLAS_CLIENT_ID = String(process.env.NYLAS_CLIENT_ID || '');
+const NYLAS_CLIENT_SECRET = String(process.env.NYLAS_CLIENT_SECRET || '');
+const NYLAS_API_KEY = String(process.env.NYLAS_API_KEY || '');
+const NYLAS_API_SERVER = process.env.NYLAS_API_SERVER;
+
+// Small util function to convert camelCase to snake_case
+function camelToCaseDeep(obj) {
+  if (Array.isArray(obj)) {
+    return obj.map((item) => camelToCaseDeep(item));
+  } else if (typeof obj === 'object' && obj !== null && obj.constructor === Object) {
+    const newObj = {};
+    for (const key in obj) {
+      const newKey = key.replace(/([A-Z])/g, (match) => `_${match.toLowerCase()}`);
+      newObj[newKey] = camelToCaseDeep(obj[key]);
+    }
+    return newObj;
+  }
+  return obj;
+}
 
 // Initialize the Nylas SDK using the client credentials
-Nylas.config({
-  clientId: process.env.NYLAS_CLIENT_ID,
-  clientSecret: process.env.NYLAS_CLIENT_SECRET,
-  apiServer: process.env.NYLAS_API_SERVER,
+const nylas = new Nylas({
+  apiKey: NYLAS_API_KEY,
+  serverUrl: NYLAS_API_SERVER,
 });
 
 // Before we start our backend, we should register our frontend as a
 // redirect URI to ensure the auth completes
 const CLIENT_URI =
-  process.env.CLIENT_URI || `http://localhost:${process.env.PORT || 3000}`;
-Nylas.application({
-  redirectUris: [CLIENT_URI],
-}).then((applicationDetails) => {
-  console.log(
-    'Application registered. Application Details: ',
-    JSON.stringify(applicationDetails)
+  process.env.CLIENT_URI || `http://localhost:${PORT}`;
+
+nylas.applications.redirectUris.list().then(async (redirectUris) => {
+  const redirectUri = redirectUris.data.find(
+    (uri) => uri.url === CLIENT_URI
   );
+
+  if (!redirectUri) {
+    const newRedirectUri = await nylas.applications.redirectUris.create({
+      platform: 'web',
+      url: CLIENT_URI,
+    }).then((uri) => uri.data);
+    console.debug(`Redirect URI registered: ${newRedirectUri.url}`);
+  } else {
+    console.debug(`Redirect URI already registered.`);
+  }
 });
 
-// Start the Nylas webhook
-openWebhookTunnel({
-  // Handle when a new message is created (sent)
-  onMessage: function handleEvent(delta) {
-    switch (delta.type) {
-      case WebhookTriggers.EventCreated:
-        console.log(
-          'Webhook trigger received, event created. Details: ',
-          JSON.stringify(delta.objectData, undefined, 2)
-        );
-        break;
-    }
-  },
-}).then((webhookDetails) => {
-  console.log('Webhook tunnel registered. Webhook ID: ' + webhookDetails.id);
-});
 
 // '/nylas/generate-auth-url': This route builds the URL for
 // authenticating users to your Nylas application via Hosted Authentication
 app.post('/nylas/generate-auth-url', express.json(), async (req, res) => {
   const { body } = req;
 
-  const authUrl = Nylas.urlForAuthentication({
+  const authUrl = nylas.auth(NYLAS_CLIENT_ID, NYLAS_CLIENT_SECRET).urlForAuthentication({
     loginHint: body.email_address,
-    redirectURI: (CLIENT_URI || '') + body.success_url,
-    scopes: [Scope.Calendar],
+    redirectUri: CLIENT_URI
   });
-
-  return res.send(authUrl);
-});
-
-// '/nylas/exchange-mailbox-token': This route exchanges an authorization
-// code for an access token
-// and sends the details of the authenticated user to the client
-app.post('/nylas/exchange-mailbox-token', express.json(), async (req, res) => {
-  const body = req.body;
-
-  const { accessToken, emailAddress } = await Nylas.exchangeCodeForToken(
-    body.token
-  );
-
-  // Normally store the access token in the DB
-  console.log('Access Token was generated for: ' + emailAddress);
-
-  // Replace this mock code with your actual database operations
-  const user = await mockDb.createOrUpdateUser(emailAddress, {
-    accessToken,
-    emailAddress,
-  });
-
-  // Return an authorization object to the user
+  
   return res.json({
-    id: user.id,
-    emailAddress: user.emailAddress,
+    auth_url: authUrl,
   });
 });
 
-// Middleware to check if the user is authenticated
-async function isAuthenticated(req, res, next) {
-  if (!req.headers.authorization) {
-    return res.status(401).json('Unauthorized');
+app.get('/nylas/exchange-auth-code', express.json(), async (req, res) => {
+  const code = String(req.query.code);
+  const error = req.query.error;
+  const errorDescription = req.query.error_description;
+
+  if (error) {
+    return res.status(400).json({
+      error: error,
+      error_description: errorDescription,
+    });
   }
 
-  // Query our mock db to retrieve the stored user access token
-  const user = await mockDb.findUser(req.headers.authorization);
+  const { grantId } = await nylas.auth(NYLAS_CLIENT_ID, NYLAS_CLIENT_SECRET).exchangeCodeForToken({
+    code,
+    redirectUri: CLIENT_URI,
+  });
+  
+  return res.json({
+    grantId
+  });
+});
 
-  if (!user) {
-    return res.status(401).json('Unauthorized');
+// Add route for getting 20 latest calendar events
+app.get('/nylas/:grantId/read-events', async (req, res) => {
+  const grantId = String(req.params.grantId);
+  const calendarId = String(req.query.calendarId);
+  if (!calendarId) {
+    return res.status(400).json({
+      message: 'Calendar ID is required',
+    });
   }
 
-  // Add the user to the response locals
-  res.locals.user = user;
+  const startsAfter = String(req.query.startsAfter);
+  const startsBefore = String(req.query.startsBefore);
+  const limit = Number(req.query.limit) || 20;
 
-  next();
-}
+  const { data: events } = await nylas.events.list({
+    identifier: grantId,
+    queryParams: {
+      calendarId,
+      limit,
+      start: startsAfter,
+      end: startsBefore,
+    }
+  })
+
+  return res.json(camelToCaseDeep(events));
+});
 
 // Add route for getting 20 latest calendar events
-app.get('/nylas/read-events', isAuthenticated, (req, res) =>
-  route.readEvents(req, res)
-);
-
-// Add route for getting 20 latest calendar events
-app.get('/nylas/read-calendars', isAuthenticated, (req, res) =>
-  route.readCalendars(req, res)
-);
+app.get('/nylas/:grantId/read-calendars', async (req, res) => {
+  const grantId = String(req.params.grantId);
+  const { data: calendars } = await nylas.calendars.list({
+    identifier: grantId,
+  });
+  return res.json(camelToCaseDeep(calendars));
+});
 
 // Add route for creating calendar events
-app.post('/nylas/create-events', isAuthenticated, express.json(), (req, res) =>
-  route.createEvents(req, res)
-);
+app.post('/nylas/:grantId/create-event', express.json(), async (req, res) => {
+  const grantId = String(req.params.grantId);
+  const { body } = req;
+
+  const { data: event } = await nylas.events.create({
+    identifier: grantId,
+    requestBody: {
+      title: body.title,
+      description: body.description,
+      location: body.location,
+      participants: body?.participants?.split(",").map((email) => ({ email })) || [],
+      when: {
+        startTime: body.startTime,
+        endTime: body.endTime,
+      },
+    },
+    queryParams: {
+      calendarId: body.calendarId,
+    }
+  });
+
+  return res.json(camelToCaseDeep(event));
+});
+
+// Handle all uncaught errors
+app.use((err, _req, res, _next) => {
+  console.error(err);
+  res.status(500).json({
+    message: err.message,
+  });
+});
 
 // Start listening on port 9000
-app.listen(port, () => console.log('App listening on port ' + port));
+app.listen(9000, () => console.log('App listening on port 9000'));
