@@ -70,7 +70,7 @@ app.post('/nylas/generate-auth-url', express.json(), async (req, res) => {
     loginHint: body.email_address,
     redirectUri: CLIENT_URI
   });
-  
+
   return res.json({
     auth_url: authUrl,
   });
@@ -92,9 +92,9 @@ app.get('/nylas/exchange-auth-code', express.json(), async (req, res) => {
     code,
     redirectUri: CLIENT_URI,
   });
-  
+
   return res.json({
-    grantId
+    grant_id: grantId,
   });
 });
 
@@ -157,6 +157,15 @@ app.post('/nylas/:grantId/create-event', express.json(), async (req, res) => {
   });
 
   return res.json(camelToCaseDeep(event));
+});
+
+// Add a route for deleting grants
+app.delete('/nylas/:grantId/delete-grant', async (req, res) => {
+  const grantId = String(req.params.grantId);
+  await nylas.auth(NYLAS_CLIENT_ID, NYLAS_CLIENT_SECRET).grants.destroy({grantId});
+  return res.json({
+    success: true,
+  });
 });
 
 // Handle all uncaught errors

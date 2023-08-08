@@ -4,11 +4,8 @@ require 'sinatra'
 require 'sinatra/cross_origin'
 require 'nylas'
 require 'dotenv'
-require_relative './utils/mock_db'
 
 Dotenv.load('.env', '../../../../.env')
-
-DB = MockDb.new('datastore.json')
 
 # enable CORS
 configure do
@@ -25,44 +22,43 @@ options '*' do
   200
 end
 
+# Create a global handler for all exceptions
+set :environment, :production
+
+error do
+  content_type :json
+  status 400 # or whatever
+
+  e = env['sinatra.error']
+  {:result => 'error', :message => e.message}.to_json
+end
+
+
 # The port that the backend server will run on
 set :port, 9000
 
 # Initialize the Nylas API client using the client id and secret specified in the .env file
-nylas = Nylas::API.new(
-  app_id: ENV['NYLAS_CLIENT_ID'],
-  app_secret: ENV['NYLAS_CLIENT_SECRET'],
-  api_server: ENV['NYLAS_API_SERVER'] || 'https://api.nylas.com',
-)
+nylas = Nylas::Client.new(api_key: ENV.fetch('NYLAS_API_KEY'), host: ENV.fetch('NYLAS_API_SERVER'))
 
-# Before we start our backend, we should register our frontend
-# as a redirect URI to ensure the auth completes
+
+# # Before we start our backend, we should register our frontend
+# # as a redirect URI to ensure the auth completes
 CLIENT_URI = ENV.fetch('CLIENT_URI') { "http://localhost:#{ENV.fetch('PORT', 3000)}" }
-updated_application_details = nylas.update_application_details({
-                                                                 redirect_uris: [CLIENT_URI]
-                                                               })
-p "Application registered. Application details: #{updated_application_details.to_h}"
 
-# Run a webhook to receive real-time updates from the Nylas API.
-# In this example, webhook open and error events and the messages received from the API are printed to the console.
-# First, define the callback for the on_message event
-def on_message(delta)
-  return unless delta.type == WebhookTrigger::EVENT_CREATED || delta.type == WebhookTrigger::ACCOUNT_CONNECTED
+redirect_uris, _request_ids = nylas.applications.redirect_uris.list
 
-  # Process the delta however you like
-  # Here we just print it to the console
-  p [:delta, delta]
+if redirect_uris.find { |request_uri,| request_uri[:url] == CLIENT_URI }
+  p 'Application redirect URI already exists'
+else
+  redirect_uri, _request_id = nylas.applications.redirect_uris.create(
+    request_body: {
+      url: CLIENT_URI,
+      platform: 'web'
+    }
+  )
+  p "Application redirect URI registered: #{redirect_uri[:id]}"
 end
 
-# Create, register, and open the webhook tunnel for testing
-# Config sets the region, triggers, and callbacks
-Thread.new do
-  Nylas::Tunnel.open_webhook_tunnel(nylas, {
-                                      "region": 'us',
-                                      "triggers": [WebhookTrigger::EVENT_CREATED, WebhookTrigger::ACCOUNT_CONNECTED],
-                                      "on_message": method(:on_message)
-                                    })
-end
 
 ##
 # Generates a Nylas Hosted Authentication URL with the given arguments.
@@ -78,15 +74,19 @@ end
 post '/nylas/generate-auth-url' do
   request_body = JSON.parse(request.body.read)
 
-  # Use the SDK method to generate a Nylas Hosted Authentication URL
-  auth_url = nylas.authentication_url(
-    redirect_uri: CLIENT_URI + request_body['success_url'],
-    scopes: ['calendar'],
-    login_hint: request_body['email_address'],
-    state: nil
-  )
+  p "Client URI #{CLIENT_URI}"
 
-  auth_url
+  # Use the SDK method to generate a Nylas Hosted Authentication URL
+  auth_url = nylas.auth.url_for_oauth2({
+                                                                                                         redirect_uri: CLIENT_URI,
+                                                                                                         login_hint: request_body['emailAddress'],
+                                                                                                         client_id: ENV.fetch('NYLAS_CLIENT_ID')
+  })
+
+  content_type 'application/json'
+  return {
+    auth_url: auth_url
+  }.to_json
 end
 
 ##
@@ -102,50 +102,32 @@ end
 # Returns a JSON object with the following information about the user:
 #     id: The identifier of the user in the database.
 #     emailAddress: The email address of the user.
-post '/nylas/exchange-mailbox-token' do
-  request_body = JSON.parse(request.body.read)
+get '/nylas/exchange-auth-code' do
+  code = params[:code]
+  error = params[:error]
+  error_description = params[:error_description]
 
-  # Use the SDK method to exchange our authorization code for an access token with the Nylas API
-  access_token_obj = nylas.exchange_code_for_token(request_body['token'], return_full_response: true)
+  if error
+    content_type 'application/json'
+    return {
+      message: error
+    }.to_json
+  end
 
-  # process the result and send to client however you want
-  access_token = access_token_obj[:access_token]
-  email_address = access_token_obj[:email_address]
+  grant, _request_id = nylas.auth.exchange_code_for_token({
+                                                            code: code,
+                                                            redirect_uri: CLIENT_URI,
+                                                            client_id: ENV.fetch('NYLAS_CLIENT_ID'),
+                                                            client_secret: ENV.fetch('NYLAS_CLIENT_SECRET')
+                                                          })
 
-  puts "Access Token was generated for: #{email_address}"
-
-  user = DB.create_or_update_user(email_address, {
-                                    'access_token': access_token,
-                                    'email_address': email_address
-                                  })
+  p "Grant #{grant} with a request id of #{_request_id}"
 
   content_type 'application/json'
-  {
-    'id': user['id'],
-    'emailAddress': user['email_address']
+  return {
+    grant_id: ""
   }.to_json
 end
-
-##
-# A middleware that checks if the user is authenticated.
-# If the user is authenticated, the middlware pass authenticated user along.
-# If the user is not authenticated, return a 401 error.
-#
-# This middleware is used for any endpoint that requires an access token to call the Nylas API.
-helpers do
-  def protected!
-    auth_headers = request.env['HTTP_AUTHORIZATION']
-    halt 401, 'Unauthorized' if auth_headers.nil?
-
-    # Find the user in the mock database
-    user = DB.find_user(auth_headers)
-    halt 401, 'Unauthorized' if user.nil?
-
-    # Return the user if found
-    user
-  end
-end
-
 
 ##
 # Retrieves all events from a calendar.
@@ -161,28 +143,39 @@ end
 # Returns a JSON array of all events from the given calendar.
 # See our docs for more information on the Event object.
 # https://developer.nylas.com/docs/api/#tag--Events
-get '/nylas/read-events' do
-  user = protected!
-
-  # create a Nylas API client using the user's access token
-  nylas_instance = nylas.as(user['access_token'])
+get '/nylas/:grant_id/read-events' do
+  grant_id = params['grant_id']
 
   calendar_id = params['calendarId']
   starts_after = params['startsAfter']
   ends_before = params['endsBefore']
-  limit = params['limit']
+  limit = params['limit'] ? params['limit'] : 20
+
+  unless calendar_id
+    return halt 400, { 'Content-Type' => 'application/json' }, {
+      message: "Calendar ID is required"
+    }
+  end
 
   # Use the SDK method chaining to retrieve all events from the given calendar
-  res = nylas_instance.events.where(
-    limit: limit,
-    calendar_id: calendar_id,
-    starts_after: starts_after,
-    ends_before: ends_before
-  )
-  res_json = res.map { |event| event }.to_json
+  query_params = {
+    calendar_id: calendar_id
+  }
+
+  if starts_after
+    query_params['starts'] = starts_after
+  end
+
+  if ends_before
+    query_params['ends'] = ends_before
+  end
+
+  events, _request_ids = nylas.events.list(identifier: grant_id, query_params: query_params)
 
   content_type 'application/json'
-  res_json
+  return {
+    events: events
+  }.to_json
 end
 
 
@@ -194,45 +187,39 @@ end
 # Returns a JSON array of all calendars for the authenticated user.
 # See our docs for more information about the calendar object.
 # https://developer.nylas.com/docs/api/#tag--Calendar
-get '/nylas/read-calendars' do
-  user = protected!
+get '/nylas/:grant_id/read-calendars' do
+  grant_id = params['grant_id']
 
-  # create a Nylas API client instance using the user's access token
-  nylas_instance = nylas.as(user['access_token'])
-
-  # returns all calendars for the authenticated user by default
-  res = nylas_instance.calendars
-  res_json = res.map { |calendar| calendar }.to_json
+  calendars, _request_id = nylas.calendars.list(identifier: grant_id)
 
   content_type 'application/json'
-  res_json
+  return {
+    calendars: calendars
+  }.to_json
 end
 
-##
-# Creates an event in the authenticated user's calendar.
-#
-# This endpoint is a POST request and accepts the following parameters in the request body:
-#
-# Request Body:
-#     calendarId: The identifier of the calendar to create the event in.
-#     title: The title of the event.
-#     description: The description of the event.
-#     startTime: The start time of the event.
-#     endTime: The end time of the event.
-#     participants: A comma separated list of email addresses of the participants of the event.
-#
-# Checks if the required parameters are present in the request body.
-# Creates an event object and sets the inputted parameters.
-# Saves the event object to the Nylas API.
-#
-# Returns the event object.
-# See our docs for more information on the Event object.
-# https://developer.nylas.com/docs/api/#tag--Events
-post '/nylas/create-events' do
-  user = protected!
-
-  # create a Nylas API client instance using the user's access token
-  nylas_instance = nylas.as(user['access_token'])
+# ##
+# # Creates an event in the authenticated user's calendar.
+# #
+# # This endpoint is a POST request and accepts the following parameters in the request body:
+# #
+# # Request Body:
+# #     calendarId: The identifier of the calendar to create the event in.
+# #     title: The title of the event.
+# #     description: The description of the event.
+# #     startTime: The start time of the event.
+# #     endTime: The end time of the event.
+# #     participants: A comma separated list of email addresses of the participants of the event.
+# #
+# # Checks if the required parameters are present in the request body.
+# # Creates an event object and sets the inputted parameters.
+# # Saves the event object to the Nylas API.
+# #
+# # Returns the event object.
+# # See our docs for more information on the Event object.
+# # https://developer.nylas.com/docs/api/#tag--Events
+post '/nylas/:grant_id/create-event' do
+  grant_id = params['grant_id']
 
   request_body = JSON.parse(request.body.read)
 
@@ -241,7 +228,7 @@ post '/nylas/create-events' do
      request_body['startTime'].nil? ||
      request_body['endTime'].nil?
     halt 400,
-         'Missing required fields: calendarId, title, starTime or endTime'
+         {'Content-type': 'application/json'}, { message: 'Missing required fields: calendarId, title, starTime or endTime' }
   end
 
   participants = if request_body['participants'].nil?
@@ -251,17 +238,34 @@ post '/nylas/create-events' do
                  end
 
   # use the SDK method to create an event object
-  event = nylas_instance.events.create(
-    title: request_body['title'],
-    description: request_body['description'],
-    calendar_id: request_body['calendarId'],
-    when: {
-      start_time: request_body['startTime'],
-      end_time: request_body['endTime']
+  event, _request_id = nylas.events.create(
+    identifier: grant_id,
+    query_params: {
+      calendar_id: request_body['calendarId'],
     },
-    participants: participants.map { |email| { email: email } }
+    request_body: {
+      title: request_body['title'],
+      description: request_body['description'],
+      when: {
+        start_time: request_body['startTime'].to_i,
+        end_time: request_body['endTime'].to_i
+      },
+      participants: participants.map { |email| { email: email } }
+    }
   )
 
   content_type 'application/json'
   event.to_json
+end
+
+
+delete '/nylas/:grant_id/delete-grant' do
+  grant_id = params['grant_id']
+
+  nylas.auth(ENV.fetch('NYLAS_CLIENT_ID'), ENV.fetch('NYLAS_CLIENT_SECRET')).grants.destroy(object_id: grant_id)
+
+  content_type 'application/json'
+  return {
+    success: true
+  }.to_json
 end

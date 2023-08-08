@@ -30,6 +30,7 @@ function App() {
         })
         .catch((error) => {
           console.error('An error occurred parsing the response:', error);
+          window.history.replaceState({}, '', `/`);
         })
         .finally(() => {
           setIsExchangingCode(false);
@@ -114,27 +115,29 @@ function App() {
       isLoading={isLoading}
       refresh={refresh}
     >
-      {isExchangingCode && (
-        <div className="app-card">
-          <p>Exchanging authentication code, please wait...</p>
-        </div>
-      )}
+      <React.Fragment>
+        {isExchangingCode && (
+          <div className="app-card">
+            <p>Exchanging authentication code, please wait...</p>
+          </div>
+        )}
 
-      {!app.grantId && !isExchangingCode && (
-        <NylasLogin email={userEmail} setEmail={setUserEmail} />
-      )}
+        {!app.grantId && !isExchangingCode && (
+          <NylasLogin email={userEmail} setEmail={setUserEmail} />
+        )}
 
-      {app.grantId && !isExchangingCode && (
-        <div className="app-card">
-          <CalendarApp
-            calendarId={primaryCalendar?.id}
-            isLoading={isLoading}
-            setIsLoading={setIsLoading}
-            events={events}
-            refresh={refresh}
-          />
-        </div>
-      )}
+        {app.grantId && !isExchangingCode && (
+          <div className="app-card">
+            <CalendarApp
+              calendarId={primaryCalendar?.id}
+              isLoading={isLoading}
+              setIsLoading={setIsLoading}
+              events={events}
+              refresh={refresh}
+            />
+          </div>
+        )}
+      </React.Fragment>
     </Layout>
   );
 }

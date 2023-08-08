@@ -66,7 +66,7 @@ public class Server {
 		 * URI. This is required for OAuth 2.0 Authentication with Nylas to work.
 		 */
 		String clientUri = dotenv.get("CLIENT_URI", "http://localhost:" + PORT);
-		
+
 		List<RedirectUri> redirectUris = nylasClient.applications().redirectUris().list().getData();
 		if (redirectUris.stream().anyMatch(redirectUri -> redirectUri.getUrl().equals(clientUri))) {
 			System.out.println("Redirect URI already registered.");
@@ -89,7 +89,7 @@ public class Server {
 							.loginHint(requestBody.get("emailAddress"))
 							.build());
 
-			return "{ \"auth_url\": \"" + authURL + "\" }"; 
+			return "{ \"auth_url\": \"" + authURL + "\" }";
 		});
 
 		get("/nylas/exchange-auth-code", (request, response) -> {
@@ -106,7 +106,7 @@ public class Server {
 			CodeExchangeResponse codeExchangeResponse = nylasClient.auth().exchangeCodeForToken(
 					new CodeExchangeRequest.Builder(clientUri, code, NYLAS_CLIENT_ID, NYLAS_CLIENT_SECRET).build());
 
-			return "{ \"grantId\": \"" + codeExchangeResponse.getGrantId() + "\" }";
+			return "{ \"grant_id\": \"" + codeExchangeResponse.getGrantId() + "\" }";
 		});
 
 		// Load additional routes
@@ -190,7 +190,7 @@ public class Server {
 
 		post("/nylas/:grantId/create-event", (request, response) -> {
 			String grantId = request.params("grantId");
-			
+
 			Map<String, String> requestBody = new Gson().fromJson(request.body(),
 					JSON_MAP);
 
@@ -224,13 +224,9 @@ public class Server {
 
 		delete("/nylas/:grantId/delete-grant", (request, response) -> {
 			String grantId = request.params("grantId");
-			if (grantId == null) {
-				halt(401, "{ \"message\": \"Unauthorized\" }");
-				return null;
-			}
 
 			NylasClient nylasClient = new NylasClient.Builder(NYLAS_API_KEY).baseUrl(NYLAS_API_SERVER).build();
-			
+
 			nylasClient.auth().grants().destroy(grantId);
 
 			return "{ \"success\": true }";
@@ -239,7 +235,7 @@ public class Server {
 
 	/**
 	 * Loads .env file. Tries local directory first then a few directories up.
-	 * 
+	 *
 	 * @return The .env file contents
 	 */
 	private static Dotenv loadEnv() {
