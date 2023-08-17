@@ -109,7 +109,7 @@ app.get('/nylas/:grantId/read-events', async (req, res) => {
   }
 
   const startsAfter = String(req.query.startsAfter);
-  const startsBefore = String(req.query.startsBefore);
+  const endsBefore = String(req.query.endsBefore);
   const limit = Number(req.query.limit) || 20;
 
   const { data: events } = await nylas.events.list({
@@ -118,7 +118,7 @@ app.get('/nylas/:grantId/read-events', async (req, res) => {
       calendarId,
       limit,
       start: startsAfter,
-      end: startsBefore,
+      end: endsBefore,
     }
   })
 
