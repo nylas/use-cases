@@ -22,7 +22,6 @@ The `package.json` in this sample already includes the Nylas React package. If y
 
 ### Build the app
 
-<!-- LR: is this step needed? I got by without it-->
 ```bash
 npm run build
 ```
