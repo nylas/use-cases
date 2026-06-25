@@ -1,8 +1,24 @@
-<a href="https://www.nylas.com/">
-    <img src="https://brand.nylas.com/assets/downloads/logo_horizontal_png/Nylas-Logo-Horizontal-Blue_.png" alt="Aimeos logo" title="Aimeos" align="right" height="60" />
-</a>
+<div align="center">
+  <a href="https://www.nylas.com/">
+    <img width="100%" alt="Nylas" src="https://github.com/user-attachments/assets/137517ae-244d-47a5-8ca7-b12984971fc4" />
+  </a>
 
-# Nylas Use Case Samples
+  <h1>Nylas Use Case Samples</h1>
+
+  <p><strong>Full-stack front-end and back-end sample applications using hosted authentication and the Nylas APIs — built on Nylas, the infrastructure that powers communications</strong></p>
+
+  <p>
+    <a href="https://developer.nylas.com/">📖 Docs</a> ·
+    <a href="https://developer.nylas.com/docs/api/v3/">📚 API Reference</a> ·
+    <a href="https://dashboard-v3.nylas.com/register">🚀 Sign up</a> ·
+    <a href="https://github.com/orgs/nylas-samples/repositories">💡 Samples</a> ·
+    <a href="https://forums.nylas.com">💬 Forum</a>
+  </p>
+</div>
+
+<br />
+
+These use case samples are built on [Nylas](https://developer.nylas.com/), the infrastructure that powers communications. Covers [Agent Accounts](https://developer.nylas.com/docs/v3/agent-accounts/), [Email](https://developer.nylas.com/docs/v3/email/), [Calendar](https://developer.nylas.com/docs/v3/calendar/), [Contacts](https://developer.nylas.com/docs/v3/email/contacts/), [Scheduler](https://developer.nylas.com/docs/v3/scheduler/), and [Notetaker](https://developer.nylas.com/docs/v3/notetaker/).
 
 **⚠️ Warning: This repo is still in the alpha development stage and stability is not fully guaranteed yet**
 
